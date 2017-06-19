@@ -38,25 +38,30 @@ yield_curve <- function(hr,wts, natmortality, R=1, sequence = seq(0.001,2,0.001)
     iii <- 1
     for (ii in sequence){
         respop <- yld <-  matrix(0,nrow=length(ages), ncol=length(season), dimnames=list("cat"=ages,"season"=season))  
+        
         respop[1,1] <- R
+        respop[1,1] <- respop[1,1] * (1-(hr[1,1]*ii))
+        yld[1,1]    <- respop[1,1] * (hr[1,1]*ii)
+        respop[1,1] <- respop[1,1] * (1-natmortality*1)
+        
         for(aa in ages){
             
-            if (aa==1){
-             # respop[aa,1] <- respop[aa,1] * (1-natmortality*1)
-              respop[aa,1] <- respop[aa,1] * (1-(hr[aa,1]*ii))
-              yld[aa,1] <- respop[aa,1] * (hr[aa,1]*ii)
-              respop[aa,1] <- respop[aa,1] * (1-natmortality*1)
-            }
+            # if (aa==1){
+            #  respop[aa,1]  <- R # respop[aa,1] * (1-natmortality*1)
+            #   respop[aa,1] <- respop[aa,1] * (1-(hr[aa,1]*ii))
+            #   yld[aa,1]    <- respop[aa,1] * (hr[aa,1]*ii)
+            #   respop[aa,1] <- respop[aa,1] * (1-natmortality*1)
+            # }
             if (aa > 1){
-                respop[aa,1] <- respop[aa-1,max(season)] * (1-natmortality*0)
+                respop[aa,1] <- respop[aa-1,max(season)] # * (1-natmortality*0)
                 respop[aa,1] <- respop[aa,1] * (1-(hr[aa,1] *ii))
-                yld[aa,1] <- respop[aa,1] * (hr[aa,1]*ii)
+                yld[aa,1]    <- respop[aa,1] * (hr[aa,1]*ii)
                 respop[aa,1] <- respop[aa,1] * (1-natmortality*1)
             }
             for (ss in 2:(max(season))){
-                respop[aa,ss] <- respop[aa,ss-1] * (1-natmortality*0)
+                respop[aa,ss] <- respop[aa,ss-1] # * (1-natmortality*0)
                 respop[aa,ss] <- respop[aa,ss] * (1-(hr[aa,ss]*ii))
-                yld[aa,ss] <- respop[aa,ss] * (hr[aa,ss]*ii)
+                yld[aa,ss]    <- respop[aa,ss] * (hr[aa,ss]*ii)
                 respop[aa,ss] <- respop[aa,ss] * (1-natmortality*1)
                 
             }
@@ -166,7 +171,7 @@ yield_curve(hr=hr[,34,], wts, natmortality, R=100, sequence = 1, verbose=T)
 
 
 
-hr <- apply(catches.n.dsvm,1:3,sum)/    ( apply(pop1,1:3,sum) )
+hr <- apply(catches.n.dsvm,1:3,sum)/    ( apply(pop1,1:3,sum))
 mean(hr[,34,])
 
 
@@ -174,7 +179,7 @@ mean(hr[,34,])
 yc <- yield_curve(hr=hr[,34,], wts, natmortality, R=100)
 
 plot(x=yc$hr, y=yc$yield, ylim=c(0,500))
-points(mean(hr[,34,]),yc$yield[yc$hr>mean(hr[,34,])][1], col="green", pch=19)
+points(mean(hr[,34,]),yc$yield[yc$hr>mean(hr[,34,])][1], col="red", pch=19)
 points(mean(hr[,34,]),catches.wt.dsvm.tot[,34,,], col="green", pch=19)
 
 
