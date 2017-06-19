@@ -112,12 +112,21 @@ catchSigma(sp2) <- catchSigma(sp3)<- catchSigma(sp4)<- catchSigma(sp5)<- array(0
 #this is where our loop starts, after we set up stable population
 for(yy in (stab.model):(stab.model+NUMRUNS-1)){
   
-  cat("Mean catch input to the dsvm for sp1,sp2\n")
-  print(catchMean(sp1)  <- array(pos_catches1[,yy,,], dim=c(length(ages), length(season),1),  dimnames=list("cat"=ages,"season"= season,"option"="a")))
+  print("================== year yy========================")
+  print(yy)
+  print("================== POP in year yy========================")
+  print(pop1[,yy,,,drop=F])
+  
+
+  catchMean(sp1)  <- array(pos_catches1[,yy,,], dim=c(length(ages), length(season),1),  dimnames=list("cat"=ages,"season"= season,"option"="a"))
                                         # ---No way of estimating sigma, therefore we assume that is 8% of the CPUE (note slight repetion in code for dims and dimnames of 0 catch arrays for spec 3,4,5)                                                                  
   catchSigma(sp1) <- catchMean(sp1) *0.08
   effort <- c(1)
 
+  print("================== catchmean input to DSVM in year yy========================")
+  print(catchMean(sp1))
+  
+  
   sp1Price <-  sp2Price <- sp3Price <- sp4Price <- sp5Price <- array(c(4), dim=c(length(ages),length(season)), dimnames=list(cat=ages,season=as.character(season)))
                                         #---effort and prices used (note that now c is removed (but that if other runs, then make sure to fix/remove code that removes "c" option)                                                                                         
   control     <- DynState.control(spp1LndQuota= 800,  spp2LndQuota=500, spp1LndQuotaFine= 2000, spp2LndQuotaFine= 2000,
@@ -128,14 +137,19 @@ for(yy in (stab.model):(stab.model+NUMRUNS-1)){
 
 
   #some checks
-  pop1[,yy,,,drop=F]
-  aperm(apply(pop1[,yy,,,drop=F],1:3,sum),c(1,3,2))
-  catchMean(sp1)
+  print("================== output catches (wt) from DSVM in weight in year yy========================")
   print(catches.wt.dsvm[,yy,,] <- apply(z@sim@spp1Landings + z@sim@spp1Discards,c(1,3),sum))
   catches.wt.dsvm.tot[] <- apply(catches.wt.dsvm,c(2),"sum")
-  aperm(apply(pop1[,yy,,,drop=F],1:3,sum),c(1,3,2))
-  print(catches.n.dsvm <- catches.wt.dsvm/wts)
   
+  print("================== output catches (wt) tot from DSVM in weight in year yy========================")
+  print(catches.wt.tot[,yy,,])
+  
+  aperm(apply(pop1[,yy,,,drop=F],1:3,sum),c(1,3,2))
+  
+  print("================== output catches (n) from DSVM in weight in year yy========================")
+  catches.n.dsvm <- catches.wt.dsvm/wts
+  print(catches.n.dsvm[,yy,,])
+        
   pop1 <- population_dynamics(pop=pop1, population.stock=1, startyear=yy, endyear=yy+1, season=season, natmortality=natmortality, catches=catches.n.dsvm[,yy,,,drop=F], recruitment=100)
   pos_catches1 <- pop1 *q*wts
   
