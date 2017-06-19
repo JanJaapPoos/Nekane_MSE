@@ -20,14 +20,14 @@ population_dynamics <- function(pop, population.stock, startyear, endyear, seaso
                 }
                 # natural mortality  ---------------------                                                             
                 pop[,as.character(y),as.character(ss),] <- pop[,as.character(y),as.character(ss),]*(1-natmortality)
-                pop[pop < 0 ] <- 0
+                pop[pop < 1e-20 ] <- 1e-20
                 
                 # maturation ---------------------                                                            
                 nummatures <- pop[,as.character(y),as.character(ss),"a"] * c(0,0.1,0.3,0.5) # last is vector of maturity              
             }
             # remove catches (dims of catches here is ages,season, area, just like in main )
             pop[,as.character(y),as.character(ss),] <- pop[,as.character(y),as.character(ss),] - catches[,,as.character(ss),]
-            pop[pop < 0 ] <- 0 
+            pop[pop < 1e-20 ] <- 1e-20 
         }
     }
     return(pop)
@@ -81,8 +81,8 @@ ages          <- 1:4
 season        <- 1:6
 areas         <- c("a")
 stab.model    <- 20
-NUMRUNS       <- 20
-SIMNUMBER     <- 270
+NUMRUNS       <- 30
+SIMNUMBER     <- 470
 SIGMA         <- 1e-20
 SPP1DSCSTEPS  <- SPP2DSCSTEPS <- 0
 endy          <- stab.model + NUMRUNS
@@ -90,7 +90,7 @@ Linf          <- 20
 K             <- 0.3
 wts           <- Linf*(1-exp(-K*ages))
 q             <- 0.0005
-natmortality  <- 0.1 
+natmortality  <- 0.09
 
 pop1                <- array(0, dim=c(length(ages),endy + 1,length(season),length(areas)), dimnames=list(cat=ages,   year=as.character(1:(endy+1)), season=as.character(season), option =areas))
 catches.n.dsvm      <- array(0, dim=c(length(ages),endy + 1,length(season),length(areas)), dimnames=list(cat=ages,   year=as.character(1:(endy+1)), season=as.character(season), option =areas))
@@ -121,7 +121,7 @@ for(yy in (stab.model):(stab.model+NUMRUNS-1)){
   catchMean(sp1)  <- array(pos_catches1[,yy,,], dim=c(length(ages), length(season),1),  dimnames=list("cat"=ages,"season"= season,"option"="a"))
                                         # ---No way of estimating sigma, therefore we assume that is 8% of the CPUE (note slight repetion in code for dims and dimnames of 0 catch arrays for spec 3,4,5)                                                                  
   catchSigma(sp1) <- catchMean(sp1) *0.08
-  effort <- c(1)
+  effort <- array(c(1), dim=c(length(areas), length(season)), dimnames=list(option =areas,season=as.character(season)))
 
   print("================== catchmean input to DSVM in year yy========================")
   print(catchMean(sp1))
@@ -195,10 +195,10 @@ par(mfrow=c(1,2))
 plot(catches.wt.dsvm.tot)
 
 plot(x=yc$hr, y=yc$yield, ylim=c(0,600))
-points(mean(hr[,33,]),yc$yield[yc$hr>mean(hr[,33,])][1], col="red", pch=19)
-points(mean(hr[,32,]),catches.wt.dsvm.tot[,32,,], col="blue", pch=19)
-points(mean(hr[,33,]),catches.wt.dsvm.tot[,33,,], col="blue", pch=19)
-points(mean(hr[,34,]),catches.wt.dsvm.tot[,34,,], col="blue", pch=19)
+points(mean(hr[,43,]),yc$yield[yc$hr>mean(hr[,43,])][1], col="red", pch=19)
+points(mean(hr[,42,]),catches.wt.dsvm.tot[,42,,], col="blue", pch=19)
+points(mean(hr[,43,]),catches.wt.dsvm.tot[,43,,], col="blue", pch=19)
+points(mean(hr[,44,]),catches.wt.dsvm.tot[,44,,], col="blue", pch=19)
 
 
     
