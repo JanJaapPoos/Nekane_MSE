@@ -142,7 +142,7 @@ for(yy in (stab.model):(stab.model+NUMRUNS-1)){
   catches.wt.dsvm.tot[] <- apply(catches.wt.dsvm,c(2),"sum")
   
   print("================== output catches (wt) tot from DSVM in weight in year yy========================")
-  print(catches.wt.tot[,yy,,])
+  print(catches.wt.dsvm.tot[,yy,,])
   
   aperm(apply(pop1[,yy,,,drop=F],1:3,sum),c(1,3,2))
   
