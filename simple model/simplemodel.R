@@ -5,7 +5,7 @@ population_dynamics <- function(pop, population.stock, startyear, endyear, seaso
   #pop[age,year, season, area]                                                                                                        
     for (y in (startyear:endyear)){     # need to think this, but maybe is better change last year (y in (endy:(endy +10)))           
         for (ss in (1:length(season))){
-                                        # move time ---------------------                                                             
+            # move time ---------------------                                                             
             if (ss ==1){
                 for(age in 2:(dim(pop)[1])){
                     pop[age,as.character(y),as.character(ss),] <- pop[age-1,as.character(y-1),as.character(length(season)),];
@@ -13,20 +13,22 @@ population_dynamics <- function(pop, population.stock, startyear, endyear, seaso
             } else {
                 pop[,as.character(y),as.character(ss),] <- pop[,as.character(y),as.character(ss-1),];
             }
-
             if (population.stock =="1"){
-                                        # birth/recruitment ---------------------                                                     
+                # birth/recruitment ---------------------                                                     
                 if (ss ==1){
                     pop[1,as.character(y),as.character(ss),"a"] <- recruitment;
                 }
-                                        # mortality ---------------------                                                             
+                # natural mortality  ---------------------                                                             
                 pop[,as.character(y),as.character(ss),] <- pop[,as.character(y),as.character(ss),]*(1-natmortality)
-                                        # maturation ---------------------                                                            
+                pop[pop < 0 ] <- 0
+                
+                # maturation ---------------------                                                            
                 nummatures <- pop[,as.character(y),as.character(ss),"a"] * c(0,0.1,0.3,0.5) # last is vector of maturity              
             }
+            # remove catches (dims of catches here is ages,season, area, just like in main )
+            pop[,as.character(y),as.character(ss),] <- pop[,as.character(y),as.character(ss),] - catches[,,as.character(ss),]
+            pop[pop < 0 ] <- 0 
         }
-        # remove catches (dims of catches here is ages,season, area, just like in main )
-        pop[,as.character(y),as.character(ss),] <- pop[,as.character(y),as.character(ss),] - catches[,,as.character(ss),]
     }
     return(pop)
 }
@@ -63,12 +65,13 @@ yield_curve <- function(hr,wts, natmortality, R=1, sequence = seq(0.001,2,0.001)
         }
         res[iii, ]$yield <- sum(yld*wts)    
         iii <- iii + 1
-        print("yields (in numbers)")
-        print(yld)
-        print(" ")
-        print("population (in numbers)")
-        print(respop)
-        
+        if (verbose == T){ 
+          print("yields (in numbers)")
+          print(yld)
+          print(" ")
+          print("population (in numbers)")
+          print(respop)
+        }
     }
     return(res)
 }
@@ -78,8 +81,8 @@ ages          <- 1:4
 season        <- 1:6
 areas         <- c("a")
 stab.model    <- 20
-NUMRUNS       <- 15
-SIMNUMBER     <- 100
+NUMRUNS       <- 20
+SIMNUMBER     <- 270
 SIGMA         <- 1e-20
 SPP1DSCSTEPS  <- SPP2DSCSTEPS <- 0
 endy          <- stab.model + NUMRUNS
@@ -118,7 +121,7 @@ for(yy in (stab.model):(stab.model+NUMRUNS-1)){
   sp1Price <-  sp2Price <- sp3Price <- sp4Price <- sp5Price <- array(c(4), dim=c(length(ages),length(season)), dimnames=list(cat=ages,season=as.character(season)))
                                         #---effort and prices used (note that now c is removed (but that if other runs, then make sure to fix/remove code that removes "c" option)                                                                                         
   control     <- DynState.control(spp1LndQuota= 800,  spp2LndQuota=500, spp1LndQuotaFine= 2000, spp2LndQuotaFine= 2000,
-                                fuelUse = 1, fuelPrice = 2.0, landingCosts= 0,gearMaintenance= 0, addNoFishing= TRUE, increments= 25,
+                                fuelUse = 0.001, fuelPrice = 2.0, landingCosts= 0,gearMaintenance= 0, addNoFishing= TRUE, increments= 25,
                                 spp1DiscardSteps= SPP1DSCSTEPS, spp2DiscardSteps= SPP2DSCSTEPS, sigma= SIGMA, simNumber= SIMNUMBER, numThreads= 20)
 
   z <- DynState(sp1, sp2, sp3, sp4, sp5, sp1Price, sp2Price, sp3Price, sp4Price, sp5Price, effort, control)
@@ -141,9 +144,6 @@ for(yy in (stab.model):(stab.model+NUMRUNS-1)){
 }
 
 
-#to check
-
-plot(catches.wt.dsvm.tot)
 
 #what do the catches look like in terms of weights?
 round(catches.wt.dsvm[,30:34,,],1)
@@ -158,24 +158,33 @@ round(apply(catches.n.dsvm[,30:34,,],c(1,3),"mean"),1)
 
 
 
-#next, what happens to theoretical pop for our harvest, what is harvest?
-hr[,30:34,]
 
 #what happens in our yield curve for this hr?
 yield_curve(hr=hr[,34,], wts, natmortality, R=100, sequence = 1, verbose=T)
 
+round(catches.n.dsvm[,34,,],1)
+round(pop1[,34,,],1)
 
 
 hr <- apply(catches.n.dsvm,1:3,sum)/    ( apply(pop1,1:3,sum) )
+#next, what happens to theoretical pop for our harvest, what is harvest?
+hr[,30:34,]
 mean(hr[,34,])
 
 
     
-yc <- yield_curve(hr=hr[,34,], wts, natmortality, R=100)
+yc <- yield_curve(hr=hr[,33,], wts, natmortality, R=100, verbose=F)
 
-plot(x=yc$hr, y=yc$yield, ylim=c(0,500))
-points(mean(hr[,34,]),yc$yield[yc$hr>mean(hr[,34,])][1], col="green", pch=19)
-points(mean(hr[,34,]),catches.wt.dsvm.tot[,34,,], col="green", pch=19)
+
+#to check
+par(mfrow=c(1,2))
+plot(catches.wt.dsvm.tot)
+
+plot(x=yc$hr, y=yc$yield, ylim=c(0,600))
+points(mean(hr[,33,]),yc$yield[yc$hr>mean(hr[,33,])][1], col="red", pch=19)
+points(mean(hr[,32,]),catches.wt.dsvm.tot[,32,,], col="blue", pch=19)
+points(mean(hr[,33,]),catches.wt.dsvm.tot[,33,,], col="blue", pch=19)
+points(mean(hr[,34,]),catches.wt.dsvm.tot[,34,,], col="blue", pch=19)
 
 
     
