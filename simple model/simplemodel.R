@@ -46,19 +46,19 @@ yield_curve <- function(hr,wts, natmortality, R=1, sequence = seq(0.001,2,0.001)
             if (aa==1){
              # respop[aa,1] <- respop[aa,1] * (1-natmortality*1)
               respop[aa,1] <- respop[aa,1] * (1-(hr[aa,1]*ii))
-              yld[aa,1] <- respop[aa,1] * (hr[aa,1]*ii)
+              yld[aa,1] <-   R -respop[aa,1] 
               respop[aa,1] <- respop[aa,1] * (1-natmortality*1)
             }
             if (aa > 1){
                 respop[aa,1] <- respop[aa-1,max(season)] * (1-natmortality*0)
                 respop[aa,1] <- respop[aa,1] * (1-(hr[aa,1] *ii))
-                yld[aa,1] <- respop[aa,1] * (hr[aa,1]*ii)
+                yld[aa,1] <-   respop[aa-1,max(season)] - respop[aa,1]
                 respop[aa,1] <- respop[aa,1] * (1-natmortality*1)
             }
             for (ss in 2:(max(season))){
                 respop[aa,ss] <- respop[aa,ss-1] * (1-natmortality*0)
                 respop[aa,ss] <- respop[aa,ss] * (1-(hr[aa,ss]*ii))
-                yld[aa,ss] <- respop[aa,ss] * (hr[aa,ss]*ii)
+                yld[aa,ss] <- respop[aa,ss-1] - respop[aa,ss]
                 respop[aa,ss] <- respop[aa,ss] * (1-natmortality*1)
                 
             }
@@ -81,8 +81,8 @@ ages          <- 1:4
 season        <- 1:6
 areas         <- c("a")
 stab.model    <- 20
-NUMRUNS       <- 30
-SIMNUMBER     <- 400
+NUMRUNS       <- 50
+SIMNUMBER     <- 410
 SIGMA         <- 1e-20
 SPP1DSCSTEPS  <- SPP2DSCSTEPS <- 0
 endy          <- stab.model + NUMRUNS
@@ -112,9 +112,9 @@ catchSigma(sp2) <- catchSigma(sp3)<- catchSigma(sp4)<- catchSigma(sp5)<- array(0
 #this is where our loop starts, after we set up stable population
 for(yy in (stab.model):(stab.model+NUMRUNS-1)){
   
-  print("================== year yy========================")
+  print("====== year yy ========")
   print(yy)
-  print("================== POP in year yy========================")
+  print("====== POP in year yy=")
   print(pop1[,yy,,,drop=F])
   
 
@@ -123,30 +123,30 @@ for(yy in (stab.model):(stab.model+NUMRUNS-1)){
   catchSigma(sp1) <- catchMean(sp1) *0.08
   effort <- array(c(1), dim=c(length(areas), length(season)), dimnames=list(option =areas,season=as.character(season)))
 
-  print("================== catchmean input to DSVM in year yy========================")
+  print("====== catchmean input to DSVM in year yy==")
   print(catchMean(sp1))
   
   
   sp1Price <-  sp2Price <- sp3Price <- sp4Price <- sp5Price <- array(c(4), dim=c(length(ages),length(season)), dimnames=list(cat=ages,season=as.character(season)))
                                         #---effort and prices used (note that now c is removed (but that if other runs, then make sure to fix/remove code that removes "c" option)                                                                                         
   control     <- DynState.control(spp1LndQuota= 800,  spp2LndQuota=500, spp1LndQuotaFine= 2000, spp2LndQuotaFine= 2000,
-                                fuelUse = 0.001, fuelPrice = 2.0, landingCosts= 0,gearMaintenance= 0, addNoFishing= TRUE, increments= 25,
+                                fuelUse = 0.001, fuelPrice = 2.0, landingCosts= 0,gearMaintenance= 0, addNoFishing= TRUE, increments= 40,
                                 spp1DiscardSteps= SPP1DSCSTEPS, spp2DiscardSteps= SPP2DSCSTEPS, sigma= SIGMA, simNumber= SIMNUMBER, numThreads= 20)
 
   z <- DynState(sp1, sp2, sp3, sp4, sp5, sp1Price, sp2Price, sp3Price, sp4Price, sp5Price, effort, control)
 
 
   #some checks
-  print("================== output catches (wt) from DSVM in weight in year yy========================")
+  print("====== output catches (wt) from DSVM in weight in year yy =====")
   print(catches.wt.dsvm[,yy,,] <- apply(z@sim@spp1Landings + z@sim@spp1Discards,c(1,3),sum))
   catches.wt.dsvm.tot[] <- apply(catches.wt.dsvm,c(2),"sum")
   
-  print("================== output catches (wt) tot from DSVM in weight in year yy========================")
+  print("====== output catches (wt) tot from DSVM in weight in year yy =")
   print(catches.wt.dsvm.tot[,yy,,])
   
   aperm(apply(pop1[,yy,,,drop=F],1:3,sum),c(1,3,2))
   
-  print("================== output catches (n) from DSVM in weight in year yy========================")
+  print("====== output catches (n) from DSVM in weight in year yy ======")
   catches.n.dsvm <- catches.wt.dsvm/wts
   print(catches.n.dsvm[,yy,,])
         
@@ -159,48 +159,41 @@ for(yy in (stab.model):(stab.model+NUMRUNS-1)){
 
 
 
-#what do the catches look like in terms of weights?
-round(catches.wt.dsvm[,30:34,,],1)
 
 #what are the weights?
 wts
 
-#what do the catches look like in numbers, and are they correct (catch.wt/wts=catch.n)
-round(catches.n.dsvm[,30:34,,],1)
-#take means over these year
-round(apply(catches.n.dsvm[,30:34,,],c(1,3),"mean"),1)
 
-
+hr <- apply(catches.n.dsvm,1:3,sum)/    (apply(catches.n.dsvm,1:3,sum) +    apply(pop1,1:3,sum) )
 
 
 #what happens in our yield curve for this hr?
-yield_curve(hr=hr[,34,], wts, natmortality, R=100, sequence = 1, verbose=T)
+yield_curve(hr=hr[,64,], wts, natmortality, R=100, sequence = 1, verbose=T)
 
-round(catches.n.dsvm[,34,,],1)
-round(pop1[,34,,],1)
+round(catches.n.dsvm[,64,,],2)
+round(pop1[,64,,],2)
 
 
-hr <- apply(catches.n.dsvm,1:3,sum)/    ( apply(pop1,1:3,sum) )
 #next, what happens to theoretical pop for our harvest, what is harvest?
-hr[,30:34,]
-mean(hr[,34,])
+hr[,64,]
+mean(hr[,64,])
 
 
     
-yc <- yield_curve(hr=hr[,44,], wts, natmortality, R=100, verbose=F)
+yc <- yield_curve(hr=hr[,64,], wts, natmortality, R=100, verbose=F)
 
-
+ylim <- c(0,900)
 #to check
 par(mfrow=c(1,2))
-plot(catches.wt.dsvm.tot)
+plot(catches.wt.dsvm.tot, type="l", ylim=ylim)
 
-plot(x=yc$hr, y=yc$yield, ylim=c(0,800))
-points(mean(hr[,44,]),yc$yield[yc$hr>mean(hr[,44,])][1], col="red", pch=19)
-points(mean(hr[,42,]),catches.wt.dsvm.tot[,42,,], col="blue", pch=19)
-points(mean(hr[,43,]),catches.wt.dsvm.tot[,43,,], col="blue", pch=19)
-points(mean(hr[,44,]),catches.wt.dsvm.tot[,44,,], col="blue", pch=19)
-points(mean(hr[,45,]),catches.wt.dsvm.tot[,45,,], col="blue", pch=19)
-points(mean(hr[,46,]),catches.wt.dsvm.tot[,46,,], col="blue", pch=19)
+plot(x=yc$hr, y=yc$yield, ylim=ylim)
+points(mean(hr[,64,]),yc$yield[yc$hr>mean(hr[,64,])][1], col="red", pch=19)
+points(mean(hr[,62,]),catches.wt.dsvm.tot[,62,,], col="blue", pch=19)
+points(mean(hr[,63,]),catches.wt.dsvm.tot[,63,,], col="blue", pch=19)
+points(mean(hr[,64,]),catches.wt.dsvm.tot[,64,,], col="blue", pch=19)
+points(mean(hr[,65,]),catches.wt.dsvm.tot[,65,,], col="blue", pch=19)
+points(mean(hr[,66,]),catches.wt.dsvm.tot[,66,,], col="blue", pch=19)
 
 
     
