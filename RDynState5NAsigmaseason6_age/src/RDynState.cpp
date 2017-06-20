@@ -18,11 +18,11 @@ bool            outofbounds_bool;
 double          outofbounds_double;
 
 // 160 by 98  works fine
-#define SPP1CAPACITY          600    // max number of first choke sp (larger than MAXNOINC * MAXHORIZON *NOSIZES= 64 * 5 * 2 = 640) 
-#define SPP2CAPACITY          600    // max number of second choke sp (MAXNOINC * MAXHORIZON *NOSIZES= 64* 5* 2 = 640)
+#define SPP1CAPACITY          640    // max number of first choke sp (larger than MAXNOINC * MAXHORIZON *NOSIZES= 64 * 5 * 2 = 640) 
+#define SPP2CAPACITY          640    // max number of second choke sp (MAXNOINC * MAXHORIZON *NOSIZES= 64* 5* 2 = 640)
 #define NOSPEC                  5     // number of species used in the analysis
 #define NOSIZES                 4     // number of size classes used in the analysis
-#define MAXNOINC               45     // max number of increments
+#define MAXNOINC               50     // max number of increments
 #define MAXHORIZON              6     // number of seasons to fish (= time)
 
 typedef unsigned UFINT;
@@ -154,6 +154,8 @@ SEXP SimulateF ( int aSimNumber, int aHorizon, ITYPE aProbChoice, int aNPatch, i
   
   for (int s= 0; s < aSimNumber; s++)	 { /* go through the x simulations */   
      
+    Rprintf ("%d ", s); R_FlushConsole();
+
     float Q;
     vector <int> aSpp1LndHold  (NOSIZES,0);
     vector <int> aSpp2LndHold  (NOSIZES,0);
@@ -170,6 +172,8 @@ SEXP SimulateF ( int aSimNumber, int aHorizon, ITYPE aProbChoice, int aNPatch, i
     int aChoice;
     
     for (int t = 0; t < aHorizon; t++) { 
+      Rprintf (" %d ", t); R_FlushConsole();
+       
       // get patch from the array
 
       float Cprobl  = 0;
@@ -186,7 +190,9 @@ SEXP SimulateF ( int aSimNumber, int aHorizon, ITYPE aProbChoice, int aNPatch, i
 	totSpp1Hold += aSpp1LndHold[si];
         totSpp2Hold += aSpp2LndHold[si];
       }
-	
+       Rprintf (" %d ", totSpp1Hold); R_FlushConsole();	
+       Rprintf (" %d ", totSpp2Hold); R_FlushConsole();	
+
       Cprobl = aProbChoice[t][totSpp1Hold][totSpp2Hold][0];
 
       for (int stick = 1; stick < aNPatch; stick++) {
@@ -197,6 +203,8 @@ SEXP SimulateF ( int aSimNumber, int aHorizon, ITYPE aProbChoice, int aNPatch, i
 	}
 	Cprobl = Cprobup;
       }
+      
+      Rprintf (" %d \n", aChoice); R_FlushConsole();
 
       INTEGER(choice)[s+ t*aSimNumber] = aChoice + 1;  /* +1 because choice in c++ starts at 0 */
       INTEGER(anEffort)[s+ t*aSimNumber]= anEffortArray[aChoice][t];
@@ -434,7 +442,7 @@ void nonZeroRanges ( int aHorizon, int aNoInc, int aNPatch, ATYPE aLndParmsAgg, 
       }
     }
     int inc = aNoInc;
-    while ( whatRangeL[inc]<0.00000001){ inc--; };
+    while ( whatRangeL[inc]<0.0000000001){ inc--; };
     whatRangeLT[t]= inc ;
   }
 }
@@ -564,7 +572,8 @@ Rprintf("Start of DynStateF\n");
   }
   Rprintf("Defined ranges for distribution functions per timestep\n"); R_FlushConsole();
   
-  int kSpp1Capacity = accumulate(whatRangeLT,whatRangeLT+kHorizon,0) +2;                         // calc max number of increments to loop over for this timest
+  //int kSpp1Capacity = accumulate(whatRangeLT,whatRangeLT+kHorizon,0) +2;                         // calc max number of increments to loop over for this timest
+  int kSpp1Capacity = SPP1CAPACITY;
   int kSpp2Capacity = kSpp1Capacity;
     
   /*********************************************************************************************************************/
@@ -692,8 +701,9 @@ Rprintf("Start of DynStateF\n");
       theShortTermEcon[i]  =  theShortTermGains[i] - theShortTermCosts[i];
     }
 
-    maxspp[t]  = accumulate(whatRangeLT,whatRangeLT+t,0) +2;                         // calc max number of increments to loop over for this timest
-    Rprintf(" maxspp %d ", maxspp[t]);  R_FlushConsole();
+    //maxspp[t]  = accumulate(whatRangeLT,whatRangeLT+t,0) +2;                         // calc max number of increments to loop over for this timest
+    maxspp[t]  = (t +1 )* MAXNOINC;                         // calc max number of increments to loop over for this timest 
+   Rprintf(" maxspp %d ", maxspp[t]);  R_FlushConsole();
     
     // do backward calcs 
     #pragma omp parallel private(Lndspp1,Lndspp2)
@@ -701,7 +711,8 @@ Rprintf("Start of DynStateF\n");
     #pragma omp for schedule(static)    
       for (Lndspp1 = 0; Lndspp1 < maxspp[t]; Lndspp1++) {
 	for (Lndspp2 = 0; Lndspp2 < maxspp[t]; Lndspp2++) {
-	  FFF(Lndspp1, Lndspp2, whatRangeLT[t],theLndParmsAgg, t, kNPatch,  theShortTermEcon, theFF0, theFF0Star, theFF1, theProbChoice);
+	  //FFF(Lndspp1, Lndspp2, whatRangeLT[t],theLndParmsAgg, t, kNPatch,  theShortTermEcon, theFF0, theFF0Star, theFF1, theProbChoice);
+	  FFF(Lndspp1, Lndspp2, MAXNOINC,theLndParmsAgg, t, kNPatch,  theShortTermEcon, theFF0, theFF0Star, theFF1, theProbChoice);
 	}
       }
     }

@@ -82,7 +82,7 @@ season        <- 1:6
 areas         <- c("a")
 stab.model    <- 20
 NUMRUNS       <- 30
-SIMNUMBER     <- 470
+SIMNUMBER     <- 400
 SIGMA         <- 1e-20
 SPP1DSCSTEPS  <- SPP2DSCSTEPS <- 0
 endy          <- stab.model + NUMRUNS
@@ -90,7 +90,7 @@ Linf          <- 20
 K             <- 0.3
 wts           <- Linf*(1-exp(-K*ages))
 q             <- 0.0005
-natmortality  <- 0.09
+natmortality  <- 0.0001
 
 pop1                <- array(0, dim=c(length(ages),endy + 1,length(season),length(areas)), dimnames=list(cat=ages,   year=as.character(1:(endy+1)), season=as.character(season), option =areas))
 catches.n.dsvm      <- array(0, dim=c(length(ages),endy + 1,length(season),length(areas)), dimnames=list(cat=ages,   year=as.character(1:(endy+1)), season=as.character(season), option =areas))
@@ -187,18 +187,20 @@ mean(hr[,34,])
 
 
     
-yc <- yield_curve(hr=hr[,33,], wts, natmortality, R=100, verbose=F)
+yc <- yield_curve(hr=hr[,44,], wts, natmortality, R=100, verbose=F)
 
 
 #to check
 par(mfrow=c(1,2))
 plot(catches.wt.dsvm.tot)
 
-plot(x=yc$hr, y=yc$yield, ylim=c(0,600))
-points(mean(hr[,43,]),yc$yield[yc$hr>mean(hr[,43,])][1], col="red", pch=19)
+plot(x=yc$hr, y=yc$yield, ylim=c(0,800))
+points(mean(hr[,44,]),yc$yield[yc$hr>mean(hr[,44,])][1], col="red", pch=19)
 points(mean(hr[,42,]),catches.wt.dsvm.tot[,42,,], col="blue", pch=19)
 points(mean(hr[,43,]),catches.wt.dsvm.tot[,43,,], col="blue", pch=19)
 points(mean(hr[,44,]),catches.wt.dsvm.tot[,44,,], col="blue", pch=19)
+points(mean(hr[,45,]),catches.wt.dsvm.tot[,45,,], col="blue", pch=19)
+points(mean(hr[,46,]),catches.wt.dsvm.tot[,46,,], col="blue", pch=19)
 
 
     

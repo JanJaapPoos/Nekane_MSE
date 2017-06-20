@@ -240,17 +240,17 @@ DynState <- function(inputSpp1, inputSpp2, inputSpp3, inputSpp4, inputSpp5, spp1
   
   
   # ----------------------------- Calculate length of vector of steps for separate spec (the *3 is to get a broad enough statistical distribution to discretize)
-  control@spp1Incs 	  <- max(inputSpp1@catchMean[1,,] + (2.0*inputSpp1@catchSigma[1,,])) /(control@increments - 1 ) 
-  control@spp2Incs        <- max(inputSpp2@catchMean[1,,] + (2.0*inputSpp2@catchSigma[1,,])) /(control@increments - 1 ) 
-  control@spp3Incs        <- max(inputSpp3@catchMean[1,,] + (2.0*inputSpp3@catchSigma[1,,])) /(control@increments - 1 )
-  control@spp4Incs        <- max(inputSpp4@catchMean[1,,] + (2.0*inputSpp4@catchSigma[1,,])) /(control@increments - 1 )
-  control@spp5Incs        <- max(inputSpp5@catchMean[1,,] + (2.0*inputSpp5@catchSigma[1,,])) /(control@increments - 1 )
+  control@spp1Incs 	  <- max(inputSpp1@catchMean[1,,] + (4.0*inputSpp1@catchSigma[1,,])) /(control@increments - 1 ) 
+  control@spp2Incs        <- max(inputSpp2@catchMean[1,,] + (4.0*inputSpp2@catchSigma[1,,])) /(control@increments - 1 ) 
+  control@spp3Incs        <- max(inputSpp3@catchMean[1,,] + (4.0*inputSpp3@catchSigma[1,,])) /(control@increments - 1 )
+  control@spp4Incs        <- max(inputSpp4@catchMean[1,,] + (4.0*inputSpp4@catchSigma[1,,])) /(control@increments - 1 )
+  control@spp5Incs        <- max(inputSpp5@catchMean[1,,] + (4.0*inputSpp5@catchSigma[1,,])) /(control@increments - 1 )
   for(si in 2:numInputSizes){
-       control@spp1Incs <-max(control@spp1Incs ,max(inputSpp1@catchMean[si,,] + (2.0*inputSpp1@catchSigma[si,,])) /(control@increments - 1 )) 
-       control@spp2Incs <-max(control@spp2Incs ,max(inputSpp2@catchMean[si,,] + (2.0*inputSpp2@catchSigma[si,,])) /(control@increments - 1 ))
-       control@spp3Incs <-max(control@spp3Incs ,max(inputSpp3@catchMean[si,,] + (2.0*inputSpp3@catchSigma[si,,])) /(control@increments - 1 ))
-       control@spp4Incs <-max(control@spp4Incs ,max(inputSpp4@catchMean[si,,] + (2.0*inputSpp4@catchSigma[si,,])) /(control@increments - 1 ))
-       control@spp5Incs <-max(control@spp5Incs ,max(inputSpp5@catchMean[si,,] + (2.0*inputSpp5@catchSigma[si,,])) /(control@increments - 1 ))
+       control@spp1Incs <-max(control@spp1Incs ,max(inputSpp1@catchMean[si,,] + (4.0*inputSpp1@catchSigma[si,,])) /(control@increments - 1 )) 
+       control@spp2Incs <-max(control@spp2Incs ,max(inputSpp2@catchMean[si,,] + (4.0*inputSpp2@catchSigma[si,,])) /(control@increments - 1 ))
+       control@spp3Incs <-max(control@spp3Incs ,max(inputSpp3@catchMean[si,,] + (4.0*inputSpp3@catchSigma[si,,])) /(control@increments - 1 ))
+       control@spp4Incs <-max(control@spp4Incs ,max(inputSpp4@catchMean[si,,] + (4.0*inputSpp4@catchSigma[si,,])) /(control@increments - 1 ))
+       control@spp5Incs <-max(control@spp5Incs ,max(inputSpp5@catchMean[si,,] + (4.0*inputSpp5@catchSigma[si,,])) /(control@increments - 1 ))
   }                                                                        
  
   # ----------------------------- Check which vector is longest and use that number of steps
@@ -288,7 +288,7 @@ DynState <- function(inputSpp1, inputSpp2, inputSpp3, inputSpp4, inputSpp5, spp1
 
   Lparms <- array(NA,dim=c(numInputOptions,
                            rep((control@spp1DiscardSteps+1),numInputSizes),
-                           rep((control@spp2DiscardSteps+1),numInputSizes ),
+                           rep((control@spp2DiscardSteps+1),numInputSizes),
                            rep((control@spp3DiscardSteps+1),numInputSizes), 
                            rep((control@spp4DiscardSteps+1),numInputSizes),
                            rep((control@spp5DiscardSteps+1),numInputSizes),numInputSeasons,5,numInputSizes,k))
