@@ -5,18 +5,20 @@ library(reshape2)
 library(plyr)
 library(scales)
 
+setwd("~/wur/N/Projecten/MARIFLEET/Nekane/simple\ model/")
+source("functions.r")
+
 
 ##############################################################################
 # POPULATION DYNAMICS
 ##############################################################################
 
-population_dynamics <- function(pop, recruitarea, startyear, endyear, season, natmortality, catches, recruitment){
+population_dynamics <- function(pop, startyear, endyear, season, natmortality, catches, recruitment){
   #pop[age,year, season, area]                                                                                                        
   for (y in (startyear:endyear)){     # need to think this, but maybe is better change last year (y in (endy:(endy +10)))           
     for (ss in (1:length(season))){
       # move time ---------------------                                                             
       if (ss ==1){
-      pop[1,as.character(y),as.character(ss),recruitarea] <- recruitment;
         for(age in 2:(dim(pop)[1])){
           pop[age,as.character(y),as.character(ss),] <- pop[age-1,as.character(y-1),as.character(length(season)),];
         }
@@ -25,64 +27,21 @@ population_dynamics <- function(pop, recruitarea, startyear, endyear, season, na
       }
       
       # birth/recruitment ---------------------                                                     
-      #if (ss ==1){
-      #  pop[1,as.character(y),as.character(ss),recruitarea] <- recruitment;
-      #}
+      if (ss ==1){
+        pop[1,as.character(y),as.character(ss),] <- recruitment;
+      }
       # natural mortality  ---------------------                                                             
       pop[,as.character(y),as.character(ss),] <- pop[,as.character(y),as.character(ss),]*(1-natmortality)
       pop[pop < 1e-20 ] <- 1e-20
       
-      # maturation ---------------------                                                            
-      nummatures <- pop[,as.character(y),as.character(ss),recruitarea] * c(0,0.1,0.3,0.5) # last is vector of maturity  
-      
-      #migration ---------------------  
-      #migration <- matrix (c(0.4,0,0.6,1), nrow=length(areas), ncol=length(areas), dimnames= list("from"=areas, "to"= areas)) 
-      migration <- array(c(rep(c(0.4,0,0.6,1),3), rep(c(0.6,1,0.4,0),3) ), dim=c(length(areas),length(areas),length(season)), dimnames=list(from=areas, to=areas, season=as.character(season)))
-      
-      pop2<- pop # need to copy the pop to explit the migration among areas
-      
-      for (aa in areas){      
-        migration_area <- migration[aa,,as.character(ss)]
-      browser()
-        
-        if (!1 %in% migration_area){ # if there are 1s, there is no migration, the populations remains in the same area
-          
-          for (i in (1:length(migration_area))){
-          
-            for(age in 2:(dim(pop)[1])){ # only fish above 1 year migrate
-
-                if (names(migration_area[i])==aa){
-                  pop[age,as.character(y),as.character(ss),aa] <- pop[age,as.character(y),as.character(ss),aa] * migration_area[i]
-                } else{
-                  pop[age,as.character(y),as.character(ss),names(migration_area[i])] <- pop[age,as.character(y),as.character(ss),names(migration_area[i])] + (pop[age,as.character(y),as.character(ss),aa] * migration_area[i])
-                }  
-              
-#             
-#              if (ss <= 3){ # First 3 season fish migrate in one direction
-#                if (names(migration_area[i])==aa){
-#                  pop[age,as.character(y),as.character(ss),aa] <- pop2[age,as.character(y),as.character(ss),aa] * migration_area[i]
-#                } else{
-#                  pop[age,as.character(y),as.character(ss),names(migration_area[i])] <- pop2[age,as.character(y),as.character(ss),names(migration_area[i])] + (pop2[age,as.character(y),as.character(ss),aa] * migration_area[i])
-#                }  
-#              } else { # Last 3 season fish migrate in the opposite direction
-#                if (names(migration_area[i])==aa){
-#                  pop[age,as.character(y),as.character(ss),names(migration_area[i])] <- pop2[age,as.character(y),as.character(ss),names(migration_area[i])] + (pop2[age,as.character(y),as.character(ss),aa] * migration_area[i])
-#                } else{
-#                  pop[age,as.character(y),as.character(ss),aa] <- pop2[age,as.character(y),as.character(ss),aa] * migration_area[i]
-#                }
-#              } 
-            }
-          }
-        }      
-      }
-      
       # remove catches (dims of catches here is ages,season, area, just like in main )
-      pop[,as.character(y),as.character(ss),] <- pop2[,as.character(y),as.character(ss),] - catches[,,as.character(ss),]
+      pop[,as.character(y),as.character(ss),] <- pop[,as.character(y),as.character(ss),] - catches[,,as.character(ss),]
       pop[pop < 1e-20 ] <- 1e-20 
     }
   }
   return(pop)
 }
+
 
 
 ##############################################################################
@@ -136,7 +95,7 @@ ages          <- 1:4
 season        <- 1:6
 areas         <- c("a", "b")
 stab.model    <- 10
-NUMRUNS       <- 30
+NUMRUNS       <- 10
 SIMNUMBER     <- 300
 SIGMA         <- 1e-20
 SPP1DSCSTEPS  <- SPP2DSCSTEPS <- 0
@@ -146,6 +105,7 @@ K             <- 0.3
 wts           <- Linf*(1-exp(-K*ages))
 q             <- 0.0005
 natmortality  <- 0.0001
+recs          <- c(100,0) 
 
 pop1                <- array(0, dim=c(length(ages),endy + 1,length(season),length(areas)), dimnames=list(cat=ages,   year=as.character(1:(endy+1)), season=as.character(season), option =areas))
 catches.n.dsvm      <- array(0, dim=c(length(ages),endy + 1,length(season),length(areas)), dimnames=list(cat=ages,   year=as.character(1:(endy+1)), season=as.character(season), option =areas))
@@ -153,7 +113,7 @@ catches.wt.dsvm     <- array(0, dim=c(length(ages),endy + 1,length(season),lengt
 catches.wt.dsvm.tot <- array(0, dim=c(1           ,endy + 1,              1,            1), dimnames=list(cat="all", year=as.character(1:(endy+1)), season="all",                option ="all"))
 
 #run population for 15 year
-pop1 <- population_dynamics(pop=pop1, recruitarea="a", startyear=2, endyear=stab.model, season=season, natmortality=natmortality, catches=catches.n.dsvm[,1,,, drop=F], recruitment=100)
+pop1 <- population_dynamics(pop=pop1, startyear=2, endyear=stab.model, season=season, natmortality=natmortality, catches=catches.n.dsvm[,1,,, drop=F], recruitment=recs)
 
 #calculated catches can then be used for input to DSVM (has same dims as pop (1: endyr), endyr=stabmodel+numruns)
 pos_catches1 <- pop1 *q*wts
@@ -184,7 +144,7 @@ for(yy in (stab.model):(stab.model+NUMRUNS-1)){
   sp1Price <-  sp2Price <- sp3Price <- sp4Price <- sp5Price <- array(c(4), dim=c(length(ages),length(season)), dimnames=list(cat=ages,season=as.character(season)))
   #---effort and prices used (note that now c is removed (but that if other runs, then make sure to fix/remove code that removes "c" option)                                                                                         
   control     <- DynState.control(spp1LndQuota= 800,  spp2LndQuota=500, spp1LndQuotaFine= 2000, spp2LndQuotaFine= 2000,
-                                  fuelUse = 0.001, fuelPrice = 2.0, landingCosts= 0,gearMaintenance= 0, addNoFishing= TRUE, increments= 40,
+                                  fuelUse = 0.001, fuelPrice = 2.0, landingCosts= 0,gearMaintenance= 0, addNoFishing= TRUE, increments= 30,
                                   spp1DiscardSteps= SPP1DSCSTEPS, spp2DiscardSteps= SPP2DSCSTEPS, sigma= SIGMA, simNumber= SIMNUMBER, numThreads= 20)
   
   z <- DynState(sp1, sp2, sp3, sp4, sp5, sp1Price, sp2Price, sp3Price, sp4Price, sp5Price, effort, control)
@@ -206,7 +166,7 @@ for(yy in (stab.model):(stab.model+NUMRUNS-1)){
   catches.n.dsvm <- catches.wt.dsvm/wts
   print(catches.n.dsvm[,yy,,])
   
-  pop1 <- population_dynamics(pop=pop1, recruitarea = "a", startyear=yy, endyear=yy+1, season=season, natmortality=natmortality, catches=catches.n.dsvm[,yy,,,drop=F], recruitment=100)
+  pop1 <- population_dynamics(pop=pop1, startyear=yy, endyear=yy+1, season=season, natmortality=natmortality, catches=catches.n.dsvm[,yy,,,drop=F], recruitment=recs)
   pos_catches1 <- pop1 *q*wts
   
 }
@@ -219,21 +179,22 @@ wts
 
 hr <- apply(catches.n.dsvm,1:3,sum)/    (apply(catches.n.dsvm,1:3,sum) +    apply(pop1,1:3,sum) )
 
+pyr <- 16 
 
 #what happens in our yield curve for this hr?
-yield_curve(hr=hr[,64,], wts, natmortality, R=100, sequence = 1, verbose=T)
+yield_curve(hr=hr[,pyr,], wts, natmortality, R=100, sequence = 1, verbose=T)
 
-round(catches.n.dsvm[,64,,],2)
-round(pop1[,64,,],2)
+round(catches.n.dsvm[,pyr,,],2)
+round(pop1[,pyr,,],2)
 
 
 #next, what happens to theoretical pop for our harvest, what is harvest?
-hr[,64,]
-mean(hr[,64,])
+hr[,pyr,]
+mean(hr[,pyr,])
 
 
 
-yc <- yield_curve(hr=hr[,64,], wts, natmortality, R=100, verbose=F)
+yc <- yield_curve(hr=hr[,pyr,], wts, natmortality, R=100, verbose=F)
 
 ylim <- c(0,900)
 #to check
@@ -241,12 +202,12 @@ par(mfrow=c(1,2))
 plot(catches.wt.dsvm.tot, type="l", ylim=ylim)
 
 plot(x=yc$hr, y=yc$yield, ylim=ylim)
-points(mean(hr[,64,]),yc$yield[yc$hr>mean(hr[,64,])][1], col="red", pch=19)
-points(mean(hr[,62,]),catches.wt.dsvm.tot[,62,,], col="blue", pch=19)
-points(mean(hr[,63,]),catches.wt.dsvm.tot[,63,,], col="blue", pch=19)
-points(mean(hr[,64,]),catches.wt.dsvm.tot[,64,,], col="blue", pch=19)
-points(mean(hr[,65,]),catches.wt.dsvm.tot[,65,,], col="blue", pch=19)
-points(mean(hr[,66,]),catches.wt.dsvm.tot[,66,,], col="blue", pch=19)
+points(mean(hr[,pyr,]),yc$yield[yc$hr>mean(hr[,pyr,])][1], col="red", pch=19)
+points(mean(hr[,pyr-2,]),catches.wt.dsvm.tot[,pyr-2,,], col="blue", pch=19)
+points(mean(hr[,pyr-1,]),catches.wt.dsvm.tot[,pyr-1,,], col="blue", pch=19)
+points(mean(hr[,pyr,]),catches.wt.dsvm.tot[,pyr,,], col="blue", pch=19)
+points(mean(hr[,pyr+1,]),catches.wt.dsvm.tot[,pyr+1,,], col="blue", pch=19)
+points(mean(hr[,pyr+2,]),catches.wt.dsvm.tot[,pyr+2,,], col="blue", pch=19)
 
 
 

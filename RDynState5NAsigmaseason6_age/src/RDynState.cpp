@@ -702,7 +702,7 @@ Rprintf("Start of DynStateF\n");
     }
 
     //maxspp[t]  = accumulate(whatRangeLT,whatRangeLT+t,0) +2;                         // calc max number of increments to loop over for this timest
-    maxspp[t]  = (t +1 )* MAXNOINC *NOSIZES;                         // calc max number of increments to loop over for this timest 
+    maxspp[t]  = (t +1 )* noInc *NOSIZES;                         // calc max number of increments to loop over for this timest 
    Rprintf(" maxspp %d ", maxspp[t]);  R_FlushConsole();
     
     // do backward calcs 
