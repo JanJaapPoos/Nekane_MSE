@@ -133,7 +133,7 @@ mig1[,,,"a","b"] <- 0.2
 mig1[,,,"b","a"] <- 0.2
 aperm( mig1,c(1,3,2,4,5))
 
-recs2          <- c(100,0) 
+recs2          <- c(0,100) 
 mig2     <- array(0, dim=c(length(ages),1,length(season),length(areas), length(areas)), dimnames=list(cat=ages,year="all",season=as.character(season), from =areas, to=areas)) 
 mig2[,,,"a","a"] <- -0.2
 mig2[,,,"b","b"] <- -0.2
@@ -142,11 +142,10 @@ mig2[,,,"b","a"] <- 0.2
 aperm( mig2,c(1,3,2,4,5))
 
 
-pop1                 <- array(0, dim=c(length(ages),endy + 1,length(season),length(areas)), dimnames=list(cat=ages,   year=as.character(1:(endy+1)), season=as.character(season), option =areas))
-pop2                 <- array(0, dim=c(length(ages),endy + 1,length(season),length(areas)), dimnames=list(cat=ages,   year=as.character(1:(endy+1)), season=as.character(season), option =areas))
-catches.n.dsvm1      <- array(0, dim=c(length(ages),endy + 1,length(season),length(areas)), dimnames=list(cat=ages,   year=as.character(1:(endy+1)), season=as.character(season), option =areas))
-catches.wt.dsvm1     <- array(0, dim=c(length(ages),endy + 1,length(season),length(areas)), dimnames=list(cat=ages,   year=as.character(1:(endy+1)), season=as.character(season), option =areas))
-catches.wt.dsvm.tot1 <- array(0, dim=c(1           ,endy + 1,              1,            1), dimnames=list(cat="all", year=as.character(1:(endy+1)), season="all",                option ="all"))
+pop1  <- pop2   <-array(0, dim=c(length(ages),endy + 1,length(season),length(areas)), dimnames=list(cat=ages,   year=as.character(1:(endy+1)), season=as.character(season), option =areas))
+catches.n.dsvm1      <- catches.n.dsvm2      <- array(0, dim=c(length(ages),endy + 1,length(season),length(areas)), dimnames=list(cat=ages,   year=as.character(1:(endy+1)), season=as.character(season), option =areas))
+catches.wt.dsvm1     <-catches.wt.dsvm2      <-  array(0, dim=c(length(ages),endy + 1,length(season),length(areas)), dimnames=list(cat=ages,   year=as.character(1:(endy+1)), season=as.character(season), option =areas))
+catches.wt.dsvm.tot1 <- catches.wt.dsvm.tot2 <- array(0, dim=c(1           ,endy + 1,              1,            1), dimnames=list(cat="all", year=as.character(1:(endy+1)), season="all",                option ="all"))
 
 #run population for 15 year
 pop1 <- population_dynamics(pop=pop1, startyear=2, endyear=stab.model, season=season, natmortality=natmortality, catches=catches.n.dsvm1[,1,,, drop=F], recruitment=recs1, migration=mig1)
@@ -212,15 +211,23 @@ for(yy in (stab.model):(stab.model+NUMRUNS-1)){
   
   print("====== output catches (wt) tot from DSVM in weight in year yy =")
   print(catches.wt.dsvm.tot1[,yy,,])
-  
   aperm(apply(pop1[,yy,,,drop=F],1:3,sum),c(1,3,2))
   
-  print("====== output catches (n) from DSVM in weight in year yy ======")
-  catches.n.dsvm <- catches.wt.dsvm/wts
-  print(catches.n.dsvm[,yy,,])
+  print(catches.wt.dsvm.tot2[,yy,,])
+  aperm(apply(pop2[,yy,,,drop=F],1:3,sum),c(1,3,2))
   
-  pop1 <- population_dynamics(pop=pop1, startyear=yy, endyear=yy+1, season=season, natmortality=natmortality, catches=catches.n.dsvm[,yy,,,drop=F], recruitment=recs, migration=mig)
+  print("====== output catches (n) from DSVM in weight in year yy ======")
+  catches.n.dsvm1 <- catches.wt.dsvm1/wts
+  print(catches.n.dsvm1[,yy,,])
+  
+  catches.n.dsvm2 <- catches.wt.dsvm2/wts
+  print(catches.n.dsvm2[,yy,,])
+  
+  pop1 <- population_dynamics(pop=pop1, startyear=yy, endyear=yy+1, season=season, natmortality=natmortality, catches=catches.n.dsvm1[,yy,,,drop=F], recruitment=recs1, migration=mig1)
   pos_catches1 <- pop1 *q*wts
+  
+  pop2 <- population_dynamics(pop=pop2, startyear=yy, endyear=yy+1, season=season, natmortality=natmortality, catches=catches.n.dsvm2[,yy,,,drop=F], recruitment=recs2, migration=mig2)
+  pos_catches2 <- pop2 *q*wts
   
 }
 
@@ -230,39 +237,62 @@ for(yy in (stab.model):(stab.model+NUMRUNS-1)){
 wts
 
 
-hr <- apply(catches.n.dsvm,1:3,sum)/    (apply(catches.n.dsvm,1:3,sum) +    apply(pop1,1:3,sum) )
+hr1 <- apply(catches.n.dsvm1,1:3,sum)/    (apply(catches.n.dsvm1,1:3,sum) +    apply(pop1,1:3,sum) )
+hr2 <- apply(catches.n.dsvm2,1:3,sum)/    (apply(catches.n.dsvm2,1:3,sum) +    apply(pop2,1:3,sum) )
 
-pyr <- 25 
+pyr <- 16 
 
 #what happens in our yield curve for this hr?
-yield_curve(hr=hr[,pyr,], wts, natmortality, R=recs, sequence = 1, verbose=T)
+yield_curve(hr=hr1[,pyr,], wts, natmortality, R=recs1, sequence = 1, verbose=T)
+yield_curve(hr=hr2[,pyr,], wts, natmortality, R=recs2, sequence = 1, verbose=T)
 
-round(catches.n.dsvm[,pyr,,],2)
+round(catches.n.dsvm1[,pyr,,],2)
 round(pop1[,pyr,,],2)
 
 #next, what happens to theoretical pop for our harvest, what is harvest?
-hr[,pyr,]
-mean(hr[,pyr,])
+hr1[,pyr,]
+mean(hr1[,pyr,])
 
-yc <- yield_curve(hr=hr[,pyr,], wts, natmortality, R=100, verbose=F)
+yc1 <- yield_curve(hr=hr1[,pyr,], wts, natmortality, R=100, verbose=F)
+yc2 <- yield_curve(hr=hr2[,pyr,], wts, natmortality, R=100, verbose=F)
 
 ylim <- c(0,1200)
 #to check
 par(mfrow=c(1,3))
-plot(catches.wt.dsvm.tot, type="l", ylim=ylim)
+plot(catches.wt.dsvm.tot1, type="l", ylim=ylim)
 
-plot(x=yc$hr, y=yc$yield, ylim=ylim)
-points(mean(hr[,pyr,]),yc$yield[yc$hr>mean(hr[,pyr,])][1], col="red", pch=19)
-points(mean(hr[,pyr-2,]),catches.wt.dsvm.tot[,pyr-2,,], col="blue", pch=19)
-points(mean(hr[,pyr-1,]),catches.wt.dsvm.tot[,pyr-1,,], col="blue", pch=19)
-points(mean(hr[,pyr,]),catches.wt.dsvm.tot[,pyr,,], col="blue", pch=19)
-points(mean(hr[,pyr+1,]),catches.wt.dsvm.tot[,pyr+1,,], col="blue", pch=19)
-points(mean(hr[,pyr+2,]),catches.wt.dsvm.tot[,pyr+2,,], col="blue", pch=19)
+plot(x=yc1$hr, y=yc1$yield, ylim=ylim)
+points(mean(hr1[,pyr,]),yc1$yield[yc1$hr>mean(hr1[,pyr,])][1], col="red", pch=19)
+points(mean(hr1[,pyr-2,]),catches.wt.dsvm.tot1[,pyr-2,,], col="blue", pch=19)
+points(mean(hr1[,pyr-1,]),catches.wt.dsvm.tot1[,pyr-1,,], col="blue", pch=19)
+points(mean(hr1[,pyr,]),catches.wt.dsvm.tot1[,pyr,,], col="blue", pch=19)
+points(mean(hr1[,pyr+1,]),catches.wt.dsvm.tot1[,pyr+1,,], col="blue", pch=19)
+points(mean(hr1[,pyr+2,]),catches.wt.dsvm.tot1[,pyr+2,,], col="blue", pch=19)
 
-plot(apply(catches.wt.dsvm,c(2,4),sum)[,1], col="blue", type="l",  ylim=ylim)
-lines(apply(catches.wt.dsvm,c(2,4),sum)[,2], col="red")
-lines(apply(catches.wt.dsvm,c(2,4),sum)[,3], col="black")
+plot(apply(catches.wt.dsvm1,c(2,4),sum)[,1], col="blue", type="l",  ylim=ylim)
+lines(apply(catches.wt.dsvm1,c(2,4),sum)[,2], col="red")
+lines(apply(catches.wt.dsvm1,c(2,4),sum)[,3], col="black")
 
 dsvm_res_allyrs[dsvm_res_allyrs$year %in% ((pyr-1):(pyr+1))  & dsvm_res_allyrs$spp == "sp1",]
 
 round(pop1,0)
+
+#to check
+par(mfrow=c(1,3))
+plot(catches.wt.dsvm.tot2, type="l", ylim=ylim)
+
+plot(x=yc2$hr, y=yc2$yield, ylim=ylim)
+points(mean(hr2[,pyr,]),yc2$yield[yc2$hr>mean(hr2[,pyr,])][1], col="red", pch=19)
+points(mean(hr2[,pyr-2,]),catches.wt.dsvm.tot2[,pyr-2,,], col="blue", pch=19)
+points(mean(hr2[,pyr-1,]),catches.wt.dsvm.tot2[,pyr-1,,], col="blue", pch=19)
+points(mean(hr2[,pyr,]),catches.wt.dsvm.tot2[,pyr,,], col="blue", pch=19)
+points(mean(hr2[,pyr+1,]),catches.wt.dsvm.tot2[,pyr+1,,], col="blue", pch=19)
+points(mean(hr2[,pyr+2,]),catches.wt.dsvm.tot2[,pyr+2,,], col="blue", pch=19)
+
+plot(apply(catches.wt.dsvm2,c(2,4),sum)[,1], col="blue", type="l",  ylim=ylim)
+lines(apply(catches.wt.dsvm2,c(2,4),sum)[,2], col="red")
+lines(apply(catches.wt.dsvm2,c(2,4),sum)[,3], col="black")
+
+dsvm_res_allyrs[dsvm_res_allyrs$year %in% ((pyr-1):(pyr+1))  & dsvm_res_allyrs$spp == "sp2",]
+
+round(pop2,0)
