@@ -6,7 +6,7 @@ library(plyr)
 library(scales)
 
 setwd("~/wur/N/Projecten/MARIFLEET/Nekane/simple\ model/")
-source("functions.r")
+source("functions.R")
 
 
 ##############################################################################
@@ -15,6 +15,7 @@ source("functions.r")
 
 population_dynamics <- function(pop, startyear, endyear, season, natmortality, catches, recruitment, migration){
   #pop[age,year, season, area]                                                                                                        
+  IreceiveallmigInToArea <- array(0, dim=dim(pop), dimnames= dimnames(pop))
   for (y in (startyear:endyear)){     # need to think this, but maybe is better change last year (y in (endy:(endy +10)))           
     for (ss in (1:length(season))){
       # move time ---------------------                                                             
@@ -39,7 +40,18 @@ population_dynamics <- function(pop, startyear, endyear, season, natmortality, c
       pop[pop < 1e-20 ] <- 1e-20 
       
       #migration
-      # pop[,as.character(y),as.character(ss),]
+      for (age in (1:dim(pop)[1])){
+        for (toarea in (dimnames(pop)[4][[1]])){
+          IreceiveallmigInToArea[age,as.character(y),as.character(ss),toarea] <- pop[age,as.character(y),as.character(ss),toarea]
+          for (fromarea in (dimnames(pop)[4][[1]])){
+            IreceiveallmigInToArea[age,as.character(y),as.character(ss),toarea] <-  IreceiveallmigInToArea[age,as.character(y),as.character(ss),toarea] + pop[age,as.character(y),as.character(ss),fromarea] * migration[age,1,as.character(ss),fromarea, toarea]
+            browser()
+            pop[age,as.character(y),as.character(ss),toarea]  <-  IreceiveallmigInToArea[age,as.character(y),as.character(ss),toarea]
+          }
+          
+        }
+         
+      }
     }
   }
   return(pop)
@@ -111,10 +123,14 @@ K             <- 0.3
 wts           <- Linf*(1-exp(-K*ages))
 q             <- 0.0005
 natmortality  <- 0.0001
-recs          <- c(50,50) 
+recs          <- c(100,0) 
 mig     <- array(0, dim=c(length(ages),1,length(season),length(areas), length(areas)), dimnames=list(cat=ages,year="all",season=as.character(season), from =areas, to=areas)) 
-mig[,,,"a","a"] <- 1
-mig[,,,"b","b"] <- 1
+#mig[,,,"a","a"] <- 1
+#mig[,,,"b","b"] <- 1
+mig[2:4,,2,"a","a"] <- -0.5
+mig[2:4,,2,"a","b"] <- 0.5
+aperm( mig,c(1,3,2,4,5))
+
 
 pop1                <- array(0, dim=c(length(ages),endy + 1,length(season),length(areas)), dimnames=list(cat=ages,   year=as.character(1:(endy+1)), season=as.character(season), option =areas))
 catches.n.dsvm      <- array(0, dim=c(length(ages),endy + 1,length(season),length(areas)), dimnames=list(cat=ages,   year=as.character(1:(endy+1)), season=as.character(season), option =areas))
