@@ -124,30 +124,43 @@ K             <- 0.3
 wts           <- Linf*(1-exp(-K*ages))
 q             <- 0.0005
 natmortality  <- 0.0001
-recs          <- c(100,0) 
-mig     <- array(0, dim=c(length(ages),1,length(season),length(areas), length(areas)), dimnames=list(cat=ages,year="all",season=as.character(season), from =areas, to=areas)) 
-mig[,,,"a","a"] <- -0.2
-mig[,,,"b","b"] <- -0.2
-mig[,,,"a","b"] <- 0.2
-mig[,,,"b","a"] <- 0.2
-aperm( mig,c(1,3,2,4,5))
+
+recs1          <- c(100,0) 
+mig1     <- array(0, dim=c(length(ages),1,length(season),length(areas), length(areas)), dimnames=list(cat=ages,year="all",season=as.character(season), from =areas, to=areas)) 
+mig1[,,,"a","a"] <- -0.2
+mig1[,,,"b","b"] <- -0.2
+mig1[,,,"a","b"] <- 0.2
+mig1[,,,"b","a"] <- 0.2
+aperm( mig1,c(1,3,2,4,5))
+
+recs2          <- c(100,0) 
+mig2     <- array(0, dim=c(length(ages),1,length(season),length(areas), length(areas)), dimnames=list(cat=ages,year="all",season=as.character(season), from =areas, to=areas)) 
+mig2[,,,"a","a"] <- -0.2
+mig2[,,,"b","b"] <- -0.2
+mig2[,,,"a","b"] <- 0.2
+mig2[,,,"b","a"] <- 0.2
+aperm( mig2,c(1,3,2,4,5))
 
 
-pop1                <- array(0, dim=c(length(ages),endy + 1,length(season),length(areas)), dimnames=list(cat=ages,   year=as.character(1:(endy+1)), season=as.character(season), option =areas))
-catches.n.dsvm      <- array(0, dim=c(length(ages),endy + 1,length(season),length(areas)), dimnames=list(cat=ages,   year=as.character(1:(endy+1)), season=as.character(season), option =areas))
-catches.wt.dsvm     <- array(0, dim=c(length(ages),endy + 1,length(season),length(areas)), dimnames=list(cat=ages,   year=as.character(1:(endy+1)), season=as.character(season), option =areas))
-catches.wt.dsvm.tot <- array(0, dim=c(1           ,endy + 1,              1,            1), dimnames=list(cat="all", year=as.character(1:(endy+1)), season="all",                option ="all"))
+pop1                 <- array(0, dim=c(length(ages),endy + 1,length(season),length(areas)), dimnames=list(cat=ages,   year=as.character(1:(endy+1)), season=as.character(season), option =areas))
+pop2                 <- array(0, dim=c(length(ages),endy + 1,length(season),length(areas)), dimnames=list(cat=ages,   year=as.character(1:(endy+1)), season=as.character(season), option =areas))
+catches.n.dsvm1      <- array(0, dim=c(length(ages),endy + 1,length(season),length(areas)), dimnames=list(cat=ages,   year=as.character(1:(endy+1)), season=as.character(season), option =areas))
+catches.wt.dsvm1     <- array(0, dim=c(length(ages),endy + 1,length(season),length(areas)), dimnames=list(cat=ages,   year=as.character(1:(endy+1)), season=as.character(season), option =areas))
+catches.wt.dsvm.tot1 <- array(0, dim=c(1           ,endy + 1,              1,            1), dimnames=list(cat="all", year=as.character(1:(endy+1)), season="all",                option ="all"))
 
 #run population for 15 year
-pop1 <- population_dynamics(pop=pop1, startyear=2, endyear=stab.model, season=season, natmortality=natmortality, catches=catches.n.dsvm[,1,,, drop=F], recruitment=recs, migration=mig)
+pop1 <- population_dynamics(pop=pop1, startyear=2, endyear=stab.model, season=season, natmortality=natmortality, catches=catches.n.dsvm1[,1,,, drop=F], recruitment=recs1, migration=mig1)
+pop2 <- population_dynamics(pop=pop2, startyear=2, endyear=stab.model, season=season, natmortality=natmortality, catches=catches.n.dsvm1[,1,,, drop=F], recruitment=recs2, migration=mig2)
 
 #calculated catches can then be used for input to DSVM (has same dims as pop (1: endyr), endyr=stabmodel+numruns)
 pos_catches1 <- pop1 *q*wts
+pos_catches2 <- pop2 *q*wts
+
 
 #set up dsvm
 sp1<- sp2 <- sp3 <- sp4 <- sp5 <-    new("DynStateInput")
-catchMean(sp2)  <- catchMean(sp3) <- catchMean(sp4) <- catchMean(sp5) <- array(0.01,dim=c(length(ages),length(season),length(areas)),dimnames=list(cat=ages,season=as.character(season),option =areas))
-catchSigma(sp2) <- catchSigma(sp3)<- catchSigma(sp4)<- catchSigma(sp5)<- array(0.001,dim=c(length(ages),length(season),length(areas)),dimnames=list(cat=ages,season=as.character(season),option =areas))
+catchMean(sp3)  <- catchMean(sp4) <- catchMean(sp5) <- array(0.01,dim=c(length(ages),length(season),length(areas)),dimnames=list(cat=ages,season=as.character(season),option =areas))
+catchSigma(sp3) <- catchSigma(sp4)<- catchSigma(sp5)<- array(0.001,dim=c(length(ages),length(season),length(areas)),dimnames=list(cat=ages,season=as.character(season),option =areas))
 
 #this is where our loop starts, after we set up stable population
 for(yy in (stab.model):(stab.model+NUMRUNS-1)){
@@ -156,20 +169,25 @@ for(yy in (stab.model):(stab.model+NUMRUNS-1)){
   print(yy)
   print("====== POP in year yy=")
   print(pop1[,yy,,,drop=F])
+  print(pop2[,yy,,,drop=F])
   
   catchMean(sp1)  <- array(pos_catches1[,yy,,], dim=c(length(ages), length(season),length(areas)),  dimnames=list("cat"=ages,"season"= season,"option"=areas))
-  # ---No way of estimating sigma, therefore we assume that is 8% of the CPUE (note slight repetion in code for dims and dimnames of 0 catch arrays for spec 3,4,5)                                                                  
+  catchMean(sp2)  <- array(pos_catches2[,yy,,], dim=c(length(ages), length(season),length(areas)),  dimnames=list("cat"=ages,"season"= season,"option"=areas))
+  
+    # ---No way of estimating sigma, therefore we assume that is 8% of the CPUE (note slight repetion in code for dims and dimnames of 0 catch arrays for spec 3,4,5)                                                                  
   catchSigma(sp1) <- catchMean(sp1) *0.08
+  catchSigma(sp2) <- catchMean(sp2) *0.08
   
   effort <- array(c(1), dim=c(length(areas), length(season)), dimnames=list(option =areas,season=as.character(season)))
   
   print("====== catchmean input to DSVM in year yy==")
   print(catchMean(sp1))
+  print(catchMean(sp2))
   
   
   sp1Price <-  sp2Price <- sp3Price <- sp4Price <- sp5Price <- array(c(100), dim=c(length(ages),length(season)), dimnames=list(cat=ages,season=as.character(season)))
   #---effort and prices used (note that now c is removed (but that if other runs, then make sure to fix/remove code that removes "c" option)                                                                                         
-  control     <- DynState.control(spp1LndQuota= 800,  spp2LndQuota=500, spp1LndQuotaFine= 2000, spp2LndQuotaFine= 2000,
+  control     <- DynState.control(spp1LndQuota= 800,  spp2LndQuota=800, spp1LndQuotaFine= 2000, spp2LndQuotaFine= 2000,
                                   fuelUse = 0.001, fuelPrice = 1.0, landingCosts= 0,gearMaintenance= 0, addNoFishing= TRUE, increments= 25,
                                   spp1DiscardSteps= SPP1DSCSTEPS, spp2DiscardSteps= SPP2DSCSTEPS, sigma= SIGMA, simNumber= SIMNUMBER, numThreads= 20)
   
@@ -186,11 +204,14 @@ for(yy in (stab.model):(stab.model+NUMRUNS-1)){
   
   #some checks
   print("====== output catches (wt) from DSVM in weight in year yy =====")
-  print(catches.wt.dsvm[,yy,,] <- catch_dataframe_to_array(dsvm_res, ages, season, areas, "pop1")) 
-  catches.wt.dsvm.tot[] <- apply(catches.wt.dsvm,c(2),"sum")
+  print(catches.wt.dsvm1[,yy,,] <- catch_dataframe_to_array(dsvm_res, ages, season, areas, "pop1")) 
+  print(catches.wt.dsvm2[,yy,,] <- catch_dataframe_to_array(dsvm_res, ages, season, areas, "pop2")) 
+  
+  catches.wt.dsvm.tot1[] <- apply(catches.wt.dsvm1,c(2),"sum")
+  catches.wt.dsvm.tot2[] <- apply(catches.wt.dsvm2,c(2),"sum")
   
   print("====== output catches (wt) tot from DSVM in weight in year yy =")
-  print(catches.wt.dsvm.tot[,yy,,])
+  print(catches.wt.dsvm.tot1[,yy,,])
   
   aperm(apply(pop1[,yy,,,drop=F],1:3,sum),c(1,3,2))
   
