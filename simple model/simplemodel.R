@@ -243,39 +243,49 @@ for(yy in (stab.model):(stab.model+NUMRUNS-1)){
 #what are the weights?
 wts
 
-
 hr1 <- apply(catches.n.dsvm1,1:3,sum)/    (apply(catches.n.dsvm1,1:3,sum) +    apply(pop1,1:3,sum) )
 hr2 <- apply(catches.n.dsvm2,1:3,sum)/    (apply(catches.n.dsvm2,1:3,sum) +    apply(pop2,1:3,sum) )
 
 pyrnoMP <- 46 
-pyrMP <- 86 
+pyrMP   <- 86 
 
 #what happens in our yield curve for this hr?
 yield_curve(hr=hr1[,pyr,], wts, natmortality, R=recs1, sequence = 1, verbose=T)
 yield_curve(hr=hr2[,pyr,], wts, natmortality, R=recs2, sequence = 1, verbose=T)
 
-round(catches.n.dsvm1[,pyr,,],2)
-round(pop1[,pyr,,],2)
+round(catches.n.dsvm1[,pyrnoMP,,],2)
+round(pop1[,pyrnoMP,,],2)
 
 #next, what happens to theoretical pop for our harvest, what is harvest?
-hr1[,pyr,]
-mean(hr1[,pyr,])
+hr1[,pyrnoMP,]
+mean(hr1[,pyrnoMP,])
 
 yc1noMP <- yield_curve(hr=hr1[,pyrnoMP,], wts, natmortality, R=recs1, verbose=F)
 yc2noMP <- yield_curve(hr=hr2[,pyrnoMP,], wts, natmortality, R=recs2, verbose=F)
 
+Fmsy1noMP <- yc1noMP[yc1noMP$yield==max(yc1noMP$yield),]$hr
+
 yc1MP <- yield_curve(hr=hr1[,pyrMP,], wts, natmortality, R=recs1, verbose=F)
 yc2MP <- yield_curve(hr=hr2[,pyrMP,], wts, natmortality, R=recs2, verbose=F)
 
+Fmsy1MP <- yc1MP[yc1MP$yield==max(yc1MP$yield),]$hr
 
-ylim <- c(0,1200)
+ylim    <- c(0,900)
+xlimYPR <- c(0,0.2)
+
 #to check
 par(mfrow=c(2,3))
-plot(catches.wt.dsvm.tot1, type="l", ylim=ylim)
+plot(catches.wt.dsvm.tot1, type="l", ylim=ylim,xaxs='i', yaxs='i')
+polygon(x=c(pyrnoMP-2,pyrnoMP+2,pyrnoMP+2,pyrnoMP-2), border=NA, y=c(rep(ylim,each=2)), col="grey")
+polygon(x=c(pyrMP-2,pyrMP+2,pyrMP+2,pyrMP-2)        , border=NA, y=c(rep(ylim,each=2)), col="grey")
+
 lines((quota1*SIMNUMBER), col="red" )
 abline(v=stab.model + MPstart, lty=2)
+lines(catches.wt.dsvm.tot1, type="l", ylim=ylim)
 
-plot(x=yc1noMP$hr, y=yc1noMP$yield, ylim=ylim)
+plot(x=yc1noMP$hr, y=yc1noMP$yield, type="l", xlim=xlimYPR, ylim=ylim)
+abline(v=Fmsy1noMP)
+text(xlimYPR[2]*0.9, ylim[2]*0.9, paste0("SIMNUMBER ",SIMNUMBER))
 points(mean(hr1[,pyrnoMP,]),yc1noMP$yield[yc1noMP$hr>mean(hr1[,pyrnoMP,])][1], col="red", pch=19)
 points(mean(hr1[,pyrnoMP-2,]),catches.wt.dsvm.tot1[,pyrnoMP-2,,], col="blue", pch=19)
 points(mean(hr1[,pyrnoMP-1,]),catches.wt.dsvm.tot1[,pyrnoMP-1,,], col="blue", pch=19)
@@ -283,11 +293,12 @@ points(mean(hr1[,pyrnoMP,]),catches.wt.dsvm.tot1[,pyrnoMP,,], col="blue", pch=19
 points(mean(hr1[,pyrnoMP+1,]),catches.wt.dsvm.tot1[,pyrnoMP+1,,], col="blue", pch=19)
 points(mean(hr1[,pyrnoMP+2,]),catches.wt.dsvm.tot1[,pyrnoMP+2,,], col="blue", pch=19)
 lines(x=yc1MP$hr, y=yc1MP$yield, ylim=ylim, col="grey")
+abline(v=Fmsy1MP, col="grey")
 points(mean(hr1[,pyrMP,]),yc1MP$yield[yc1MP$hr>mean(hr1[,pyrMP,])][1], col="red", pch=19)
 
-
-
-plot(apply(catches.wt.dsvm1,c(2,4),sum)[,1], col="blue", type="l",  ylim=ylim)
+plot(apply(catches.wt.dsvm1,c(2,4),sum)[,1], col="blue", type="l",  ylim=ylim, xaxs='i', yaxs='i')
+polygon(x=c(pyrnoMP-2,pyrnoMP+2,pyrnoMP+2,pyrnoMP-2), border=NA, y=c(rep(ylim,each=2)), col="grey")
+polygon(x=c(pyrMP-2,pyrMP+2,pyrMP+2,pyrMP-2)        , border=NA, y=c(rep(ylim,each=2)), col="grey")
 lines(apply(catches.wt.dsvm1,c(2,4),sum)[,2], col="red")
 lines(apply(catches.wt.dsvm1,c(2,4),sum)[,3], col="black")
 legend("topleft",c("a","b"), col=c("blue","red"), lty=c(1,1))
@@ -299,15 +310,20 @@ round(pop1,0)
 
 #to check
 plot(catches.wt.dsvm.tot2, type="l", ylim=ylim)
+polygon(x=c(pyrnoMP-2,pyrnoMP+2,pyrnoMP+2,pyrnoMP-2), border=NA, y=c(rep(ylim,each=2)), col="grey")
+polygon(x=c(pyrMP-2,pyrMP+2,pyrMP+2,pyrMP-2)        , border=NA, y=c(rep(ylim,each=2)), col="grey")
 abline(v=stab.model + MPstart, lty=2)
+lines(catches.wt.dsvm.tot2, type="l", ylim=ylim)
 
-plot(x=yc2$hr, y=yc2$yield, ylim=ylim)
-points(mean(hr2[,pyr,]),yc2$yield[yc2$hr>mean(hr2[,pyr,])][1], col="red", pch=19)
-points(mean(hr2[,pyr-2,]),catches.wt.dsvm.tot2[,pyr-2,,], col="blue", pch=19)
-points(mean(hr2[,pyr-1,]),catches.wt.dsvm.tot2[,pyr-1,,], col="blue", pch=19)
-points(mean(hr2[,pyr,]),catches.wt.dsvm.tot2[,pyr,,], col="blue", pch=19)
-points(mean(hr2[,pyr+1,]),catches.wt.dsvm.tot2[,pyr+1,,], col="blue", pch=19)
-points(mean(hr2[,pyr+2,]),catches.wt.dsvm.tot2[,pyr+2,,], col="blue", pch=19)
+plot(x=yc2noMP$hr, y=yc2noMP$yield, type="l", xlim=xlimYPR, ylim=ylim)
+points(mean(hr2[,pyrnoMP,]),yc2$yield[yc2$hr>mean(hr2[,pyrnoMP,])][1], col="red", pch=19)
+points(mean(hr2[,pyrnoMP-2,]),catches.wt.dsvm.tot2[,pyrnoMP-2,,], col="blue", pch=19)
+points(mean(hr2[,pyrnoMP-1,]),catches.wt.dsvm.tot2[,pyrnoMP-1,,], col="blue", pch=19)
+points(mean(hr2[,pyrnoMP,]),catches.wt.dsvm.tot2[,pyrnoMP,,], col="blue", pch=19)
+points(mean(hr2[,pyrnoMP+1,]),catches.wt.dsvm.tot2[,pyrnoMP+1,,], col="blue", pch=19)
+points(mean(hr2[,pyrnoMP+2,]),catches.wt.dsvm.tot2[,pyrnoMP+2,,], col="blue", pch=19)
+lines(x=yc2MP$hr, y=yc2MP$yield, ylim=ylim, col="grey")
+points(mean(hr2[,pyrMP,]),yc2MP$yield[yc2MP$hr>mean(hr1[,pyrMP,])][1], col="red", pch=19)
 
 plot(apply(catches.wt.dsvm2,c(2,4),sum)[,1], col="blue", type="l",  ylim=ylim)
 lines(apply(catches.wt.dsvm2,c(2,4),sum)[,2], col="red")
@@ -317,7 +333,3 @@ abline(v=stab.model + MPstart, lty=2)
 dsvm_res_allyrs[dsvm_res_allyrs$year %in% ((pyr-1):(pyr+1))  & dsvm_res_allyrs$spp == "sp2",]
 
 round(pop2,0)
-
-
-
-
