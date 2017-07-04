@@ -115,10 +115,10 @@ ages          <- 1:4
 season        <- 1:6
 areas         <- c("a", "b")
 stab.model    <- 10
-NUMRUNS       <- 70
-MPstart       <- 30
+NUMRUNS       <- 80
+MPstart       <- 40
 SIMNUMBER     <- 850
-SIGMA         <- 300 
+SIGMA         <- 300 #comes from 2
 SPP1DSCSTEPS  <- SPP2DSCSTEPS <- 0
 endy          <- stab.model + NUMRUNS
 Linf          <- 20
@@ -153,7 +153,7 @@ catches.wt.dsvm.tot1 <- catches.wt.dsvm.tot2 <- array(0, dim=c(1           ,endy
 quota1               <- quota2               <- array(NA, dim=c(1           ,endy + 1,              1,            1), dimnames=list(cat="all", year=as.character(1:(endy+1)), season="all",                option ="all"))
 
 
-#run population for stab.model year
+#run population for 15 year
 pop1 <- population_dynamics(pop=pop1, startyear=2, endyear=stab.model, season=season, natmortality=natmortality, catches=catches.n.dsvm1[,1,,, drop=F], recruitment=recs1, migration=mig1)
 pop2 <- population_dynamics(pop=pop2, startyear=2, endyear=stab.model, season=season, natmortality=natmortality, catches=catches.n.dsvm1[,1,,, drop=F], recruitment=recs2, migration=mig2)
 
@@ -234,11 +234,9 @@ for(yy in (stab.model):(stab.model+NUMRUNS-1)){
   hr2wanted <- yc2[yc2$yield==max(yc2$yield),]$hr
   
   if (yy > (stab.model + MPstart-1))
-    #quota1[,yy+1,,] <- (hr1wanted/mean(hr1[,yy,]) * catches.wt.dsvm.tot1[,yy,,])/SIMNUMBER
-    quota1[,yy+1,,] <- sum(sweep((hr1wanted/mean(hr1[,yy,])) * hr1[,yy,] * apply(pop1[,yy,,],c(1,2), sum) ,1,wts,"*"))/SIMNUMBER
+    quota1[,yy+1,,] <- (hr1wanted/mean(hr1[,yy,]) * catches.wt.dsvm.tot1[,yy,,])/SIMNUMBER
+  
 }
-
-
 
 
 
@@ -249,8 +247,8 @@ wts
 hr1 <- apply(catches.n.dsvm1,1:3,sum)/    (apply(catches.n.dsvm1,1:3,sum) +    apply(pop1,1:3,sum) )
 hr2 <- apply(catches.n.dsvm2,1:3,sum)/    (apply(catches.n.dsvm2,1:3,sum) +    apply(pop2,1:3,sum) )
 
-pyrnoMP <- 36 
-pyrMP <- 76 
+pyrnoMP <- 46 
+pyrMP <- 86 
 
 #what happens in our yield curve for this hr?
 yield_curve(hr=hr1[,pyr,], wts, natmortality, R=recs1, sequence = 1, verbose=T)
@@ -303,16 +301,13 @@ round(pop1,0)
 plot(catches.wt.dsvm.tot2, type="l", ylim=ylim)
 abline(v=stab.model + MPstart, lty=2)
 
-plot(x=yc2noMP$hr, y=yc2noMP$yield, ylim=ylim)
-points(mean(hr2[,pyrnoMP,]),yc2$yield[yc2$hr>mean(hr2[,pyrnoMP,])][1], col="red", pch=19)
-points(mean(hr2[,pyrnoMP-2,]),catches.wt.dsvm.tot2[,pyrnoMP-2,,], col="blue", pch=19)
-points(mean(hr2[,pyrnoMP-1,]),catches.wt.dsvm.tot2[,pyrnoMP-1,,], col="blue", pch=19)
-points(mean(hr2[,pyrnoMP,]),catches.wt.dsvm.tot2[,pyrnoMP,,], col="blue", pch=19)
-points(mean(hr2[,pyrnoMP+1,]),catches.wt.dsvm.tot2[,pyrnoMP+1,,], col="blue", pch=19)
-points(mean(hr2[,pyrnoMP+2,]),catches.wt.dsvm.tot2[,pyrnoMP+2,,], col="blue", pch=19)
-lines(x=yc2MP$hr, y=yc2MP$yield, ylim=ylim, col="grey")
-points(mean(hr2[,pyrMP,]),yc2MP$yield[yc2MP$hr>mean(hr1[,pyrMP,])][1], col="red", pch=19)
-
+plot(x=yc2$hr, y=yc2$yield, ylim=ylim)
+points(mean(hr2[,pyr,]),yc2$yield[yc2$hr>mean(hr2[,pyr,])][1], col="red", pch=19)
+points(mean(hr2[,pyr-2,]),catches.wt.dsvm.tot2[,pyr-2,,], col="blue", pch=19)
+points(mean(hr2[,pyr-1,]),catches.wt.dsvm.tot2[,pyr-1,,], col="blue", pch=19)
+points(mean(hr2[,pyr,]),catches.wt.dsvm.tot2[,pyr,,], col="blue", pch=19)
+points(mean(hr2[,pyr+1,]),catches.wt.dsvm.tot2[,pyr+1,,], col="blue", pch=19)
+points(mean(hr2[,pyr+2,]),catches.wt.dsvm.tot2[,pyr+2,,], col="blue", pch=19)
 
 plot(apply(catches.wt.dsvm2,c(2,4),sum)[,1], col="blue", type="l",  ylim=ylim)
 lines(apply(catches.wt.dsvm2,c(2,4),sum)[,2], col="red")
