@@ -234,7 +234,7 @@ for(yy in (stab.model):(stab.model+NUMRUNS-1)){
   hr2wanted <- yc2[yc2$yield==max(yc2$yield),]$hr
   
   if (yy > (stab.model + MPstart-1))
-    quota1[,yy+1,,] <- (hr1wanted/mean(hr1[,yy,]) * catches.wt.dsvm.tot1[,yy,,])/SIMNUMBER
+    quota1[,yy+1,,] <- sum(sweep((hr1wanted/mean(hr1[,yy,])) * hr1[,yy,] * apply(pop1[,yy,,],c(1,2), sum) ,1,wts,"*"))/SIMNUMBER 
   
 }
 
