@@ -323,7 +323,7 @@ points(mean(hr2[,pyrnoMP,]),catches.wt.dsvm.tot2[,pyrnoMP,,], col="blue", pch=19
 points(mean(hr2[,pyrnoMP+1,]),catches.wt.dsvm.tot2[,pyrnoMP+1,,], col="blue", pch=19)
 points(mean(hr2[,pyrnoMP+2,]),catches.wt.dsvm.tot2[,pyrnoMP+2,,], col="blue", pch=19)
 lines(x=yc2MP$hr, y=yc2MP$yield, ylim=ylim, col="grey")
-points(mean(hr2[,pyrMP,]),yc2MP$yield[yc2MP$hr>mean(hr1[,pyrMP,])][1], col="red", pch=19)
+points(mean(hr2[,pyrMP,]),yc2MP$yield[yc2MP$hr>mean(hr2[,pyrMP,])][1], col="red", pch=19)
 
 plot(apply(catches.wt.dsvm2,c(2,4),sum)[,1], col="blue", type="l",  ylim=ylim)
 lines(apply(catches.wt.dsvm2,c(2,4),sum)[,2], col="red")
