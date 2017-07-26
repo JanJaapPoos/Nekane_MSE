@@ -18,12 +18,12 @@ bool            outofbounds_bool;
 double          outofbounds_double;
 
 // 160 by 98  works fine
-#define SPP1CAPACITY          1200    // max number of first choke sp (larger than MAXNOINC * MAXHORIZON *NOSIZES= 64 * 5 * 2 = 640) 
-#define SPP2CAPACITY          1200    // max number of second choke sp (MAXNOINC * MAXHORIZON *NOSIZES= 64* 5* 2 = 640)
-#define NOSPEC                  5     // number of species used in the analysis
-#define NOSIZES                 4     // number of size classes used in the analysis
-#define MAXNOINC               40     // max number of increments
-#define MAXHORIZON              6     // number of seasons to fish (= time)
+#define SPP1CAPACITY      750    // max number of first choke sp (larger than MAXNOINC * MAXHORIZON *NOSIZES= 64 * 5 * 2 = 640) 
+#define SPP2CAPACITY      750    // max number of second choke sp (MAXNOINC * MAXHORIZON *NOSIZES= 64* 5* 2 = 640)
+#define NOSPEC              5    // number of species used in the analysis
+#define NOSIZES             4    // number of size classes used in the analysis
+#define MAXNOINC           30    // max number of increments
+#define MAXHORIZON          6    // number of seasons to fish (= time)
 
 typedef unsigned UFINT;
 
@@ -585,7 +585,7 @@ Rprintf("Start of DynStateF\n");
   FTYPE theFF0Star          = (FTYPE) matalloc(sizeof(float), (void *)0, 2, kSpp1Capacity, kSpp2Capacity);
   FTYPE theFF1              = (FTYPE) matalloc(sizeof(float), (void *)0, 2, kSpp1Capacity, kSpp2Capacity);
   FTYPE deltaSum            = (FTYPE) matalloc(sizeof(float), (void *)0, 2, kSpp1Capacity, kSpp2Capacity);
-  ITYPE theProbChoice       = (ITYPE) matalloc(sizeof(float), (void *)0, 4, MAXHORIZON,kSpp1Capacity, kSpp2Capacity,kNPatch);
+  ITYPE theProbChoice       = (ITYPE) matalloc(sizeof(float), (void *)0, 4, MAXHORIZON,noInc * kHorizon *NOSIZES, noInc * kHorizon*NOSIZES,kNPatch);
 
   if (theFF0 == 0l) Rprintf("error in memory allocation FF0 \n");
   if (theFF1 == 0l) Rprintf("error in memory allocation FF1 \n");
@@ -729,7 +729,7 @@ Rprintf("Start of DynStateF\n");
 	}}}
 
 
-    //Rprintf("\n the FF0Star \n "); R_FlushConsole();    
+    //  Rprintf(" Finished numerator "); R_FlushConsole();    
    // for (Lndspp1 = 0; Lndspp1 < maxspp[t]; Lndspp1++) {
     //  for (Lndspp2 = 0; Lndspp2 < maxspp[t]; Lndspp2++) {
 //	Rprintf("%.1f ",theFF0Star[Lndspp1][Lndspp2]); 
@@ -774,6 +774,9 @@ Rprintf("Start of DynStateF\n");
 	  deltaSum[Lndspp1][Lndspp2] += numerator[Lndspp1][Lndspp2][ppp];
 	}}}
 
+    // Rprintf(" Accumulated numerator "); R_FlushConsole();    
+  
+    
 //    Rprintf("\n deltaSum \n"); R_FlushConsole();    
 //   for (Lndspp1 = 0; Lndspp1 < maxspp[t]; Lndspp1++) {
 //     for (Lndspp2 = 0; Lndspp2 < maxspp[t]; Lndspp2++) {
@@ -787,7 +790,9 @@ Rprintf("Start of DynStateF\n");
     for (Lndspp1 = 0; Lndspp1 < maxspp[t]; Lndspp1++) {
       for (Lndspp2 = 0; Lndspp2 < maxspp[t]; Lndspp2++) {
 	for (int ppp = 0; ppp < kNPatch; ppp++) {
+	  // Rprintf("\n %d ",Lndspp1); Rprintf(" %d ",Lndspp2); Rprintf(" %d ",ppp);  R_FlushConsole();    
 	  theProbChoice[t][Lndspp1][Lndspp2][ppp] = numerator[Lndspp1][Lndspp2][ppp]/  deltaSum[Lndspp1][Lndspp2] ;
+          // Rprintf("%.3f ",theProbChoice[t][Lndspp1][Lndspp2][ppp]);  R_FlushConsole();    
 	}}}
 
  //   Rprintf("\n probabilities \n"); R_FlushConsole();    
