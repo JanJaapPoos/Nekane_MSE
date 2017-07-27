@@ -116,8 +116,8 @@ ages          <- 1:4
 season        <- 1:6
 areas         <- c("a", "b")
 stab.model    <- 10
-NUMRUNS       <- 10
-MPstart       <- 15
+NUMRUNS       <- 80
+MPstart       <- 40
 SIMNUMBER     <- 850
 SIGMA         <- 200 #comes from 2// chanheg from 300 to 200
 SPP1DSCSTEPS  <- 0
@@ -249,14 +249,10 @@ for(yy in (stab.model):(stab.model+NUMRUNS)){
 
  if (yy > (MPstart-1) & yy < endy){ #if (yy > (MPstart-1))
  
-    quota1[,yy+1,,] <-  sum(sweep((hr1wanted/mean(hr1[,yy,]))* hr1[,yy,]*apply(pop1[,yy+1,,],c(1,2), sum) ,1,wts,"*"))/SIMNUMBER
+    quota1[,yy+1,,] <-  sum(sweep((hr1wanted/mean(hr1[,yy,]))* hr1[,yy,]*landings.ratio1[,yy,]*apply(pop1[,yy+1,,],c(1,2), sum) ,1,wts,"*"))/SIMNUMBER
   }
     
-  
 }
-
-
-
 
 
 #what are the weights?
@@ -279,11 +275,11 @@ round(pop1[,pyrnoMP,,],2)
 hr1[,pyrnoMP,]
 mean(hr1[,pyrnoMP,])
 
-yc1noMP <- yield_curve(hr=hr1[,pyrnoMP,], wts, natmortality, R=recs1, verbose=F)
-yc2noMP <- yield_curve(hr=hr2[,pyrnoMP,], wts, natmortality, R=recs2, verbose=F)
+yc1noMP <- yield_curve(hr=hr1[,pyrnoMP,], landings.ratio1[,pyrnoMP,],  wts, natmortality, R=recs1, verbose=F)
+yc2noMP <- yield_curve(hr=hr2[,pyrnoMP,], landings.ratio2[,pyrnoMP,], wts, natmortality, R=recs2, verbose=F)
 
-Fmsy1noMP <- yc1noMP[yc1noMP$yield==max(yc1noMP$yield),]$hr
-Fmsy2noMP <- yc2noMP[yc2noMP$yield==max(yc2noMP$yield),]$hr
+Fmsy1noMP <- yc1noMP[yc1noMP$landings==max(yc1noMP$landings),]$hr
+Fmsy2noMP <- yc2noMP[yc2noMP$landings==max(yc2noMP$landings),]$hr
 
 yc1MP <- yield_curve(hr=hr1[,pyrMP,], landings.ratio1[,pyrMP,], wts, natmortality, R=recs1, verbose=F)
 yc2MP <- yield_curve(hr=hr2[,pyrMP,], landings.ratio2[,pyrMP,], wts, natmortality, R=recs2, verbose=F)
@@ -302,12 +298,14 @@ polygon(x=c(pyrMP-2,pyrMP+2,pyrMP+2,pyrMP-2)        , border=NA, y=c(rep(ylim,ea
 
 lines((quota1* SIMNUMBER), col="red" )
 abline(v=MPstart, lty=2)
+text(MPstart+4, 50, "MP")
 lines(catches.wt.dsvm.tot1,  type="l", ylim=ylim)
 lines(landings.wt.dsvm.tot1, type="l", ylim=ylim, lty= 2)
 
 plot(x=yc1noMP$hr, y=yc1noMP$landings, type="l", xlim=xlimYPR, ylim=ylim,xaxs='i', yaxs='i')
+text(xlimYPR[2]*0.8, yc1noMP$landings[length(yc1noMP$hr)]+5, "Unconstrained")
 abline(v=Fmsy1noMP)
-text(xlimYPR[2]*0.9, ylim[2]*0.9, paste0("SIMNUMBER ",SIMNUMBER))
+text(xlimYPR[2]*0.8, ylim[2]*0.9, paste0("SIMNUMBER ",SIMNUMBER))
 points(mean(hr1[,pyrnoMP,]),yc1noMP$landings[yc1noMP$hr>mean(hr1[,pyrnoMP,])][1], col="red", pch=19)
 points(mean(hr1[,pyrnoMP-2,]),landings.wt.dsvm.tot1[,pyrnoMP-2,,], col="blue", pch=19)
 points(mean(hr1[,pyrnoMP-1,]),landings.wt.dsvm.tot1[,pyrnoMP-1,,], col="blue", pch=19)
@@ -315,6 +313,7 @@ points(mean(hr1[,pyrnoMP,]),landings.wt.dsvm.tot1[,pyrnoMP,,], col="blue", pch=1
 points(mean(hr1[,pyrnoMP+1,]),landings.wt.dsvm.tot1[,pyrnoMP+1,,], col="blue", pch=19)
 points(mean(hr1[,pyrnoMP+2,]),landings.wt.dsvm.tot1[,pyrnoMP+2,,], col="blue", pch=19)
 lines(x=yc1MP$hr, y=yc1MP$landings, ylim=ylim, col="grey")
+text(yc1MP$hr[length(yc1MP$hr)], yc1MP$landings[length(yc1MP$hr)]+50, "Constrained")
 abline(v=Fmsy1MP, col="grey")
 points(mean(hr1[,pyrMP,]),yc1MP$landings[yc1MP$hr>mean(hr1[,pyrMP,])][1], col="red", pch=21, bg="white")
 points(mean(hr1[,pyrMP-2,]),landings.wt.dsvm.tot1[,pyrMP-2,,], col="blue", pch=21, bg="white")
@@ -344,22 +343,33 @@ plot(catches.wt.dsvm.tot2, type="l", ylim=ylim,xaxs='i', yaxs='i')
 polygon(x=c(pyrnoMP-2,pyrnoMP+2,pyrnoMP+2,pyrnoMP-2), border=NA, y=c(rep(ylim,each=2)), col="grey")
 polygon(x=c(pyrMP-2,pyrMP+2,pyrMP+2,pyrMP-2)        , border=NA, y=c(rep(ylim,each=2)), col="grey")
 abline(v=MPstart, lty=2)
+text(MPstart+4, 50, "MP")
 lines(catches.wt.dsvm.tot2, type="l", ylim=ylim)
+lines(landings.wt.dsvm.tot2, type="l", ylim=ylim, lty= 2)
 
-plot(x=yc2noMP$hr, y=yc2noMP$yield, type="l", xlim=xlimYPR, ylim=ylim,xaxs='i', yaxs='i')
+plot(x=yc2noMP$hr, y=yc2noMP$landings, type="l", xlim=xlimYPR, ylim=ylim,xaxs='i', yaxs='i')
+text(xlimYPR[2]*0.8, yc2noMP$landings[length(yc2noMP$hr)]+5, "Unconstrained")
 abline(v=Fmsy2noMP)
-points(mean(hr2[,pyrnoMP,]),yc2noMP$yield[yc2noMP$hr>mean(hr2[,pyrnoMP,])][1], col="red", pch=19)
-points(mean(hr2[,pyrnoMP-2,]),catches.wt.dsvm.tot2[,pyrnoMP-2,,], col="blue", pch=19)
-points(mean(hr2[,pyrnoMP-1,]),catches.wt.dsvm.tot2[,pyrnoMP-1,,], col="blue", pch=19)
-points(mean(hr2[,pyrnoMP,]),catches.wt.dsvm.tot2[,pyrnoMP,,], col="blue", pch=19)
-points(mean(hr2[,pyrnoMP+1,]),catches.wt.dsvm.tot2[,pyrnoMP+1,,], col="blue", pch=19)
-points(mean(hr2[,pyrnoMP+2,]),catches.wt.dsvm.tot2[,pyrnoMP+2,,], col="blue", pch=19)
-lines(x=yc2MP$hr, y=yc2MP$yield, ylim=ylim, col="grey")
+points(mean(hr2[,pyrnoMP,]),yc2noMP$landings[yc2noMP$hr>mean(hr2[,pyrnoMP,])][1], col="red", pch=19)
+points(mean(hr2[,pyrnoMP-2,]),landings.wt.dsvm.tot2[,pyrnoMP-2,,], col="blue", pch=19)
+points(mean(hr2[,pyrnoMP-1,]),landings.wt.dsvm.tot2[,pyrnoMP-1,,], col="blue", pch=19)
+points(mean(hr2[,pyrnoMP,]),landings.wt.dsvm.tot2[,pyrnoMP,,], col="blue", pch=19)
+points(mean(hr2[,pyrnoMP+1,]),landings.wt.dsvm.tot2[,pyrnoMP+1,,], col="blue", pch=19)
+points(mean(hr2[,pyrnoMP+2,]),landings.wt.dsvm.tot2[,pyrnoMP+2,,], col="blue", pch=19)
+lines(x=yc2MP$hr, y=yc2MP$landings, ylim=ylim, col="grey")
+text(yc2MP$hr[length(yc2MP$hr)], yc2MP$landings[length(yc2MP$hr)]+50, "Constrained")
 abline(v=Fmsy2MP, col="grey")
-points(mean(hr2[,pyrMP,]),yc2MP$yield[yc2MP$hr>mean(hr2[,pyrMP,])][1], col="red", pch=19)
+points(mean(hr2[,pyrMP,]),yc2MP$landings[yc2MP$hr>mean(hr2[,pyrMP,])][1], col="red", pch=21, bg="white")
+points(mean(hr2[,pyrMP-2,]),landings.wt.dsvm.tot2[,pyrMP-2,,], col="blue", pch=21, bg="white")
+points(mean(hr2[,pyrMP-1,]),landings.wt.dsvm.tot2[,pyrMP-1,,], col="blue", pch=21, bg="white")
+points(mean(hr2[,pyrMP,]),landings.wt.dsvm.tot2[,pyrMP,,], col="blue", pch=21, bg="white")
+points(mean(hr2[,pyrMP+1,]),landings.wt.dsvm.tot2[,pyrMP+1,,], col="blue", pch=21, bg="white")
+points(mean(hr2[,pyrMP+2,]),landings.wt.dsvm.tot2[,pyrMP+2,,], col="blue", pch=21, bg="white")
 
 plot(apply(catches.wt.dsvm2,c(2,4),sum)[,1], col="blue", type="l",  ylim=ylim,xaxs='i', yaxs='i')
 lines(apply(catches.wt.dsvm2,c(2,4),sum)[,2], col="red")
+lines(apply(landings.wt.dsvm2,c(2,4),sum)[,1], col="blue", lty=2)
+lines(apply(landings.wt.dsvm2,c(2,4),sum)[,2], col="red", lty=2)
 #lines(apply(catches.wt.dsvm2,c(2,4),sum)[,3], col="black")
 abline(v=MPstart, lty=2)
 
