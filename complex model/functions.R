@@ -89,10 +89,13 @@ catch_dataframe_to_array <- function(dsvm_result, ages, season, areas, stock, ca
 # EFFORT PLOT
 ##############################################################################
 
-effort_plot_dsvm <- function(NVESSELS, effort_dsvm_res_allyrs, stab.model){
+effort_plot_dsvm <- function(NVESSELS, effort_dsvm_res_allyrs, stab.model, economics_res_allyrs){
   
   # create a list to store the results
   efforts<- list()
+  netrev<-  melt(economics_res_allyrs,, id.vars = "year", measure.vars = c("NetRev"))
+  grossrev<-  melt(economics_res_allyrs,, id.vars = "year", measure.vars = c("Grossrev"))
+  annualfine<-  melt(economics_res_allyrs,, id.vars = "year", measure.vars = c("Annualfine"))
   
   mypalette <-c("#808080","#CCCCCC","#D55E00")
   names(mypalette) <- c("a", "b", "Stay in port")
@@ -114,7 +117,7 @@ effort_plot_dsvm <- function(NVESSELS, effort_dsvm_res_allyrs, stab.model){
   
   p <- ggplot(a, aes(x=as.factor(year), y=trip, fill=option)) + 
     geom_bar(stat="identity", position = "fill", colour="black")+
-    annotate("text", label =paste0("SIMNUMBER ",SIMNUMBER), x =84,y = - .04)+
+    #annotate("text", label =paste0("SIMNUMBER ",SIMNUMBER), x =84,y = - .04)+
     scale_y_continuous( labels = percent)+
     scale_x_discrete(breaks=seq(0,90, 2), labels = c(seq(0,90, 2)), drop=FALSE)+
     geom_vline(xintercept = MPstart, linetype=2, color = "black", size=2)+
@@ -130,6 +133,68 @@ effort_plot_dsvm <- function(NVESSELS, effort_dsvm_res_allyrs, stab.model){
     xlab("model time") +
     ylab("Effort pattern")
   
-  return(p)
+  q<- ggplot()+
+    stat_summary(data= netrev, aes(year, value), geom="ribbon", fun.ymin = function(x) quantile(x, 0.025), fun.ymax = function(x) quantile(x, 0.975), alpha=0.2)+
+    stat_summary(data= netrev, aes(year, value), geom="line", size= 0.25, fun.y=mean)+
+    stat_summary(data= netrev, aes(year, value), geom="point", size= 1, , fun.y=mean)+
+    scale_x_discrete(breaks=seq(0,90, 2), labels = c(seq(0,90, 2)), drop=FALSE)+
+    ylim(0, 4000)+
+    geom_vline(xintercept = MPstart, linetype=2, color = "black", size=2)+
+    annotate("text", label ="MP", x = MPstart+2, y = - .04)+
+     theme_bw()+
+    theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), 
+          panel.background = element_blank(),legend.title=element_blank(),
+          legend.position="bottom",axis.text=element_text(size=8),
+          strip.text = element_text(size = 8),
+          text = element_text(size=10))+
+    guides(fill= guide_legend(nrow=1, byrow=TRUE))+
+    ylab("Net Revenue")
+    
+    r<- ggplot()+
+    stat_summary(data= grossrev, aes(year, value), geom="ribbon", fun.ymin = function(x) quantile(x, 0.025), fun.ymax = function(x) quantile(x, 0.975), alpha=0.2)+
+    stat_summary(data=grossrev, aes(year, value), geom="line", size= 0.25, fun.y=mean)+
+    stat_summary(data= grossrev, aes(year, value), geom="point", size= 1, , fun.y=mean)+
+    scale_x_discrete(breaks=seq(0,90, 2), labels = c(seq(0,90, 2)), drop=FALSE)+
+    ylim(0, 4000)+
+    geom_vline(xintercept = MPstart, linetype=2, color = "black", size=2)+
+    annotate("text", label ="MP", x = MPstart+2, y = - .04)+
+     theme_bw()+
+    theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), 
+          panel.background = element_blank(),legend.title=element_blank(),
+          legend.position="bottom",axis.text=element_text(size=8),
+          strip.text = element_text(size = 8),
+          text = element_text(size=10))+
+    guides(fill= guide_legend(nrow=1, byrow=TRUE))+
+    ylab("Gross Revenue")
+    
+    s<- ggplot()+
+    stat_summary(data= annualfine, aes(year, value), geom="ribbon", fun.ymin = function(x) quantile(x, 0.025), fun.ymax = function(x) quantile(x, 0.975), alpha=0.2)+
+    stat_summary(data= annualfine, aes(year, value), geom="line", size= 0.25, fun.y=mean)+
+    stat_summary(data= annualfine, aes(year, value), geom="point", size= 1, , fun.y=mean)+
+    scale_x_discrete(breaks=seq(0,90, 2), labels = c(seq(0,90, 2)), drop=FALSE)+
+    ylim(0, 4000)+
+    geom_vline(xintercept = MPstart, linetype=2, color = "black", size=2)+
+    annotate("text", label ="MP", x = MPstart+2, y = - .04)+
+     theme_bw()+
+    theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), 
+          panel.background = element_blank(),legend.title=element_blank(),
+          legend.position="bottom",axis.text=element_text(size=8),
+          strip.text = element_text(size = 8),
+          text = element_text(size=10))+
+    guides(fill= guide_legend(nrow=1, byrow=TRUE))+
+    ylab("Annual Fine")
+    
+    
+    
   
+  return(grid.arrange(p, q, r, s, ncol=1))
+  
+}
+
+add_legend <- function(...) {
+  opar <- par(fig=c(0, 1, 0, 1), oma=c(0, 0, 0, 0), 
+              mar=c(0, 0, 0, 0), new=TRUE)
+  on.exit(par(opar))
+  plot(0, 0, type='n', bty='n', xaxt='n', yaxt='n')
+  legend(...)
 }
