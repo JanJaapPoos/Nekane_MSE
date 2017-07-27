@@ -5,7 +5,7 @@ library(reshape2)
 library(plyr)
 library(scales)
 
-setwd("~/Dropbox/BoB/MSE/Git/Nekane/simple model/")
+setwd("~/Dropbox/BoB/MSE/Git/Nekane/complex model/")
 source("functions.R")
 
 
@@ -64,10 +64,10 @@ population_dynamics <- function(pop, startyear, endyear, season, natmortality, c
 # YIELD CURVE
 ##############################################################################
 
-yield_curve <- function(hr,wts, natmortality, R=1, sequence = seq(0.001,2,0.001), verbose=F ){
+yield_curve <- function(hr,lratio, wts, natmortality, R=1, sequence = seq(0.001,2,0.001), verbose=F ){
   
   # note that definition of hr is not completely correct (should be sum over seasons, and mean over ages), but as long as consistently incorect in code it should not matter
-  res <- data.frame("hr"=mean(hr) *sequence,"yield"=NA) 
+  res <- data.frame("hr"=mean(hr) *sequence,"catch"=NA, "landings"=NA) 
   iii <- 1
   sumR <- sum(R)
   if (verbose == T){ 
@@ -97,7 +97,8 @@ yield_curve <- function(hr,wts, natmortality, R=1, sequence = seq(0.001,2,0.001)
         respop[aa,ss] <- respop[aa,ss]   * (1-natmortality*1)
       }
     }
-    res[iii, ]$yield <- sum(yld*wts)    
+    res[iii, ]$catch    <- sum(yld*wts)
+    res[iii, ]$landings <- sum(yld*lratio*wts)
     iii <- iii + 1
     if (verbose == T){ 
       print("yields (in numbers)")
@@ -110,59 +111,15 @@ yield_curve <- function(hr,wts, natmortality, R=1, sequence = seq(0.001,2,0.001)
   return(res)
 }
 
-effort_plot_dsvm <- function(NVESSELS, effort_dsvm_res_allyrs, stab.model){
-  
-  # create a list to store the results
-  efforts<- list()
-  
-  mypalette <-c("#808080","#CCCCCC","#D55E00")
-  names(mypalette) <- c("a", "b", "Stay in port")
-  
-  for (n in (1: length(NVESSELS))){
-    
-    a<- subset(effort_dsvm_res_allyrs,(spp %in% "sp1"))
-    a<- subset(a,(cat %in% 1))
-    a$year<- factor(a$year, levels= 1:90)
-    #a<- subset(a,(nvessels %in% NVESSELS[n]))
-    #a<- within(a,year <- year- stab.model)
-    a<- aggregate(cbind(landings.wt, discards.wt, catch.wt, effort,trip)~ spp+cat+option+year, FUN=sum, data=a)
-    
-    efforts[[n]]<-a
-    
-  }    
-  
-  efforts <- ldply(efforts, rbind)
-  
-  p <- ggplot(a, aes(x=as.factor(year), y=trip, fill=option)) + 
-    geom_bar(stat="identity", position = "fill", colour="black")+
-    annotate("text", label =paste0("SIMNUMBER ",SIMNUMBER), x =84,y = - .04)+
-    scale_y_continuous( labels = percent)+
-    scale_x_discrete(breaks=seq(0,90, 2), labels = c(seq(0,90, 2)), drop=FALSE)+
-    geom_vline(xintercept = MPstart, linetype=2, color = "black", size=2)+
-    annotate("text", label ="MP", x = MPstart+2, y = - .04)+
-    scale_fill_manual(name= "option",values=mypalette,breaks=c("a", "b", "Stay in port"))+
-    theme_bw()+
-    theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), 
-          panel.background = element_blank(),legend.title=element_blank(),
-          legend.position="bottom",axis.text=element_text(size=8),
-          strip.text = element_text(size = 8),
-          text = element_text(size=10))+
-    guides(fill= guide_legend(nrow=1, byrow=TRUE))+
-    xlab("model time") +
-    ylab("Effort pattern")
-  
-  return(p)
-  
-}
 
 ages          <- 1:4
 season        <- 1:6
 areas         <- c("a", "b")
 stab.model    <- 10
-NUMRUNS       <- 80
-MPstart       <- 40
+NUMRUNS       <- 10
+MPstart       <- 15
 SIMNUMBER     <- 850
-SIGMA         <- 300 #comes from 2
+SIGMA         <- 200 #comes from 2// chanheg from 300 to 200
 SPP1DSCSTEPS  <- 0
 SPP2DSCSTEPS <- 0
 endy          <- stab.model + NUMRUNS
@@ -193,8 +150,11 @@ effort <- array(c(1), dim=c(length(areas), length(season)), dimnames=list(option
 
 pop1  <- pop2   <-array(0, dim=c(length(ages),endy+1,length(season),length(areas)), dimnames=list(cat=ages,   year=as.character(1:(endy+1)), season=as.character(season), option =areas))
 catches.n.dsvm1      <- catches.n.dsvm2      <- array(0, dim=c(length(ages),endy,length(season),length(areas)), dimnames=list(cat=ages,   year=as.character(1:endy), season=as.character(season), option =areas))
+landings.n.dsvm1      <- landings.n.dsvm2      <- array(0, dim=c(length(ages),endy,length(season),length(areas)), dimnames=list(cat=ages,   year=as.character(1:endy), season=as.character(season), option =areas))
 catches.wt.dsvm1     <- catches.wt.dsvm2     <- array(0, dim=c(length(ages),endy,length(season),length(areas)), dimnames=list(cat=ages,   year=as.character(1:endy), season=as.character(season), option =areas))
+landings.wt.dsvm1     <- landings.wt.dsvm2     <- array(0, dim=c(length(ages),endy,length(season),length(areas)), dimnames=list(cat=ages,   year=as.character(1:endy), season=as.character(season), option =areas))
 catches.wt.dsvm.tot1 <- catches.wt.dsvm.tot2 <- array(0, dim=c(1           ,endy,              1,            1), dimnames=list(cat="all", year=as.character(1:endy), season="all",                option ="all"))
+landings.wt.dsvm.tot1 <- landings.wt.dsvm.tot2 <- array(0, dim=c(1           ,endy,              1,            1), dimnames=list(cat="all", year=as.character(1:endy), season="all",                option ="all"))
 quota1               <- quota2               <- array(NA, dim=c(1           ,endy,              1,            1), dimnames=list(cat="all", year=as.character(1:endy), season="all",                option ="all"))
 
 
@@ -246,27 +206,25 @@ for(yy in (stab.model):(stab.model+NUMRUNS)){
   } 
 
   #get catches in wts from DSVM 
-  if (control@spp1DiscardSteps==0){
-    catch_option1= "catch.wt"
-  } else {
-    catch_option1= "landings.wt"
-  }
+  catches.wt.dsvm1[,yy,,] <- catch_dataframe_to_array(dsvm_res, ages, season, areas, "pop1", catch_option="catch.wt")
+  catches.wt.dsvm2[,yy,,] <- catch_dataframe_to_array(dsvm_res, ages, season, areas, "pop2", catch_option="catch.wt") 
   
-  if (control@spp2DiscardSteps==0){
-    catch_option2= "catch.wt"
-  } else {
-    catch_option2= "landings.wt"
-  } 
-  catches.wt.dsvm1[,yy,,] <- catch_dataframe_to_array(dsvm_res, ages, season, areas, "pop1", catch_option=catch_option1)
-  catches.wt.dsvm2[,yy,,] <- catch_dataframe_to_array(dsvm_res, ages, season, areas, "pop2", catch_option=catch_option2) 
+  landings.wt.dsvm1[,yy,,] <- catch_dataframe_to_array(dsvm_res, ages, season, areas, "pop1", catch_option="landings.wt")
+  landings.wt.dsvm2[,yy,,] <- catch_dataframe_to_array(dsvm_res, ages, season, areas, "pop2", catch_option="landings.wt") 
   
   #calculate total catches (by summing over seasons and ages)
   catches.wt.dsvm.tot1[] <- apply(catches.wt.dsvm1,c(2),"sum")
   catches.wt.dsvm.tot2[] <- apply(catches.wt.dsvm2,c(2),"sum")
+
+  landings.wt.dsvm.tot1[] <- apply(landings.wt.dsvm1,c(2),"sum")
+  landings.wt.dsvm.tot2[] <- apply(landings.wt.dsvm2,c(2),"sum")
   
   #calculate numbers caught from weight caught 
   catches.n.dsvm1 <- catches.wt.dsvm1/wts
   catches.n.dsvm2 <- catches.wt.dsvm2/wts
+  
+  landings.n.dsvm1 <- landings.wt.dsvm1/wts
+  landings.n.dsvm2 <- landings.wt.dsvm2/wts
 
   # calculatae what happens to population based on catches
   pop1 <- population_dynamics(pop=pop1, startyear=yy, endyear=yy+1, season=season, natmortality=natmortality, catches=catches.n.dsvm1[,yy,,,drop=F], recruitment=recs1, migration=mig1)
@@ -280,11 +238,14 @@ for(yy in (stab.model):(stab.model+NUMRUNS)){
   hr1 <- apply(catches.n.dsvm1,1:3,sum)/    (apply(catches.n.dsvm1,1:3,sum) +    apply(pop1[,1:endy,,],1:3,sum) )
   hr2 <- apply(catches.n.dsvm2,1:3,sum)/    (apply(catches.n.dsvm2,1:3,sum) +    apply(pop2[,1:endy,,],1:3,sum) )
 
-  yc1 <- yield_curve(hr=hr1[,yy,], wts, natmortality, R=recs1, verbose=F)
-  yc2 <- yield_curve(hr=hr2[,yy,], wts, natmortality, R=recs2, verbose=F)
+  landings.ratio1 <- apply(landings.n.dsvm1,1:3,sum)/ (apply(catches.n.dsvm1,1:3,sum)+1e-12)
+  landings.ratio2 <- apply(landings.n.dsvm2,1:3,sum)/ (apply(catches.n.dsvm2,1:3,sum)+1e-12)
   
-  hr1wanted <- yc1[yc1$yield==max(yc1$yield),]$hr
-  hr2wanted <- yc2[yc2$yield==max(yc2$yield),]$hr
+  yc1 <- yield_curve(hr=hr1[,yy,], landings.ratio1[,yy,], wts, natmortality, R=recs1, verbose=F)
+  yc2 <- yield_curve(hr=hr2[,yy,], landings.ratio2[,yy,], wts, natmortality, R=recs2, verbose=F)
+  
+  hr1wanted <- yc1[yc1$landings==max(yc1$landings),]$hr
+  hr2wanted <- yc2[yc2$landings==max(yc2$landings),]$hr
 
  if (yy > (MPstart-1) & yy < endy){ #if (yy > (MPstart-1))
  
@@ -308,8 +269,8 @@ pyrnoMP <- MPstart- 4
 pyrMP   <- endy   - 4
 
 #what happens in our yield curve for this hr?
-yield_curve(hr=hr1[,pyrnoMP,], wts, natmortality, R=recs1, sequence = 1, verbose=T)
-yield_curve(hr=hr2[,pyrnoMP,], wts, natmortality, R=recs2, sequence = 1, verbose=T)
+yield_curve(hr=hr1[,pyrnoMP,], landings.ratio1[,pyrnoMP,], wts, natmortality, R=recs1, sequence = 1, verbose=T)
+yield_curve(hr=hr2[,pyrnoMP,], landings.ratio2[,pyrnoMP,], wts, natmortality, R=recs2, sequence = 1, verbose=T)
 
 round(catches.n.dsvm1[,pyrnoMP,,],2)
 round(pop1[,pyrnoMP,,],2)
@@ -324,11 +285,11 @@ yc2noMP <- yield_curve(hr=hr2[,pyrnoMP,], wts, natmortality, R=recs2, verbose=F)
 Fmsy1noMP <- yc1noMP[yc1noMP$yield==max(yc1noMP$yield),]$hr
 Fmsy2noMP <- yc2noMP[yc2noMP$yield==max(yc2noMP$yield),]$hr
 
-yc1MP <- yield_curve(hr=hr1[,pyrMP,], wts, natmortality, R=recs1, verbose=F)
-yc2MP <- yield_curve(hr=hr2[,pyrMP,], wts, natmortality, R=recs2, verbose=F)
+yc1MP <- yield_curve(hr=hr1[,pyrMP,], landings.ratio1[,pyrMP,], wts, natmortality, R=recs1, verbose=F)
+yc2MP <- yield_curve(hr=hr2[,pyrMP,], landings.ratio2[,pyrMP,], wts, natmortality, R=recs2, verbose=F)
 
-Fmsy1MP <- yc1MP[yc1MP$yield==max(yc1MP$yield),]$hr
-Fmsy2MP <- yc2MP[yc2MP$yield==max(yc2MP$yield),]$hr
+Fmsy1MP <- yc1MP[yc1MP$landings==max(yc1MP$landings),]$hr
+Fmsy2MP <- yc2MP[yc2MP$landings==max(yc2MP$landings),]$hr
 
 ylim <- c(0,1000)
 xlimYPR <- c(0,0.2)
@@ -341,25 +302,26 @@ polygon(x=c(pyrMP-2,pyrMP+2,pyrMP+2,pyrMP-2)        , border=NA, y=c(rep(ylim,ea
 
 lines((quota1* SIMNUMBER), col="red" )
 abline(v=MPstart, lty=2)
-lines(catches.wt.dsvm.tot1, type="l", ylim=ylim)
+lines(catches.wt.dsvm.tot1,  type="l", ylim=ylim)
+lines(landings.wt.dsvm.tot1, type="l", ylim=ylim, lty= 2)
 
-plot(x=yc1noMP$hr, y=yc1noMP$yield, type="l", xlim=xlimYPR, ylim=ylim,xaxs='i', yaxs='i')
+plot(x=yc1noMP$hr, y=yc1noMP$landings, type="l", xlim=xlimYPR, ylim=ylim,xaxs='i', yaxs='i')
 abline(v=Fmsy1noMP)
 text(xlimYPR[2]*0.9, ylim[2]*0.9, paste0("SIMNUMBER ",SIMNUMBER))
-points(mean(hr1[,pyrnoMP,]),yc1noMP$yield[yc1noMP$hr>mean(hr1[,pyrnoMP,])][1], col="red", pch=19)
-points(mean(hr1[,pyrnoMP-2,]),catches.wt.dsvm.tot1[,pyrnoMP-2,,], col="blue", pch=19)
-points(mean(hr1[,pyrnoMP-1,]),catches.wt.dsvm.tot1[,pyrnoMP-1,,], col="blue", pch=19)
-points(mean(hr1[,pyrnoMP,]),catches.wt.dsvm.tot1[,pyrnoMP,,], col="blue", pch=19)
-points(mean(hr1[,pyrnoMP+1,]),catches.wt.dsvm.tot1[,pyrnoMP+1,,], col="blue", pch=19)
-points(mean(hr1[,pyrnoMP+2,]),catches.wt.dsvm.tot1[,pyrnoMP+2,,], col="blue", pch=19)
-lines(x=yc1MP$hr, y=yc1MP$yield, ylim=ylim, col="grey")
+points(mean(hr1[,pyrnoMP,]),yc1noMP$landings[yc1noMP$hr>mean(hr1[,pyrnoMP,])][1], col="red", pch=19)
+points(mean(hr1[,pyrnoMP-2,]),landings.wt.dsvm.tot1[,pyrnoMP-2,,], col="blue", pch=19)
+points(mean(hr1[,pyrnoMP-1,]),landings.wt.dsvm.tot1[,pyrnoMP-1,,], col="blue", pch=19)
+points(mean(hr1[,pyrnoMP,]),landings.wt.dsvm.tot1[,pyrnoMP,,], col="blue", pch=19)
+points(mean(hr1[,pyrnoMP+1,]),landings.wt.dsvm.tot1[,pyrnoMP+1,,], col="blue", pch=19)
+points(mean(hr1[,pyrnoMP+2,]),landings.wt.dsvm.tot1[,pyrnoMP+2,,], col="blue", pch=19)
+lines(x=yc1MP$hr, y=yc1MP$landings, ylim=ylim, col="grey")
 abline(v=Fmsy1MP, col="grey")
-points(mean(hr1[,pyrMP,]),yc1MP$yield[yc1MP$hr>mean(hr1[,pyrMP,])][1], col="red", pch=21, bg="white")
-points(mean(hr1[,pyrMP-2,]),catches.wt.dsvm.tot1[,pyrMP-2,,], col="blue", pch=21, bg="white")
-points(mean(hr1[,pyrMP-1,]),catches.wt.dsvm.tot1[,pyrMP-1,,], col="blue", pch=21, bg="white")
-points(mean(hr1[,pyrMP,]),catches.wt.dsvm.tot1[,pyrMP,,], col="blue", pch=21, bg="white")
-points(mean(hr1[,pyrMP+1,]),catches.wt.dsvm.tot1[,pyrMP+1,,], col="blue", pch=21, bg="white")
-points(mean(hr1[,pyrMP+2,]),catches.wt.dsvm.tot1[,pyrMP+2,,], col="blue", pch=21, bg="white")
+points(mean(hr1[,pyrMP,]),yc1MP$landings[yc1MP$hr>mean(hr1[,pyrMP,])][1], col="red", pch=21, bg="white")
+points(mean(hr1[,pyrMP-2,]),landings.wt.dsvm.tot1[,pyrMP-2,,], col="blue", pch=21, bg="white")
+points(mean(hr1[,pyrMP-1,]),landings.wt.dsvm.tot1[,pyrMP-1,,], col="blue", pch=21, bg="white")
+points(mean(hr1[,pyrMP,]),landings.wt.dsvm.tot1[,pyrMP,,], col="blue", pch=21, bg="white")
+points(mean(hr1[,pyrMP+1,]),landings.wt.dsvm.tot1[,pyrMP+1,,], col="blue", pch=21, bg="white")
+points(mean(hr1[,pyrMP+2,]),landings.wt.dsvm.tot1[,pyrMP+2,,], col="blue", pch=21, bg="white")
 
 
 plot(apply(catches.wt.dsvm1,c(2,4),sum)[,1], col="blue", type="l",  ylim=ylim, xaxs='i', yaxs='i',xaxs='i', yaxs='i')
@@ -367,6 +329,8 @@ polygon(x=c(pyrnoMP-2,pyrnoMP+2,pyrnoMP+2,pyrnoMP-2), border=NA, y=c(rep(ylim,ea
 polygon(x=c(pyrMP-2,pyrMP+2,pyrMP+2,pyrMP-2)        , border=NA, y=c(rep(ylim,each=2)), col="grey")
 lines(apply(catches.wt.dsvm1,c(2,4),sum)[,1], col="blue")
 lines(apply(catches.wt.dsvm1,c(2,4),sum)[,2], col="red")
+lines(apply(landings.wt.dsvm1,c(2,4),sum)[,1], col="blue", lty=2)
+lines(apply(landings.wt.dsvm1,c(2,4),sum)[,2], col="red", lty=2)
 #lines(apply(catches.wt.dsvm1,c(2,4),sum)[,3], col="black")
 legend("topright",c("a","b"), col=c("blue","red"), lty=c(1,1))
 abline(v=MPstart, lty=2)
