@@ -297,8 +297,9 @@ ylim <- c(0,1000)
 xlimYPR <- c(0,0.2)
 
 #to check
-par(mfrow=c(2,4))
-plot(catches.wt.dsvm.tot1, type="l", ylim=ylim, xaxs='i', yaxs='i', xlab = "Years", ylab = "Total catches (weight)")
+par(mfrow=c(2,4),oma = c(2,2,1,1) + 0.1, mar = c(2,4,1,1) + 0.1)
+
+plot(catches.wt.dsvm.tot1, type="l", ylim=ylim, xaxs='i', yaxs='i', ylab = "Total catches (weight)")
 polygon(x=c(pyrnoMP-2,pyrnoMP+2,pyrnoMP+2,pyrnoMP-2), border=NA, y=c(rep(ylim,each=2)), col="grey")
 polygon(x=c(pyrMP-2,pyrMP+2,pyrMP+2,pyrMP-2)        , border=NA, y=c(rep(ylim,each=2)), col="grey")
 lines((quota1* SIMNUMBER), col="red" )
@@ -309,7 +310,7 @@ lines(landings.wt.dsvm.tot1, type="l", ylim=ylim, lty= 2)
 legend(30,300, legend=c("Catches","TAC"), pch=c(1,1), col=c("black","red"), bty='n', cex=0.8)
 
 
-plot(x=yc1noMP$hr, y=yc1noMP$landings, type="l", xlim=xlimYPR, ylim=ylim,xaxs='i', yaxs='i', xlab = "harvest rate", ylab = "Yield per recruit")
+plot(x=yc1noMP$hr, y=yc1noMP$landings, type="l", xlim=xlimYPR, ylim=ylim,xaxs='i', yaxs='i', ylab = "Yield per recruit")
 text(xlimYPR[2]*0.8, yc1noMP$landings[length(yc1noMP$hr)]+5, "Unconstrained")
 abline(v=Fmsy1noMP)
 #text(xlimYPR[2]*0.8, ylim[2]*0.9, paste0("SIMNUMBER ",SIMNUMBER))
@@ -320,7 +321,7 @@ points(mean(hr1[,pyrnoMP,]),landings.wt.dsvm.tot1[,pyrnoMP,,], col="blue", pch=1
 points(mean(hr1[,pyrnoMP+1,]),landings.wt.dsvm.tot1[,pyrnoMP+1,,], col="blue", pch=19)
 points(mean(hr1[,pyrnoMP+2,]),landings.wt.dsvm.tot1[,pyrnoMP+2,,], col="blue", pch=19)
 lines(x=yc1MP$hr, y=yc1MP$landings, ylim=ylim, col="grey")
-text(yc1MP$hr[length(yc1MP$hr)], yc1MP$landings[length(yc1MP$hr)]+50, "Constrained")
+text(yc1MP$hr[length(yc1MP$hr)]-0.02, yc1MP$landings[length(yc1MP$hr)]+80, "Constrained")
 abline(v=Fmsy1MP, col="grey")
 points(mean(hr1[,pyrMP,]),yc1MP$landings[yc1MP$hr>mean(hr1[,pyrMP,])][1], col="red", pch=21, bg="white")
 points(mean(hr1[,pyrMP-2,]),landings.wt.dsvm.tot1[,pyrMP-2,,], col="blue", pch=21, bg="white")
@@ -329,12 +330,12 @@ points(mean(hr1[,pyrMP,]),landings.wt.dsvm.tot1[,pyrMP,,], col="blue", pch=21, b
 points(mean(hr1[,pyrMP+1,]),landings.wt.dsvm.tot1[,pyrMP+1,,], col="blue", pch=21, bg="white")
 points(mean(hr1[,pyrMP+2,]),landings.wt.dsvm.tot1[,pyrMP+2,,], col="blue", pch=21, bg="white")
 
-plot(rowMeans(hr1[,pyrnoMP,]), type="b", ylim=c(0,.2), xlab = "Ages", ylab = "Selectivity")
+plot(rowMeans(hr1[,pyrnoMP,]), type="b", ylim=c(0,.2), ylab = "Selectivity")
 text(1.5,rowMeans(hr1[,pyrnoMP,])[1]+0.01, "Unconstrained")
 lines(rowMeans(hr1[,pyrMP,]), type="b", ylim=c(0,.2), col="grey")
 text(1.5,rowMeans(hr1[,pyrMP,])[1]-0.01, "Constrained")
 
-plot(apply(catches.wt.dsvm1,c(2,4),sum)[,1], col="blue", type="l",  ylim=ylim, xaxs='i', yaxs='i',xaxs='i', yaxs='i', xlab = "Years", ylab = "Catches by area (weight)")
+plot(apply(catches.wt.dsvm1,c(2,4),sum)[,1], col="blue", type="l",  ylim=ylim, xaxs='i', yaxs='i',xaxs='i', yaxs='i', ylab = "Catches by area (weight)")
 polygon(x=c(pyrnoMP-2,pyrnoMP+2,pyrnoMP+2,pyrnoMP-2), border=NA, y=c(rep(ylim,each=2)), col="grey")
 polygon(x=c(pyrMP-2,pyrMP+2,pyrMP+2,pyrMP-2)        , border=NA, y=c(rep(ylim,each=2)), col="grey")
 lines(apply(catches.wt.dsvm1,c(2,4),sum)[,1], col="blue")
@@ -342,7 +343,7 @@ lines(apply(catches.wt.dsvm1,c(2,4),sum)[,2], col="red")
 lines(apply(landings.wt.dsvm1,c(2,4),sum)[,1], col="blue", lty=2)
 lines(apply(landings.wt.dsvm1,c(2,4),sum)[,2], col="red", lty=2)
 #lines(apply(catches.wt.dsvm1,c(2,4),sum)[,3], col="black")
-legend(30,900,c("a","b"),  pch=c(1,1), col=c("blue","red"), bty='n', cex=0.8)
+legend(40,900,c("a","b"),  pch=c(1,1), col=c("blue","red"), bty='n', cex=0.8)
 abline(v=MPstart, lty=2)
 
 dsvm_res_allyrs[dsvm_res_allyrs$year %in% ((pyr-1):(pyr+1))  & dsvm_res_allyrs$spp == "sp1",]
@@ -368,7 +369,7 @@ points(mean(hr2[,pyrnoMP,]),landings.wt.dsvm.tot2[,pyrnoMP,,], col="blue", pch=1
 points(mean(hr2[,pyrnoMP+1,]),landings.wt.dsvm.tot2[,pyrnoMP+1,,], col="blue", pch=19)
 points(mean(hr2[,pyrnoMP+2,]),landings.wt.dsvm.tot2[,pyrnoMP+2,,], col="blue", pch=19)
 lines(x=yc2MP$hr, y=yc2MP$landings, ylim=ylim, col="grey")
-text(yc2MP$hr[length(yc2MP$hr)], yc2MP$landings[length(yc2MP$hr)]+50, "Constrained")
+text(yc2MP$hr[length(yc2MP$hr)]-0.02, yc2MP$landings[length(yc2MP$hr)]+80, "Constrained")
 abline(v=Fmsy2MP, col="grey")
 points(mean(hr2[,pyrMP,]),yc2MP$landings[yc2MP$hr>mean(hr2[,pyrMP,])][1], col="red", pch=21, bg="white")
 points(mean(hr2[,pyrMP-2,]),landings.wt.dsvm.tot2[,pyrMP-2,,], col="blue", pch=21, bg="white")
@@ -394,5 +395,64 @@ add_legend("topright", legend=paste0("SIMNUMBER ",SIMNUMBER), col="black", horiz
 
 round(pop2,0)
 
-# Effort pattern
-effort_plot_dsvm(SIMNUMBER, dsvm_res_allyrs, stab.model, economics_res_allyrs)
+# Effort pattern and economics
+#effort_plot_dsvm(SIMNUMBER, dsvm_res_allyrs, stab.model, economics_res_allyrs)
+
+#effort
+effort      <- subset(dsvm_res_allyrs,(spp %in% "sp1"))
+effort      <- subset(effort,(cat %in% 1))
+effort$year <- factor(effort$year, levels= 1:90)
+effort      <- aggregate(cbind(landings.wt, discards.wt, catch.wt, effort,trip)~ spp+cat+option+year, FUN=sum, data=effort)
+
+trip      <- with(effort,data.frame(year, trip, option))
+trip      <- dcast(trip ,option~year, value.var="trip")
+trip[is.na(trip)]<- 0
+rownames(trip)  <- c("a","b","Stay in port")
+trip            <- trip[,-1]
+trip_percentage <- apply(trip, 2, function(x){x*100/sum(x,na.rm=T)})
+
+days      <- with(effort,data.frame(year, effort, option))
+days<- days[!days$option=="Stay in port",]
+days      <- dcast(days ,option~year, value.var="effort")
+days[is.na(days)]<- 0
+rownames(days)  <- c("a","b")
+days            <- days[,-1]
+
+#economics
+netrev      <-  melt(economics_res_allyrs, id.vars = "year", measure.vars = c("NetRev"))
+grossrev    <-  melt(economics_res_allyrs, id.vars = "year", measure.vars = c("Grossrev"))
+annualfine  <-  melt(economics_res_allyrs, id.vars = "year", measure.vars = c("Annualfine"))
+
+par(mfrow=c(2,4))#, mar=c(1, 4, 1, 1) + 0.1, xaxs="i")
+#layout(matrix(c(1,1,2,2, 3,4,5, 6), 2, 4, byrow = TRUE))
+
+barplot(trip_percentage, col=c("#808080","#CCCCCC","#D55E00") , border="black", xlim = c(0,90), #legend = rownames(effort_percentage),
+        ylab = "Effort pattern (%)", space=0.115)
+abline(v=MPstart-6, lty=2)
+
+boxplot(value ~ year, netrev, cex = 0.6, col="grey",boxwex=1, xlab = "year", ylab = "Net revenue", ylim=c(0,4000))
+
+boxplot(value ~ year, grossrev, cex = 0.6, col="grey",boxwex=1, xlab = "year", ylab = "Net revenue", ylim=c(0,4000))
+
+boxplot(value ~ year, annualfine, cex = 0.6, col="grey",boxwex=1, xlab = "year", ylab = "Net revenue", ylim=c(0,4000))
+
+barplot(as.matrix(days), col=c("#808080","#CCCCCC") , border="black", xlim = c(0,90), #legend = rownames(effort_percentage),
+       ylab = "Days at sea", space=0.115)
+abline(v=MPstart-6, lty=2)
+
+plot(value ~ year, data = aggregate(value ~ year, FUN=mean, data=netrev),
+     type="l", ylim=c(0,4000), xlim=c(10,90),ylab = "Net revenue")
+abline(v=MPstart, lty=2)
+text(MPstart+1, 4, "MP") 
+
+plot(value ~ year, data = aggregate(value ~ year, FUN=sum, data=grossrev),
+     type="l", ylim=c(0,2091351), xlim=c(10,90), ylab = "Gross revenue")
+abline(v=MPstart, lty=2)
+text(MPstart+1, 4, "MP") 
+
+plot(value ~ year, data = aggregate(value ~ year, FUN=mean, data=annualfine),
+     type="l", ylim=c(0,4000), xlim=c(10,90),ylab = "Annual fine")
+abline(v=MPstart, lty=2)
+text(MPstart+1, 4, "MP") 
+
+
