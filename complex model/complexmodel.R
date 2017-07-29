@@ -169,7 +169,11 @@ pos_catches2 <- pop2 *q*wts
 #set up dsvm
 sp1<- sp2 <- sp3 <- sp4 <- sp5 <-    new("DynStateInput")
 catchMean(sp3)  <- catchMean(sp4) <- catchMean(sp5) <- array(0.01,dim=c(length(ages),length(season),length(areas)),dimnames=list(cat=ages,season=as.character(season),option =areas))
-catchSigma(sp3) <- catchSigma(sp4)<- catchSigma(sp5)<- array(0.001,dim=c(length(ages),length(season),length(areas)),dimnames=list(cat=ages,season=as.character(season),option =areas))
+catchSigma(sp3) <- catchSigma(sp4)<- catchSigma(sp5)<- array(0.0000001,dim=c(length(ages),length(season),length(areas)),dimnames=list(cat=ages,season=as.character(season),option =areas))
+
+sp1Price <- sp2Price <-  array(c(1000), dim=c(length(ages),length(season)), dimnames=list(cat=ages,season=as.character(season)))
+sp3Price <- sp4Price <- sp5Price <- array(c(0), dim=c(length(ages),length(season)), dimnames=list(cat=ages,season=as.character(season)))
+#---effort and prices used (note that now c is removed (but that if other runs, then make sure to fix/remove code that removes "c" option)                                                                                         
 
 control     <- DynState.control(spp1LndQuota= 200,  spp2LndQuota=200, spp1LndQuotaFine= 20000, spp2LndQuotaFine= 20000, fuelUse = 0.001, fuelPrice = 1.0, landingCosts= 0,gearMaintenance= 0, addNoFishing= TRUE, increments= 25, spp1DiscardSteps= SPP1DSCSTEPS, spp2DiscardSteps= SPP2DSCSTEPS, sigma= SIGMA, simNumber= SIMNUMBER, numThreads= 20)
 
@@ -185,9 +189,6 @@ for(yy in (stab.model):(stab.model+NUMRUNS)){
   # ---No way of estimating sigma, therefore we assume that is 8% of the CPUE (note slight repetion in code for dims and dimnames of 0 catch arrays for spec 3,4,5)                                                                  
   catchSigma(sp1) <- catchMean(sp1) *0.08
   catchSigma(sp2) <- catchMean(sp2) *0.08
-  
-  sp1Price <-  sp2Price <- sp3Price <- sp4Price <- sp5Price <- array(c(1000), dim=c(length(ages),length(season)), dimnames=list(cat=ages,season=as.character(season)))
-  #---effort and prices used (note that now c is removed (but that if other runs, then make sure to fix/remove code that removes "c" option)                                                                                         
   
   # if we are in MP period, then set quota based on last year
   if (yy > MPstart)
