@@ -119,7 +119,7 @@ stab.model    <- 10
 NUMRUNS       <- 80
 MPstart       <- 40
 SIMNUMBER     <- 850
-SIGMA         <- 200 #comes from 2// chanheg from 300 to 200
+SIGMA         <- 0 #comes from 2// chanheg from 300 to 200
 SPP1DSCSTEPS  <- 0
 SPP2DSCSTEPS <- 0
 endy          <- stab.model + NUMRUNS
@@ -408,15 +408,17 @@ effort      <- aggregate(cbind(landings.wt, discards.wt, catch.wt, effort,trip)~
 trip      <- with(effort,data.frame(year, trip, option))
 trip      <- dcast(trip ,option~year, value.var="trip")
 trip[is.na(trip)]<- 0
-rownames(trip)  <- c("a","b","Stay in port")
+rownames(trip)  <- trip$option
 trip            <- trip[,-1]
-trip_percentage <- apply(trip, 2, function(x){x*100/sum(x,na.rm=T)})
+trip_percentage <- matrix(apply(trip, 2, function(x){x*100/sum(x,na.rm=T)}), nrow=nrow(trip))
+rownames(trip_percentage) <- rownames(trip)
+colnames(trip_percentage) <- colnames(trip)
 
 days      <- with(effort,data.frame(year, effort, option))
 days<- days[!days$option=="Stay in port",]
 days      <- dcast(days ,option~year, value.var="effort")
 days[is.na(days)]<- 0
-rownames(days)  <- c("a","b")
+rownames(days)  <- days$option
 days            <- days[,-1]
 
 #economics
@@ -426,33 +428,36 @@ annualfine  <-  melt(economics_res_allyrs, id.vars = "year", measure.vars = c("A
 
 par(mfrow=c(2,4))#, mar=c(1, 4, 1, 1) + 0.1, xaxs="i")
 #layout(matrix(c(1,1,2,2, 3,4,5, 6), 2, 4, byrow = TRUE))
+mypalette <- c("#808080","#CCCCCC","#D55E00")
+names(mypalette) <- c("a", "b", "Stay in port")
 
-barplot(trip_percentage, col=c("#808080","#CCCCCC","#D55E00") , border="black", xlim = c(0,90), #legend = rownames(effort_percentage),
+barplot(trip_percentage, col= mypalette, border="black", xlim = c(0,90), #legend = rownames(trip_percentage),
         ylab = "Effort pattern (%)", space=0.115)
+legend(60,10, rownames(trip_percentage), fill = mypalette, cex=0.6)
 abline(v=MPstart-6, lty=2)
 
-boxplot(value ~ year, netrev, cex = 0.6, col="grey",boxwex=1, xlab = "year", ylab = "Net revenue", ylim=c(0,4000))
+boxplot(value ~ year, netrev, cex = 0.6, col="grey",boxwex=1, xlab = "year", ylab = "Mean Net revenue", ylim=c(0,4000))
 
-boxplot(value ~ year, grossrev, cex = 0.6, col="grey",boxwex=1, xlab = "year", ylab = "Net revenue", ylim=c(0,4000))
+boxplot(value ~ year, grossrev, cex = 0.6, col="grey",boxwex=1, xlab = "year", ylab = "Mean Gross revenue", ylim=c(0,4000))
 
-boxplot(value ~ year, annualfine, cex = 0.6, col="grey",boxwex=1, xlab = "year", ylab = "Net revenue", ylim=c(0,4000))
+boxplot(value ~ year, annualfine, cex = 0.6, col="grey",boxwex=1, xlab = "year", ylab = "Mean Annual Fine", ylim=c(0,4000))
 
 barplot(as.matrix(days), col=c("#808080","#CCCCCC") , border="black", xlim = c(0,90), #legend = rownames(effort_percentage),
-       ylab = "Days at sea", space=0.115)
+       ylab = "Total Days at sea", space=0.115)
 abline(v=MPstart-6, lty=2)
 
-plot(value ~ year, data = aggregate(value ~ year, FUN=mean, data=netrev),
-     type="l", ylim=c(0,4000), xlim=c(10,90),ylab = "Net revenue")
+plot(value ~ year, data = aggregate(value ~ year, FUN=sum, data=netrev),
+     type="l", ylim=c(0,2091351), xlim=c(10,90),ylab = "Total Net revenue")
 abline(v=MPstart, lty=2)
 text(MPstart+1, 4, "MP") 
 
 plot(value ~ year, data = aggregate(value ~ year, FUN=sum, data=grossrev),
-     type="l", ylim=c(0,2091351), xlim=c(10,90), ylab = "Gross revenue")
+     type="l", ylim=c(0,2091351), xlim=c(10,90), ylab = "Total Gross revenue")
 abline(v=MPstart, lty=2)
 text(MPstart+1, 4, "MP") 
 
-plot(value ~ year, data = aggregate(value ~ year, FUN=mean, data=annualfine),
-     type="l", ylim=c(0,4000), xlim=c(10,90),ylab = "Annual fine")
+plot(value ~ year, data = aggregate(value ~ year, FUN=sum, data=annualfine),
+     type="l", ylim=c(0,2091351), xlim=c(10,90),ylab = "Total Annual fine")
 abline(v=MPstart, lty=2)
 text(MPstart+1, 4, "MP") 
 
