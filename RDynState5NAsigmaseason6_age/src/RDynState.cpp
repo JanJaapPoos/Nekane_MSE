@@ -683,6 +683,15 @@ Rprintf("Start of DynStateF\n");
       }
     }
   }
+
+   for (Lndspp1 = 0; Lndspp1 < kSpp1Capacity; Lndspp1 +=22) {
+      for (Lndspp2 = 0; Lndspp2 < kSpp2Capacity; Lndspp2 +=22) {
+	Rprintf("%4.f ",theFF1[Lndspp1][Lndspp2]);
+      }
+      Rprintf("\n"); R_FlushConsole();      
+    }
+ 
+  
   Rprintf("Utility function initialised \n");  R_FlushConsole();
   
   /*************************************************************************************************************************************/
@@ -703,7 +712,7 @@ Rprintf("Start of DynStateF\n");
 
     //maxspp[t]  = accumulate(whatRangeLT,whatRangeLT+t,0) +2;                         // calc max number of increments to loop over for this timest
     maxspp[t]  = (t +1 )* noInc *NOSIZES;                         // calc max number of increments to loop over for this timest 
-   Rprintf(" maxspp %d ", maxspp[t]);  R_FlushConsole();
+    Rprintf(" maxspp %d ", maxspp[t]);  R_FlushConsole();
     
     // do backward calcs 
     #pragma omp parallel private(Lndspp1,Lndspp2)
@@ -712,7 +721,7 @@ Rprintf("Start of DynStateF\n");
       for (Lndspp1 = 0; Lndspp1 < maxspp[t]; Lndspp1++) {
 	for (Lndspp2 = 0; Lndspp2 < maxspp[t]; Lndspp2++) {
 	  //FFF(Lndspp1, Lndspp2, whatRangeLT[t],theLndParmsAgg, t, kNPatch,  theShortTermEcon, theFF0, theFF0Star, theFF1, theProbChoice);
-	  FFF(Lndspp1, Lndspp2, MAXNOINC,theLndParmsAgg, t, kNPatch,  theShortTermEcon, theFF0, theFF0Star, theFF1, theProbChoice);
+	  FFF(Lndspp1, Lndspp2, (NOSIZES*noInc)-1,theLndParmsAgg, t, kNPatch,  theShortTermEcon, theFF0, theFF0Star, theFF1, theProbChoice);
 	}
       }
     }
@@ -721,7 +730,21 @@ Rprintf("Start of DynStateF\n");
     /***********************************************************************************************************************************/
     /* CALC delta (note that exp(-deltas/sigmas) are stored in FF0 array first                                                              */
     /***********************************************************************************************************************************/
-   
+    Rprintf("\n"); R_FlushConsole();      
+
+    
+    for (Lndspp1 = 0; Lndspp1 < kSpp1Capacity; Lndspp1 +=22) {
+      for (Lndspp2 = 0; Lndspp2 < kSpp2Capacity; Lndspp2 +=22) {
+	for (int ppp = 0; ppp < kNPatch; ppp++) {
+	
+	  Rprintf("%2.2f,", theFF0[Lndspp1][Lndspp2][ppp]);
+	}
+	Rprintf(" "); 
+      }
+      Rprintf("\n"); R_FlushConsole();      
+    }
+ 
+    
     for (Lndspp1 = 0; Lndspp1 < maxspp[t]; Lndspp1++) {
       for (Lndspp2 = 0; Lndspp2 < maxspp[t]; Lndspp2++) {
 	for (int ppp = 0; ppp < kNPatch; ppp++) {
