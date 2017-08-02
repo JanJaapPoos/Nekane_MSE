@@ -116,8 +116,8 @@ ages          <- 1:4
 season        <- 1:6
 areas         <- c("a", "b")
 stab.model    <- 10
-NUMRUNS       <- 80
-MPstart       <- 40
+NUMRUNS       <- 30
+MPstart       <- 15
 SIMNUMBER     <- 850
 SIGMA         <- 0 #comes from 2// chanheg from 300 to 200
 SPP1DSCSTEPS  <- 0
@@ -171,11 +171,11 @@ sp1<- sp2 <- sp3 <- sp4 <- sp5 <-    new("DynStateInput")
 catchMean(sp3)  <- catchMean(sp4) <- catchMean(sp5) <- array(0.01,dim=c(length(ages),length(season),length(areas)),dimnames=list(cat=ages,season=as.character(season),option =areas))
 catchSigma(sp3) <- catchSigma(sp4)<- catchSigma(sp5)<- array(0.0000001,dim=c(length(ages),length(season),length(areas)),dimnames=list(cat=ages,season=as.character(season),option =areas))
 
-sp1Price <- sp2Price <-  array(c(1000), dim=c(length(ages),length(season)), dimnames=list(cat=ages,season=as.character(season)))
+sp1Price <- sp2Price <-  array(c(1), dim=c(length(ages),length(season)), dimnames=list(cat=ages,season=as.character(season)))
 sp3Price <- sp4Price <- sp5Price <- array(c(0), dim=c(length(ages),length(season)), dimnames=list(cat=ages,season=as.character(season)))
 #---effort and prices used (note that now c is removed (but that if other runs, then make sure to fix/remove code that removes "c" option)                                                                                         
 
-control     <- DynState.control(spp1LndQuota= 200,  spp2LndQuota=200, spp1LndQuotaFine= 20000, spp2LndQuotaFine= 20000, fuelUse = 0.001, fuelPrice = 1.0, landingCosts= 0,gearMaintenance= 0, addNoFishing= TRUE, increments= 25, spp1DiscardSteps= SPP1DSCSTEPS, spp2DiscardSteps= SPP2DSCSTEPS, sigma= SIGMA, simNumber= SIMNUMBER, numThreads= 20)
+control     <- DynState.control(spp1LndQuota= 200,  spp2LndQuota=200, spp1LndQuotaFine= 1e1, spp2LndQuotaFine= 1e1, fuelUse = 0.001, fuelPrice = 1.0, landingCosts= 0,gearMaintenance= 0, addNoFishing= TRUE, increments= 25, spp1DiscardSteps= SPP1DSCSTEPS, spp2DiscardSteps= SPP2DSCSTEPS, sigma= SIGMA, simNumber= SIMNUMBER, numThreads= 20)
 
 #this is where our loop starts, after we set up stable population
 for(yy in (stab.model):(stab.model+NUMRUNS)){
@@ -184,7 +184,7 @@ for(yy in (stab.model):(stab.model+NUMRUNS)){
   print(yy)
   
   catchMean(sp1)  <- array(apply(pos_catches1[,(yy-2):yy,,,drop=F],c(1,3,4),mean), dim=c(length(ages), length(season),length(areas)),  dimnames=list("cat"=ages,"season"= season,"option"=areas))
-  catchMean(sp2)  <- array(apply(pos_catches1[,(yy-2):yy,,,drop=F],c(1,3,4),mean), dim=c(length(ages), length(season),length(areas)),  dimnames=list("cat"=ages,"season"= season,"option"=areas))
+  catchMean(sp2)  <- array(apply(pos_catches2[,(yy-2):yy,,,drop=F],c(1,3,4),mean), dim=c(length(ages), length(season),length(areas)),  dimnames=list("cat"=ages,"season"= season,"option"=areas))
   
   # ---No way of estimating sigma, therefore we assume that is 8% of the CPUE (note slight repetion in code for dims and dimnames of 0 catch arrays for spec 3,4,5)                                                                  
   catchSigma(sp1) <- catchMean(sp1) *0.08
@@ -300,7 +300,7 @@ xlimYPR <- c(0,0.2)
 #to check
 par(mfrow=c(2,4),oma = c(2,2,1,1) + 0.1, mar = c(2,4,1,1) + 0.1)
 
-plot(catches.wt.dsvm.tot1, type="l", ylim=ylim, xaxs='i', yaxs='i', ylab = "Total catches (weight)")
+plot(catches.wt.dsvm.tot1, type="l", ylim=ylim, xaxs='i', yaxs='i', ylab = "Total catches (weight)", panel.first=grid())
 polygon(x=c(pyrnoMP-2,pyrnoMP+2,pyrnoMP+2,pyrnoMP-2), border=NA, y=c(rep(ylim,each=2)), col="grey")
 polygon(x=c(pyrMP-2,pyrMP+2,pyrMP+2,pyrMP-2)        , border=NA, y=c(rep(ylim,each=2)), col="grey")
 lines((quota1* SIMNUMBER), col="red" )
@@ -311,7 +311,7 @@ lines(landings.wt.dsvm.tot1, type="l", ylim=ylim, lty= 2)
 legend(30,300, legend=c("Catches","TAC"), pch=c(1,1), col=c("black","red"), bty='n', cex=0.8)
 
 
-plot(x=yc1noMP$hr, y=yc1noMP$landings, type="l", xlim=xlimYPR, ylim=ylim,xaxs='i', yaxs='i', ylab = "Yield per recruit")
+plot(x=yc1noMP$hr, y=yc1noMP$landings, type="l", xlim=xlimYPR, ylim=ylim,xaxs='i', yaxs='i', ylab = "Yield per recruit", panel.first=grid())
 text(xlimYPR[2]*0.8, yc1noMP$landings[length(yc1noMP$hr)]+5, "Unconstrained")
 abline(v=Fmsy1noMP)
 #text(xlimYPR[2]*0.8, ylim[2]*0.9, paste0("SIMNUMBER ",SIMNUMBER))
@@ -331,12 +331,12 @@ points(mean(hr1[,pyrMP,]),landings.wt.dsvm.tot1[,pyrMP,,], col="blue", pch=21, b
 points(mean(hr1[,pyrMP+1,]),landings.wt.dsvm.tot1[,pyrMP+1,,], col="blue", pch=21, bg="white")
 points(mean(hr1[,pyrMP+2,]),landings.wt.dsvm.tot1[,pyrMP+2,,], col="blue", pch=21, bg="white")
 
-plot(rowMeans(hr1[,pyrnoMP,]), type="b", ylim=c(0,.2), ylab = "Selectivity")
+plot(rowMeans(hr1[,pyrnoMP,]), type="b", ylim=c(0,.2), ylab = "Selectivity", panel.first=grid())
 text(1.5,rowMeans(hr1[,pyrnoMP,])[1]+0.01, "Unconstrained")
 lines(rowMeans(hr1[,pyrMP,]), type="b", ylim=c(0,.2), col="grey")
 text(1.5,rowMeans(hr1[,pyrMP,])[1]-0.01, "Constrained")
 
-plot(apply(catches.wt.dsvm1,c(2,4),sum)[,1], col="blue", type="l",  ylim=ylim, xaxs='i', yaxs='i',xaxs='i', yaxs='i', ylab = "Catches by area (weight)")
+plot(apply(catches.wt.dsvm1,c(2,4),sum)[,1], col="blue", type="l",  ylim=ylim, xaxs='i', yaxs='i',xaxs='i', yaxs='i', ylab = "Catches by area (weight)", panel.first=grid())
 polygon(x=c(pyrnoMP-2,pyrnoMP+2,pyrnoMP+2,pyrnoMP-2), border=NA, y=c(rep(ylim,each=2)), col="grey")
 polygon(x=c(pyrMP-2,pyrMP+2,pyrMP+2,pyrMP-2)        , border=NA, y=c(rep(ylim,each=2)), col="grey")
 lines(apply(catches.wt.dsvm1,c(2,4),sum)[,1], col="blue")
@@ -347,12 +347,10 @@ lines(apply(landings.wt.dsvm1,c(2,4),sum)[,2], col="red", lty=2)
 legend(40,900,c("a","b"),  pch=c(1,1), col=c("blue","red"), bty='n', cex=0.8)
 abline(v=MPstart, lty=2)
 
-dsvm_res_allyrs[dsvm_res_allyrs$year %in% ((pyr-1):(pyr+1))  & dsvm_res_allyrs$spp == "sp1",]
-
 round(pop1,0)
 
 #to check
-plot(catches.wt.dsvm.tot2, type="l", ylim=ylim,xaxs='i', yaxs='i', xlab = "Years", ylab = "Total catches (weight)")
+plot(catches.wt.dsvm.tot2, type="l", ylim=ylim,xaxs='i', yaxs='i', xlab = "Years", ylab = "Total catches (weight)", panel.first=grid())
 polygon(x=c(pyrnoMP-2,pyrnoMP+2,pyrnoMP+2,pyrnoMP-2), border=NA, y=c(rep(ylim,each=2)), col="grey")
 polygon(x=c(pyrMP-2,pyrMP+2,pyrMP+2,pyrMP-2)        , border=NA, y=c(rep(ylim,each=2)), col="grey")
 abline(v=MPstart, lty=2)
@@ -360,7 +358,7 @@ text(MPstart+4, 50, "MP")
 lines(catches.wt.dsvm.tot2, type="l", ylim=ylim)
 lines(landings.wt.dsvm.tot2, type="l", ylim=ylim, lty= 2)
 
-plot(x=yc2noMP$hr, y=yc2noMP$landings, type="l", xlim=xlimYPR, ylim=ylim,xaxs='i', yaxs='i', xlab = "harvest rate", ylab = "Yield per recruit")
+plot(x=yc2noMP$hr, y=yc2noMP$landings, type="l", xlim=xlimYPR, ylim=ylim,xaxs='i', yaxs='i', xlab = "harvest rate", ylab = "Yield per recruit", panel.first=grid())
 text(xlimYPR[2]*0.8, yc2noMP$landings[length(yc2noMP$hr)]+5, "Unconstrained")
 abline(v=Fmsy2noMP)
 points(mean(hr2[,pyrnoMP,]),yc2noMP$landings[yc2noMP$hr>mean(hr2[,pyrnoMP,])][1], col="red", pch=19)
@@ -380,19 +378,18 @@ points(mean(hr2[,pyrMP+1,]),landings.wt.dsvm.tot2[,pyrMP+1,,], col="blue", pch=2
 points(mean(hr2[,pyrMP+2,]),landings.wt.dsvm.tot2[,pyrMP+2,,], col="blue", pch=21, bg="white")
 
 
-plot(rowMeans(hr2[,pyrnoMP,]), type="b", ylim=c(0,.2), xlab = "Ages", ylab = "Selectivity")
+plot(rowMeans(hr2[,pyrnoMP,]), type="b", ylim=c(0,.2), xlab = "Ages", ylab = "Selectivity", panel.first=grid())
 text(1.5,rowMeans(hr2[,pyrnoMP,])[1]+0.01, "Unconstrained")
 lines(rowMeans(hr2[,pyrMP,]), type="b", ylim=c(0,.2), col="grey")
 text(1.5,rowMeans(hr2[,pyrMP,])[1]-0.01, "Constrained")
 
-plot(apply(catches.wt.dsvm2,c(2,4),sum)[,1], col="blue", type="l",  ylim=ylim,xaxs='i', yaxs='i', xlab = "Years", ylab = "Catches by area (weight)")
+plot(apply(catches.wt.dsvm2,c(2,4),sum)[,1], col="blue", type="l",  ylim=ylim,xaxs='i', yaxs='i', xlab = "Years", ylab = "Catches by area (weight)", panel.first=grid())
 lines(apply(catches.wt.dsvm2,c(2,4),sum)[,2], col="red")
 lines(apply(landings.wt.dsvm2,c(2,4),sum)[,1], col="blue", lty=2)
 lines(apply(landings.wt.dsvm2,c(2,4),sum)[,2], col="red", lty=2)
 #lines(apply(catches.wt.dsvm2,c(2,4),sum)[,3], col="black")
 abline(v=MPstart, lty=2)
 add_legend("topright", legend=paste0("SIMNUMBER ",SIMNUMBER), col="black", horiz=TRUE, bty='n', cex=1.5)
-
 
 round(pop2,0)
 
