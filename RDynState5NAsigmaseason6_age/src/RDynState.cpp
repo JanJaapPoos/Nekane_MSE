@@ -108,7 +108,7 @@ float FFF (int aLndSpp1,int aLndSpp2, int aNoInc, ATYPE aLndParmsAgg, int aTime,
 
 /* initialise Simulation experiment (SEXP= S-expressie) */
 
-SEXP SimulateF ( int aSimNumber, int aHorizon, ITYPE aProbChoice, int aNPatch, int aNoInc, vector< float > aSizeSppInc, PTYPE aLndParms, PTYPE aDisParms, int anEffortArray[][MAXHORIZON]){
+SEXP SimulateF ( int aSimNumber, int aHorizon, ITYPE aProbChoice, int aNPatch, int aNoInc, vector< float > aSizeSppInc, PTYPE aLndParms, PTYPE aDisParms, int anEffortArray[][MAXHORIZON], int verbose){
   SEXP ReturnObject, SimDims2, SimDims3, choice, spp1Rand, spp2Rand, spp3Rand, spp4Rand,spp5Rand, 
     spp1Landings, spp2Landings, spp3Landings, spp4Landings, spp5Landings,spp1LndHold, spp2LndHold,
     spp3LndHold, spp4LndHold, spp5LndHold,  spp1Discards, spp2Discards, spp3Discards, spp4Discards, 
@@ -154,7 +154,7 @@ SEXP SimulateF ( int aSimNumber, int aHorizon, ITYPE aProbChoice, int aNPatch, i
   
   for (int s= 0; s < aSimNumber; s++)	 { /* go through the x simulations */   
      
-  //  Rprintf ("%d ", s); R_FlushConsole();
+    if (verbose==1) Rprintf ("ves %d ", s); R_FlushConsole();
 
     float Q;
     vector <int> aSpp1LndHold  (NOSIZES,0);
@@ -172,15 +172,12 @@ SEXP SimulateF ( int aSimNumber, int aHorizon, ITYPE aProbChoice, int aNPatch, i
     int aChoice;
     
     for (int t = 0; t < aHorizon; t++) { 
-    //  Rprintf (" %d ", t); R_FlushConsole();
        
       // get patch from the array
-
       float Cprobl  = 0;
       float Cprobup = 0;
 
       aChoice = 0;  //default if it is not after first stick   
-
       Q = ranf();	/* set starting choice random number 0-1 */
 
       int totSpp1Hold =0;
@@ -190,9 +187,7 @@ SEXP SimulateF ( int aSimNumber, int aHorizon, ITYPE aProbChoice, int aNPatch, i
 	totSpp1Hold += aSpp1LndHold[si];
         totSpp2Hold += aSpp2LndHold[si];
       }
-     //  Rprintf (" %d ", totSpp1Hold); R_FlushConsole();	
-    //   Rprintf (" %d ", totSpp2Hold); R_FlushConsole();	
-
+      
       Cprobl = aProbChoice[t][totSpp1Hold][totSpp2Hold][0];
 
       for (int stick = 1; stick < aNPatch; stick++) {
@@ -203,9 +198,18 @@ SEXP SimulateF ( int aSimNumber, int aHorizon, ITYPE aProbChoice, int aNPatch, i
 	}
 	Cprobl = Cprobup;
       }
-      
-    //  Rprintf (" %d \n", aChoice); R_FlushConsole();
 
+      if (verbose==1){
+	Rprintf (" time %d ", t); 
+	Rprintf ("spp1,2  %d,", totSpp1Hold); 	
+	Rprintf ("%d ", totSpp2Hold); 	
+	
+	for (int ccc = 0; ccc < aNPatch; ccc++) {
+	  Rprintf(" probs %f,",  aProbChoice[t][totSpp1Hold][totSpp2Hold][ccc]);
+	}
+	Rprintf (" choice %d \n", aChoice); R_FlushConsole();
+      }
+      
       INTEGER(choice)[s+ t*aSimNumber] = aChoice + 1;  /* +1 because choice in c++ starts at 0 */
       INTEGER(anEffort)[s+ t*aSimNumber]= anEffortArray[aChoice][t];
       Effort = Effort + INTEGER(anEffort)[s+ t*aSimNumber]; /*calculate fueluse*/
@@ -455,7 +459,8 @@ Rprintf("Start of DynStateF\n");
   /*******************************************************************************************************************/
   /* INITIALISE VARIABLES, READ VARIABLES,                                                                           */
   /*******************************************************************************************************************/
-  
+  SEXP ReturnObject, Simulations ;
+ 
   SEXP a       = GET_DIM(cLndParms);
   int kNPatch  = INTEGER(a)[0];
   int kHorizon = INTEGER(a)[1];
@@ -480,10 +485,17 @@ Rprintf("Start of DynStateF\n");
   double   kSpp2LndQuota      = vSpp2LndQuota/sizeSpp2Inc;
   double   kSpp2LndQuotaFine  = vSpp2LndQuotaFine * sizeSpp2Inc;
 
-  SEXP ReturnObject, Simulations ;
+  Rprintf("kPriceEffort ");     Rprintf("%f \n",kPriceEffort); 
 
-   Rprintf("kPriceEffort ");     Rprintf("%f \n",kPriceEffort); 
-  
+  int verbose = 0; 
+
+  /********************************************************************************************************************/
+  /* Check if sigma is zero (because this leads to div by zero in prob calcs). If so set to very small num and warn   */
+  /********************************************************************************************************************/
+  if (sigma == 0){
+    Rprintf("Warning, sigma = 0, giving it a small value (0.000001) \n");
+    sigma = 0.000001;
+  }
   /********************************************************************************************************************/
   /* Check if khorizon is not bigger than HORIZON, if so simulations will not extend arrays                           */
   /********************************************************************************************************************/
@@ -552,7 +564,11 @@ Rprintf("Start of DynStateF\n");
       for (int s = 0; s < NOSPEC; s++){
 	for (int inc0 = 0; inc0 < noInc; inc0++){
 	  for (int inc1 = 0; inc1 < noInc; inc1++){
-	    theLndParmsAgg[i][t][s][inc0+inc1] +=  theLndParms[i][t][s][0][inc0] * theLndParms[i][t][s][1][inc1]; 
+	    for (int inc2 = 0; inc2 < noInc; inc2++){
+	      for (int inc3 = 0; inc3 < noInc; inc3++){
+		theLndParmsAgg[i][t][s][inc0 + inc1 + inc2 + inc3] +=  theLndParms[i][t][s][0][inc0] * theLndParms[i][t][s][1][inc1] *  theLndParms[i][t][s][2][inc2]  * theLndParms[i][t][s][3][inc3] ;
+	      }
+	    }
 	  }
 	}
       }
@@ -669,7 +685,21 @@ Rprintf("Start of DynStateF\n");
       }
     }
   }
-  Rprintf("Init memory F0 and F1 \n");   R_FlushConsole();
+  Rprintf("Init memory FF0Star and FF1 \n");   R_FlushConsole();
+
+  #pragma omp parallel private(Lndspp1,Lndspp2)
+  {
+#pragma omp for schedule(static)    
+    for (Lndspp1 = 0; Lndspp1 < kSpp1Capacity; Lndspp1++) {
+      for (Lndspp2 = 0; Lndspp2 < kSpp2Capacity; Lndspp2++) {
+	for (int ppp = 0; ppp < kNPatch; ppp++) {
+	  theFF0[Lndspp1][Lndspp2][ppp] = 0.0; 
+	}
+      }
+    }
+  }
+  Rprintf("Init memory FF0 \n");   R_FlushConsole();
+
   
   /*************************************************************************************************************************************/
   /* INITIALISE THE F1 ARRAY AT FINAL TIMESTEP (FINAL FITNESS FUNCTION)                                                                */
@@ -683,14 +713,16 @@ Rprintf("Start of DynStateF\n");
       }
     }
   }
-
-   for (Lndspp1 = 0; Lndspp1 < kSpp1Capacity; Lndspp1 +=22) {
-      for (Lndspp2 = 0; Lndspp2 < kSpp2Capacity; Lndspp2 +=22) {
+  if (verbose == 1){
+     Rprintf("\n",Lndspp1);
+    for (Lndspp1 = 0; Lndspp1 < kSpp1Capacity; Lndspp1 +=10) {
+      Rprintf("%d ",Lndspp1);
+      for (Lndspp2 = 0; Lndspp2 < kSpp2Capacity; Lndspp2 +=30) {
 	Rprintf("%4.f ",theFF1[Lndspp1][Lndspp2]);
       }
       Rprintf("\n"); R_FlushConsole();      
     }
- 
+  }
   
   Rprintf("Utility function initialised \n");  R_FlushConsole();
   
@@ -725,26 +757,27 @@ Rprintf("Start of DynStateF\n");
 	}
       }
     }
+  
+    if (verbose == 1){
+      Rprintf("\n"); R_FlushConsole();        
+      for (Lndspp1 = 0; Lndspp1 < kSpp1Capacity; Lndspp1 +=10) {
+	Rprintf("%d ",Lndspp1); 
+	for (Lndspp2 = 0; Lndspp2 < kSpp2Capacity; Lndspp2 +=30) {
+	  for (int ppp = 0; ppp < kNPatch; ppp++) {
+	    Rprintf("%2.2f,", theFF0[Lndspp1][Lndspp2][ppp]);
+	  }
+         Rprintf(" "); 
+	}
+	Rprintf("\n"); R_FlushConsole();      
+      }
+    } 
+    
     Rprintf("Finished FF0 calculations ");  R_FlushConsole();
 
     /***********************************************************************************************************************************/
     /* CALC delta (note that exp(-deltas/sigmas) are stored in FF0 array first                                                              */
     /***********************************************************************************************************************************/
-    Rprintf("\n"); R_FlushConsole();      
-
-    
-    for (Lndspp1 = 0; Lndspp1 < kSpp1Capacity; Lndspp1 +=22) {
-      for (Lndspp2 = 0; Lndspp2 < kSpp2Capacity; Lndspp2 +=22) {
-	for (int ppp = 0; ppp < kNPatch; ppp++) {
-	
-	  Rprintf("%2.2f,", theFF0[Lndspp1][Lndspp2][ppp]);
-	}
-	Rprintf(" "); 
-      }
-      Rprintf("\n"); R_FlushConsole();      
-    }
  
-    
     for (Lndspp1 = 0; Lndspp1 < maxspp[t]; Lndspp1++) {
       for (Lndspp2 = 0; Lndspp2 < maxspp[t]; Lndspp2++) {
 	for (int ppp = 0; ppp < kNPatch; ppp++) {
@@ -752,38 +785,19 @@ Rprintf("Start of DynStateF\n");
 	}}}
 
 
-    //  Rprintf(" Finished numerator "); R_FlushConsole();    
-   // for (Lndspp1 = 0; Lndspp1 < maxspp[t]; Lndspp1++) {
-    //  for (Lndspp2 = 0; Lndspp2 < maxspp[t]; Lndspp2++) {
-//	Rprintf("%.1f ",theFF0Star[Lndspp1][Lndspp2]); 
-    //  }
-   //   Rprintf("\n "); R_FlushConsole();
-   // }
-   // Rprintf("\n ");R_FlushConsole(); 
-  //  
-  //  Rprintf("\n the FF0"); R_FlushConsole();    
-  //  for (int ppp = 0; ppp < kNPatch; ppp++) {
-  //    for (Lndspp1 = 0; Lndspp1 < maxspp[t]; Lndspp1++) {
-//	for (Lndspp2 = 0; Lndspp2 < maxspp[t]; Lndspp2++) {
-//	  Rprintf("%.1f ",theFF0[Lndspp1][Lndspp2][ppp]); 
-//	}
-//	Rprintf("\n "); R_FlushConsole();
-  //    }
-  //    Rprintf("\n ");R_FlushConsole(); 
-  //    }
-
- //   Rprintf("\n numerator \n"); R_FlushConsole();    
- //   for (int ppp = 0; ppp < kNPatch; ppp++) {
-  //    for (Lndspp1 = 0; Lndspp1 < maxspp[t]; Lndspp1++) {
-//	for (Lndspp2 = 0; Lndspp2 < maxspp[t]; Lndspp2++) {
-//	  Rprintf("%.3f ",numerator[Lndspp1][Lndspp2][ppp]); 
-//	}
-//	Rprintf("\n "); R_FlushConsole();
-   //   }
-   //   Rprintf("\n ");R_FlushConsole(); 
-   //   }
-
-
+    //  Rprintf(" Finished numerator "); R_FlushConsole();
+    if (verbose == 1){
+      Rprintf("\n"); R_FlushConsole();        
+      for (Lndspp1 = 0; Lndspp1 < maxspp[t]; Lndspp1 += 10) {
+	Rprintf("%d ",Lndspp1); 
+	for (Lndspp2 = 0; Lndspp2 < maxspp[t]; Lndspp2 +=30) {
+	  Rprintf("%2.2f ",theFF0Star[Lndspp1][Lndspp2]); 
+	}
+	Rprintf("\n "); R_FlushConsole();
+      }
+      Rprintf("\n ");R_FlushConsole(); 
+    }
+ 
     /* first set deltaSum to zero before accumulating numerators into it (otherwise values from other time steps will be in there) */
     for (Lndspp1 = 0; Lndspp1 < maxspp[t]; Lndspp1++) {
       for (Lndspp2 = 0; Lndspp2 < maxspp[t]; Lndspp2++) {
@@ -797,18 +811,6 @@ Rprintf("Start of DynStateF\n");
 	  deltaSum[Lndspp1][Lndspp2] += numerator[Lndspp1][Lndspp2][ppp];
 	}}}
 
-    // Rprintf(" Accumulated numerator "); R_FlushConsole();    
-  
-    
-//    Rprintf("\n deltaSum \n"); R_FlushConsole();    
-//   for (Lndspp1 = 0; Lndspp1 < maxspp[t]; Lndspp1++) {
-//     for (Lndspp2 = 0; Lndspp2 < maxspp[t]; Lndspp2++) {
-//       Rprintf("%.3f ",deltaSum[Lndspp1][Lndspp2]); 
-//     }
-//     Rprintf("\n "); R_FlushConsole();
-//   }
- //  Rprintf("\n ");R_FlushConsole();
-
     /* calc probabilities by dividing numerator by deltasum */
     for (Lndspp1 = 0; Lndspp1 < maxspp[t]; Lndspp1++) {
       for (Lndspp2 = 0; Lndspp2 < maxspp[t]; Lndspp2++) {
@@ -818,19 +820,21 @@ Rprintf("Start of DynStateF\n");
           // Rprintf("%.3f ",theProbChoice[t][Lndspp1][Lndspp2][ppp]);  R_FlushConsole();    
 	}}}
 
- //   Rprintf("\n probabilities \n"); R_FlushConsole();    
- //   for (int ppp = 0; ppp < kNPatch; ppp++) {
- //     for (Lndspp1 = 0; Lndspp1 < maxspp[t]; Lndspp1++) {
-//	for (Lndspp2 = 0; Lndspp2 < maxspp[t]; Lndspp2++) {
-//	  Rprintf("%.3f ",theProbChoice[t][Lndspp1][Lndspp2][ppp]); 
-//	}
-//	Rprintf("\n "); R_FlushConsole();
-//      }
-//      Rprintf("\n ");R_FlushConsole(); 
-//      }
-
+    if (verbose == 1){
+      Rprintf("\n probabilities \n"); R_FlushConsole();    
+      for (Lndspp1 = 0; Lndspp1 < maxspp[t]; Lndspp1 += 10) {
+	Rprintf("%d ",Lndspp1); 
+	for (Lndspp2 = 0; Lndspp2 < maxspp[t]; Lndspp2 +=30) {
+	  for (int ppp = 0; ppp < kNPatch; ppp++) {
+	    Rprintf("%.2f,",theProbChoice[t][Lndspp1][Lndspp2][ppp]); 
+	  }
+	  Rprintf(" "); R_FlushConsole();
+	}
+	Rprintf("\n ");R_FlushConsole(); 
+      }
+    }
     
-     Rprintf("Probability calculations done \n"); R_FlushConsole();
+    Rprintf("Probability calculations done \n"); R_FlushConsole();
  
     /***********************************************************************************************************************************/
     /* PUT FO ARRAY IN F1 ARRAY AFTER TIMESTEP IS CALCULATED                                                                           */
@@ -855,7 +859,7 @@ Rprintf("Start of DynStateF\n");
   /***************************************************************************************************************/
   /* DO MONTE CARLO SIMULATIONS                                                                                  */
   /***************************************************************************************************************/
-  Simulations = SimulateF(kSimNumber, kHorizon, theProbChoice, kNPatch, noInc, sizeSppInc, theLndParms, theDisParms, theEffortArray);
+  Simulations = SimulateF(kSimNumber, kHorizon, theProbChoice, kNPatch, noInc, sizeSppInc, theLndParms, theDisParms, theEffortArray, verbose);
 
   Rprintf("Simulations done \n"); R_FlushConsole();
   PROTECT(ReturnObject = NEW_OBJECT(MAKE_CLASS("DynState")));
