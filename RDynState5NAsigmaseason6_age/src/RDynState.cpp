@@ -446,7 +446,7 @@ void nonZeroRanges ( int aHorizon, int aNoInc, int aNPatch, ATYPE aLndParmsAgg, 
       }
     }
     int inc = aNoInc;
-    while ( whatRangeL[inc]<0.0000000001){ inc--; };
+    while ( whatRangeL[inc]<0.00000000001){ inc--; };
     whatRangeLT[t]= inc ;
   }
 }
@@ -588,8 +588,8 @@ Rprintf("Start of DynStateF\n");
   }
   Rprintf("Defined ranges for distribution functions per timestep\n"); R_FlushConsole();
   
-  //int kSpp1Capacity = accumulate(whatRangeLT,whatRangeLT+kHorizon,0) +2;                         // calc max number of increments to loop over for this timest
-  int kSpp1Capacity = SPP1CAPACITY;
+  int kSpp1Capacity = accumulate(whatRangeLT,whatRangeLT+kHorizon,0) +2;                         // calc max number of increments to loop over for this timest
+  //int kSpp1Capacity = SPP1CAPACITY;
   int kSpp2Capacity = kSpp1Capacity;
     
   /*********************************************************************************************************************/
@@ -601,7 +601,7 @@ Rprintf("Start of DynStateF\n");
   FTYPE theFF0Star          = (FTYPE) matalloc(sizeof(float), (void *)0, 2, kSpp1Capacity, kSpp2Capacity);
   FTYPE theFF1              = (FTYPE) matalloc(sizeof(float), (void *)0, 2, kSpp1Capacity, kSpp2Capacity);
   FTYPE deltaSum            = (FTYPE) matalloc(sizeof(float), (void *)0, 2, kSpp1Capacity, kSpp2Capacity);
-  ITYPE theProbChoice       = (ITYPE) matalloc(sizeof(float), (void *)0, 4, MAXHORIZON,noInc * kHorizon *NOSIZES, noInc * kHorizon*NOSIZES,kNPatch);
+  ITYPE theProbChoice       = (ITYPE) matalloc(sizeof(float), (void *)0, 4, MAXHORIZON, kSpp1Capacity,kSpp2Capacity,kNPatch);
 
   if (theFF0 == 0l) Rprintf("error in memory allocation FF0 \n");
   if (theFF1 == 0l) Rprintf("error in memory allocation FF1 \n");
@@ -742,8 +742,8 @@ Rprintf("Start of DynStateF\n");
       theShortTermEcon[i]  =  theShortTermGains[i] - theShortTermCosts[i];
     }
 
-    //maxspp[t]  = accumulate(whatRangeLT,whatRangeLT+t,0) +2;                         // calc max number of increments to loop over for this timest
-    maxspp[t]  = (t +1 )* noInc *NOSIZES;                         // calc max number of increments to loop over for this timest 
+    maxspp[t]  = accumulate(whatRangeLT,whatRangeLT+t,0) +2;                         // calc max number of increments to loop over for this timest
+    //maxspp[t]  = (t +1 )* noInc *NOSIZES;                         // calc max number of increments to loop over for this timest 
     Rprintf(" maxspp %d ", maxspp[t]);  R_FlushConsole();
     
     // do backward calcs 
@@ -752,8 +752,8 @@ Rprintf("Start of DynStateF\n");
     #pragma omp for schedule(static)    
       for (Lndspp1 = 0; Lndspp1 < maxspp[t]; Lndspp1++) {
 	for (Lndspp2 = 0; Lndspp2 < maxspp[t]; Lndspp2++) {
-	  //FFF(Lndspp1, Lndspp2, whatRangeLT[t],theLndParmsAgg, t, kNPatch,  theShortTermEcon, theFF0, theFF0Star, theFF1, theProbChoice);
-	  FFF(Lndspp1, Lndspp2, (NOSIZES*noInc)-1,theLndParmsAgg, t, kNPatch,  theShortTermEcon, theFF0, theFF0Star, theFF1, theProbChoice);
+	  FFF(Lndspp1, Lndspp2, whatRangeLT[t],theLndParmsAgg, t, kNPatch,  theShortTermEcon, theFF0, theFF0Star, theFF1, theProbChoice);
+	  //FFF(Lndspp1, Lndspp2, (NOSIZES*noInc)-1,theLndParmsAgg, t, kNPatch,  theShortTermEcon, theFF0, theFF0Star, theFF1, theProbChoice);
 	}
       }
     }
