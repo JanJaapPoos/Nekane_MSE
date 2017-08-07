@@ -116,12 +116,12 @@ ages          <- 1:4
 season        <- 1:6
 areas         <- c("a", "b")
 stab.model    <- 10
-NUMRUNS       <- 30
-MPstart       <- 15
-SIMNUMBER     <- 850
-SIGMA         <- 0 #comes from 2// chanheg from 300 to 200
+NUMRUNS       <- 80
+MPstart       <- 40
+SIMNUMBER     <- 600
+SIGMA         <- 100 #comes from 2// chanheg from 300 to 200
 SPP1DSCSTEPS  <- 0
-SPP2DSCSTEPS <- 0
+SPP2DSCSTEPS  <- 0
 endy          <- stab.model + NUMRUNS
 Linf          <- 20
 K             <- 0.3
@@ -171,11 +171,11 @@ sp1<- sp2 <- sp3 <- sp4 <- sp5 <-    new("DynStateInput")
 catchMean(sp3)  <- catchMean(sp4) <- catchMean(sp5) <- array(0.01,dim=c(length(ages),length(season),length(areas)),dimnames=list(cat=ages,season=as.character(season),option =areas))
 catchSigma(sp3) <- catchSigma(sp4)<- catchSigma(sp5)<- array(0.0000001,dim=c(length(ages),length(season),length(areas)),dimnames=list(cat=ages,season=as.character(season),option =areas))
 
-sp1Price <- sp2Price <-  array(c(1), dim=c(length(ages),length(season)), dimnames=list(cat=ages,season=as.character(season)))
+sp1Price <- sp2Price <-  array(c(1000), dim=c(length(ages),length(season)), dimnames=list(cat=ages,season=as.character(season)))
 sp3Price <- sp4Price <- sp5Price <- array(c(0), dim=c(length(ages),length(season)), dimnames=list(cat=ages,season=as.character(season)))
 #---effort and prices used (note that now c is removed (but that if other runs, then make sure to fix/remove code that removes "c" option)                                                                                         
 
-control     <- DynState.control(spp1LndQuota= 200,  spp2LndQuota=200, spp1LndQuotaFine= 1e1, spp2LndQuotaFine= 1e1, fuelUse = 0.001, fuelPrice = 1.0, landingCosts= 0,gearMaintenance= 0, addNoFishing= TRUE, increments= 25, spp1DiscardSteps= SPP1DSCSTEPS, spp2DiscardSteps= SPP2DSCSTEPS, sigma= SIGMA, simNumber= SIMNUMBER, numThreads= 20)
+control     <- DynState.control(spp1LndQuota= 200,  spp2LndQuota=200, spp1LndQuotaFine= 3e6, spp2LndQuotaFine= 3e6, fuelUse = 0.001, fuelPrice = 1.0, landingCosts= 0,gearMaintenance= 0, addNoFishing= TRUE, increments= 25, spp1DiscardSteps= SPP1DSCSTEPS, spp2DiscardSteps= SPP2DSCSTEPS, sigma= SIGMA, simNumber= SIMNUMBER, numThreads= 20)
 
 #this is where our loop starts, after we set up stable population
 for(yy in (stab.model):(stab.model+NUMRUNS)){
@@ -297,21 +297,36 @@ Fmsy2MP <- yc2MP[yc2MP$landings==max(yc2MP$landings),]$hr
 ylim <- c(0,1000)
 xlimYPR <- c(0,0.2)
 
+png(filename="~/Dropbox/BoB/MSE/figures/CATCHpp.png",width=20, height=8, units="cm", res=500, pointsize=6.5)
 #to check
-par(mfrow=c(2,4),oma = c(2,2,1,1) + 0.1, mar = c(2,4,1,1) + 0.1)
 
-plot(catches.wt.dsvm.tot1, type="l", ylim=ylim, xaxs='i', yaxs='i', ylab = "Total catches (weight)", panel.first=grid())
-polygon(x=c(pyrnoMP-2,pyrnoMP+2,pyrnoMP+2,pyrnoMP-2), border=NA, y=c(rep(ylim,each=2)), col="grey")
-polygon(x=c(pyrMP-2,pyrMP+2,pyrMP+2,pyrMP-2)        , border=NA, y=c(rep(ylim,each=2)), col="grey")
-lines((quota1* SIMNUMBER), col="red" )
+par(mfrow=c(2,5),oma = c(3,0,0,0) + 0.1, mar = c(4,4,1,1) + 0.1)
+#,oma = c(4,3,1,1) + 0.1, mar = c(4,4,1,1) + 0.1)
+
+plot(catches.wt.dsvm.tot1, type="l",  xlim=c(10,90), ylim=ylim, xaxs='i', yaxs='i', xlab= "Year", ylab = "Total catches (weight)", xaxt = "n", panel.first=grid(NA, NULL,col = "ivory2"))
+polygon(x=c(pyrnoMP-2,pyrnoMP+2,pyrnoMP+2,pyrnoMP-2), border=NA, y=c(rep(ylim,each=2)), col="gray")
+polygon(x=c(pyrMP-2,pyrMP+2,pyrMP+2,pyrMP-2)        , border=NA, y=c(rep(ylim,each=2)), col="ivory2")
+axis(1, at = c(10, 30, 40, 50, 70, 90),labels = c(10, 30, "MP", 50,70,90))
+abline(v=c(30, 50, 70), lty="dotted", col = "ivory2")
 abline(v=MPstart, lty=2)
-text(MPstart+4, 50, "MP")
+lines((quota1* SIMNUMBER), col="red" )
 lines(catches.wt.dsvm.tot1,  type="l", ylim=ylim)
 lines(landings.wt.dsvm.tot1, type="l", ylim=ylim, lty= 2)
-legend(30,300, legend=c("Catches","TAC"), pch=c(1,1), col=c("black","red"), bty='n', cex=0.8)
+legend("bottomright", inset=.05, legend=c("Catches","TAC"), pch=c(1,1), col=c("black","red"), bty='n', cex=0.8)
 
+plot(apply(hr1,c(1,2),mean)[1,], type="p",  xlim=c(10,90), ylim=c(0,0.2), xaxs='i', yaxs='i', xlab= "Year", ylab = "Harvest rates", xaxt = "n", panel.first=grid(NA, NULL,col = "ivory2"))
+polygon(x=c(pyrnoMP-2,pyrnoMP+2,pyrnoMP+2,pyrnoMP-2), border=NA, y=c(rep(ylim,each=2)), col="gray")
+polygon(x=c(pyrMP-2,pyrMP+2,pyrMP+2,pyrMP-2)        , border=NA, y=c(rep(ylim,each=2)), col="ivory2")
+axis(1, at = c(10, 30, 40, 50, 70, 90),labels = c(10, 30, "MP", 50,70,90))
+abline(v=c(30, 50, 70), lty="dotted", col = "ivory2")
+abline(v=MPstart, lty=2)
+points(apply(hr1,c(1,2),mean)[1,], col="black", pch=19)
+points(apply(hr1,c(1,2),mean)[2,], col="red", pch=19)
+points(apply(hr1,c(1,2),mean)[3,], col="black", pch=21)
+points(apply(hr1,c(1,2),mean)[4,], col="red", pch=21)
+legend("topright", inset=.05, legend=c("Age 1","Age 2","Age 3","Age 4"), pch=c(19,19,21,21), col=c("black","red", "black","red"), bty='n', cex=0.8)
 
-plot(x=yc1noMP$hr, y=yc1noMP$landings, type="l", xlim=xlimYPR, ylim=ylim,xaxs='i', yaxs='i', ylab = "Yield per recruit", panel.first=grid())
+plot(x=yc1noMP$hr, y=yc1noMP$landings, type="l", xlim=xlimYPR, ylim=ylim,xaxs='i', yaxs='i',  xlab="Harvest rate", ylab = "Yield per recruit", panel.first=grid(col = "ivory2"))
 text(xlimYPR[2]*0.8, yc1noMP$landings[length(yc1noMP$hr)]+5, "Unconstrained")
 abline(v=Fmsy1noMP)
 #text(xlimYPR[2]*0.8, ylim[2]*0.9, paste0("SIMNUMBER ",SIMNUMBER))
@@ -331,34 +346,50 @@ points(mean(hr1[,pyrMP,]),landings.wt.dsvm.tot1[,pyrMP,,], col="blue", pch=21, b
 points(mean(hr1[,pyrMP+1,]),landings.wt.dsvm.tot1[,pyrMP+1,,], col="blue", pch=21, bg="white")
 points(mean(hr1[,pyrMP+2,]),landings.wt.dsvm.tot1[,pyrMP+2,,], col="blue", pch=21, bg="white")
 
-plot(rowMeans(hr1[,pyrnoMP,]), type="b", ylim=c(0,.2), ylab = "Selectivity", panel.first=grid())
+plot(rowMeans(hr1[,pyrnoMP,]), type="b", ylim=c(0,.2),  xlab="Age", ylab = "Selectivity", panel.first=grid(col = "ivory2"), xaxt="n")
 text(1.5,rowMeans(hr1[,pyrnoMP,])[1]+0.01, "Unconstrained")
 lines(rowMeans(hr1[,pyrMP,]), type="b", ylim=c(0,.2), col="grey")
 text(1.5,rowMeans(hr1[,pyrMP,])[1]-0.01, "Constrained")
+axis(1, at = seq(1, 4, by = 1))
 
-plot(apply(catches.wt.dsvm1,c(2,4),sum)[,1], col="blue", type="l",  ylim=ylim, xaxs='i', yaxs='i',xaxs='i', yaxs='i', ylab = "Catches by area (weight)", panel.first=grid())
-polygon(x=c(pyrnoMP-2,pyrnoMP+2,pyrnoMP+2,pyrnoMP-2), border=NA, y=c(rep(ylim,each=2)), col="grey")
-polygon(x=c(pyrMP-2,pyrMP+2,pyrMP+2,pyrMP-2)        , border=NA, y=c(rep(ylim,each=2)), col="grey")
-lines(apply(catches.wt.dsvm1,c(2,4),sum)[,1], col="blue")
+plot(apply(catches.wt.dsvm1,c(2,4),sum)[,1], col="blue", type="l",  ylim=ylim,xaxs='i', yaxs='i', xlim=c(10,90),xlab = "Year", ylab = "Catches by area (weight)",xaxt = "n", panel.first=grid(NA, NULL,col = "ivory2"))
+polygon(x=c(pyrnoMP-2,pyrnoMP+2,pyrnoMP+2,pyrnoMP-2), border=NA, y=c(rep(ylim,each=2)), col="gray")
+polygon(x=c(pyrMP-2,pyrMP+2,pyrMP+2,pyrMP-2)        , border=NA, y=c(rep(ylim,each=2)), col="ivory2")
+axis(1, at = c(10, 30, 40, 50, 70, 90),labels = c(10, 30, "MP", 50,70,90))
+abline(v=c(30, 50, 70), lty="dotted", col = "ivory2")
+abline(v=MPstart, lty=2)
+lines(apply(catches.wt.dsvm1,c(2,4),sum)[,1], col="blue", type="l")
 lines(apply(catches.wt.dsvm1,c(2,4),sum)[,2], col="red")
 lines(apply(landings.wt.dsvm1,c(2,4),sum)[,1], col="blue", lty=2)
 lines(apply(landings.wt.dsvm1,c(2,4),sum)[,2], col="red", lty=2)
 #lines(apply(catches.wt.dsvm1,c(2,4),sum)[,3], col="black")
-legend(40,900,c("a","b"),  pch=c(1,1), col=c("blue","red"), bty='n', cex=0.8)
+legend("topright", inset=.05, c("a","b"),  pch=c(1,1), col=c("blue","red"), bty='n', cex=0.8)
 abline(v=MPstart, lty=2)
 
-round(pop1,0)
 
-#to check
-plot(catches.wt.dsvm.tot2, type="l", ylim=ylim,xaxs='i', yaxs='i', xlab = "Years", ylab = "Total catches (weight)", panel.first=grid())
-polygon(x=c(pyrnoMP-2,pyrnoMP+2,pyrnoMP+2,pyrnoMP-2), border=NA, y=c(rep(ylim,each=2)), col="grey")
-polygon(x=c(pyrMP-2,pyrMP+2,pyrMP+2,pyrMP-2)        , border=NA, y=c(rep(ylim,each=2)), col="grey")
+#round(pop1,0)
+
+plot(catches.wt.dsvm.tot2, type="l",  xlim=c(10,90), ylim=ylim, xaxs='i', yaxs='i', xlab= "Year", ylab = "Total catches (weight)", xaxt = "n", panel.first=grid(NA, NULL,col = "ivory2"))
+polygon(x=c(pyrnoMP-2,pyrnoMP+2,pyrnoMP+2,pyrnoMP-2), border=NA, y=c(rep(ylim,each=2)), col="gray")
+polygon(x=c(pyrMP-2,pyrMP+2,pyrMP+2,pyrMP-2)        , border=NA, y=c(rep(ylim,each=2)), col="ivory2")
+axis(1, at = c(10, 30, 40, 50, 70, 90),labels = c(10, 30, "MP", 50,70,90))
+abline(v=c(30, 50, 70), lty="dotted", col = "ivory2")
 abline(v=MPstart, lty=2)
-text(MPstart+4, 50, "MP")
-lines(catches.wt.dsvm.tot2, type="l", ylim=ylim)
+lines(catches.wt.dsvm.tot2,  type="l", ylim=ylim)
 lines(landings.wt.dsvm.tot2, type="l", ylim=ylim, lty= 2)
 
-plot(x=yc2noMP$hr, y=yc2noMP$landings, type="l", xlim=xlimYPR, ylim=ylim,xaxs='i', yaxs='i', xlab = "harvest rate", ylab = "Yield per recruit", panel.first=grid())
+plot(apply(hr2,c(1,2),mean)[1,], type="p",  xlim=c(10,90), ylim=c(0,0.2), xaxs='i', yaxs='i', xlab= "Year", ylab = "Harvest rates", xaxt = "n", panel.first=grid(NA, NULL,col = "ivory2"))
+polygon(x=c(pyrnoMP-2,pyrnoMP+2,pyrnoMP+2,pyrnoMP-2), border=NA, y=c(rep(ylim,each=2)), col="gray")
+polygon(x=c(pyrMP-2,pyrMP+2,pyrMP+2,pyrMP-2)        , border=NA, y=c(rep(ylim,each=2)), col="ivory2")
+axis(1, at = c(10, 30, 40, 50, 70, 90),labels = c(10, 30, "MP", 50,70,90))
+abline(v=c(30, 50, 70), lty="dotted", col = "ivory2")
+abline(v=MPstart, lty=2)
+points(apply(hr2,c(1,2),mean)[1,], col="black", pch=19)
+points(apply(hr2,c(1,2),mean)[2,], col="red", pch=19)
+points(apply(hr2,c(1,2),mean)[3,], col="black", pch=21)
+points(apply(hr2,c(1,2),mean)[4,], col="red", pch=21)
+
+plot(x=yc2noMP$hr, y=yc2noMP$landings, type="l", xlim=xlimYPR, ylim=ylim,xaxs='i', yaxs='i', xlab = "Harvest rate", ylab = "Yield per recruit", panel.first=grid(col = "ivory2"))
 text(xlimYPR[2]*0.8, yc2noMP$landings[length(yc2noMP$hr)]+5, "Unconstrained")
 abline(v=Fmsy2noMP)
 points(mean(hr2[,pyrnoMP,]),yc2noMP$landings[yc2noMP$hr>mean(hr2[,pyrnoMP,])][1], col="red", pch=19)
@@ -377,21 +408,28 @@ points(mean(hr2[,pyrMP,]),landings.wt.dsvm.tot2[,pyrMP,,], col="blue", pch=21, b
 points(mean(hr2[,pyrMP+1,]),landings.wt.dsvm.tot2[,pyrMP+1,,], col="blue", pch=21, bg="white")
 points(mean(hr2[,pyrMP+2,]),landings.wt.dsvm.tot2[,pyrMP+2,,], col="blue", pch=21, bg="white")
 
-
-plot(rowMeans(hr2[,pyrnoMP,]), type="b", ylim=c(0,.2), xlab = "Ages", ylab = "Selectivity", panel.first=grid())
+plot(rowMeans(hr2[,pyrnoMP,]), type="b", ylim=c(0,.2), xlab = "Age", ylab = "Selectivity", panel.first=grid(col = "ivory2"), xaxt="n")
 text(1.5,rowMeans(hr2[,pyrnoMP,])[1]+0.01, "Unconstrained")
 lines(rowMeans(hr2[,pyrMP,]), type="b", ylim=c(0,.2), col="grey")
 text(1.5,rowMeans(hr2[,pyrMP,])[1]-0.01, "Constrained")
+axis(1, at = seq(1, 4, by = 1))
 
-plot(apply(catches.wt.dsvm2,c(2,4),sum)[,1], col="blue", type="l",  ylim=ylim,xaxs='i', yaxs='i', xlab = "Years", ylab = "Catches by area (weight)", panel.first=grid())
+plot(apply(catches.wt.dsvm2,c(2,4),sum)[,1], col="blue", type="l",  ylim=ylim,xaxs='i', yaxs='i', xlim=c(10,90),xlab = "Year", ylab = "Catches by area (weight)",xaxt = "n", panel.first=grid(NA, NULL,col = "ivory2"))
+polygon(x=c(pyrnoMP-2,pyrnoMP+2,pyrnoMP+2,pyrnoMP-2), border=NA, y=c(rep(ylim,each=2)), col="gray")
+polygon(x=c(pyrMP-2,pyrMP+2,pyrMP+2,pyrMP-2)        , border=NA, y=c(rep(ylim,each=2)), col="ivory2")
+axis(1, at = c(10, 30, 40, 50, 70, 90),labels = c(10, 30, "MP", 50,70,90))
+abline(v=c(30, 50, 70), lty="dotted", col = "ivory2")
+abline(v=MPstart, lty=2)
+lines(apply(catches.wt.dsvm2,c(2,4),sum)[,1], col="blue", type="l")
 lines(apply(catches.wt.dsvm2,c(2,4),sum)[,2], col="red")
 lines(apply(landings.wt.dsvm2,c(2,4),sum)[,1], col="blue", lty=2)
 lines(apply(landings.wt.dsvm2,c(2,4),sum)[,2], col="red", lty=2)
 #lines(apply(catches.wt.dsvm2,c(2,4),sum)[,3], col="black")
-abline(v=MPstart, lty=2)
-add_legend("topright", legend=paste0("SIMNUMBER ",SIMNUMBER), col="black", horiz=TRUE, bty='n', cex=1.5)
 
-round(pop2,0)
+add_legend("bottomright", legend=paste0("SIGMA ", SIGMA, "; SIMNUMBER ",SIMNUMBER), col="black", horiz=TRUE, bty='n', cex=1)
+#round(pop2,0)
+#
+dev.off()
 
 # Effort pattern and economics
 #effort_plot_dsvm(SIMNUMBER, dsvm_res_allyrs, stab.model, economics_res_allyrs)
@@ -423,39 +461,67 @@ netrev      <-  melt(economics_res_allyrs, id.vars = "year", measure.vars = c("N
 grossrev    <-  melt(economics_res_allyrs, id.vars = "year", measure.vars = c("Grossrev"))
 annualfine  <-  melt(economics_res_allyrs, id.vars = "year", measure.vars = c("Annualfine"))
 
-par(mfrow=c(2,4))#, mar=c(1, 4, 1, 1) + 0.1, xaxs="i")
+png(filename="~/Dropbox/BoB/MSE/figures/EFFORTpp.png",width=16, height=8, units="cm", res=500, pointsize=6.5)
+
+par(mfrow=c(2,4),oma = c(3,0,0,0) + 0.1, mar = c(4,4,1,1) + 0.1)
 #layout(matrix(c(1,1,2,2, 3,4,5, 6), 2, 4, byrow = TRUE))
+
 mypalette <- c("#808080","#CCCCCC","#D55E00")
 names(mypalette) <- c("a", "b", "Stay in port")
+barplot(trip_percentage, col= mypalette, border=NA, xlim = c(1,81), xlab = "Year", ylab = "Effort pattern (%)", xaxt = "n",space = 0)
+axis(1, at = c(0.5, 20.5, 30.5, 40.5, 60.5, 80.5),labels = c(10, 30,"MP",50,70,90))
+legend("topright", inset=.05, legend=c("a", "b", "Stay in port"), fill=mypalette, cex=0.6)
+abline(v=MPstart-9.5, lty=2)
 
-barplot(trip_percentage, col= mypalette, border="black", xlim = c(0,90), #legend = rownames(trip_percentage),
-        ylab = "Effort pattern (%)", space=0.115)
-legend(60,10, rownames(trip_percentage), fill = mypalette, cex=0.6)
-abline(v=MPstart-6, lty=2)
+boxplot(value ~ year, netrev, cex = 0.6, col="grey",boxwex=1, xlab = "Year", ylab = "Mean net revenue", 
+        ylim=c(0,4000), xlim=c(1, 81), xaxt = "n")
+axis(1, at = c(1, 21, 31, 41, 61, 81),labels = c(10, 30,"MP", 50,70,90))
+grid(NA, NULL, col = "ivory2")
+abline(v=c(1, 21, 41, 61, 81), lty="dotted", col = "ivory2")
+abline(v=MPstart-9, lty=2)
+boxplot(value ~ year, netrev, cex = 0.6, col="grey",boxwex=1, xlab = "Year", ylab = "Mean net revenue", 
+        ylim=c(0,4000), xlim=c(1, 81), xaxt = "n", add=TRUE)
 
-boxplot(value ~ year, netrev, cex = 0.6, col="grey",boxwex=1, xlab = "year", ylab = "Mean Net revenue", ylim=c(0,4000))
+boxplot(value ~ year, grossrev, cex = 0.6, col="grey",boxwex=1, xlab = "Year", ylab = "Mean gross revenue", 
+        ylim=c(0,4000), xlim=c(1,81), xaxt = "n")
+axis(1, at = c(1, 21, 31, 41, 61, 81),labels = c(10, 30,"MP", 50,70,90))
+grid(NA, NULL, col = "ivory2")
+abline(v=c(1, 21, 41, 61, 81), lty="dotted", col = "ivory2")
+abline(v=MPstart-9, lty=2)
+boxplot(value ~ year, grossrev, cex = 0.6, col="grey",boxwex=1, xlab = "Year", ylab = "Mean gross revenue", 
+        ylim=c(0,4000), xlim=c(1,81), xaxt = "n", add=TRUE)
 
-boxplot(value ~ year, grossrev, cex = 0.6, col="grey",boxwex=1, xlab = "year", ylab = "Mean Gross revenue", ylim=c(0,4000))
+boxplot(value ~ year, annualfine, cex = 0.6, col="grey",boxwex=1, xlab = "Year", ylab = "Mean annual fine", 
+        ylim=c(0,4000), xaxt = "n")
+axis(1, at = c(1, 21, 31, 41, 61, 81),labels = c(10, 30,"MP", 50,70,90))
+grid(NA, NULL, col = "ivory2")
+abline(v=c(1, 21, 41, 61, 81), lty="dotted", col = "ivory2")
+abline(v=MPstart-9, lty=2)
+boxplot(value ~ year, annualfine, cex = 0.6, col="grey",boxwex=1, xlab = "Year", ylab = "Mean annual fine", 
+        ylim=c(0,4000), xaxt = "n", add=TRUE)
 
-boxplot(value ~ year, annualfine, cex = 0.6, col="grey",boxwex=1, xlab = "year", ylab = "Mean Annual Fine", ylim=c(0,4000))
+barplot(as.matrix(days), col=c("#808080","#CCCCCC"),border=NA, xlim = c(1,81), xlab = "Year", ylab = "Total days at sea", xaxt = "n",space = 0)
+axis(1, at = c(0.5, 20.5, 30.5, 40.5, 60.5, 80.5),labels = c(10, 30,"MP",50,70,90))
+abline(v=MPstart-9.5, lty=2)
 
-barplot(as.matrix(days), col=c("#808080","#CCCCCC") , border="black", xlim = c(0,90), #legend = rownames(effort_percentage),
-       ylab = "Total Days at sea", space=0.115)
-abline(v=MPstart-6, lty=2)
-
-plot(value ~ year, data = aggregate(value ~ year, FUN=sum, data=netrev),
-     type="l", ylim=c(0,2091351), xlim=c(10,90),ylab = "Total Net revenue")
+plot(aggregate(value ~ year, FUN=sum, data=netrev)$year,aggregate(value ~ year, FUN=sum, data=netrev)$value, type="l", ylim=c(0,2091351), xlim=c(10,90), xlab = "Year", ylab = "Total net revenue", xaxt = "n", panel.first=grid(NA, NULL,col = "ivory2"))
+axis(1, at = c(10, 30, 40, 50, 70, 90),labels = c(10, 30, "MP", 50,70,90))
+abline(v=c(10, 30, 50, 70, 90), lty="dotted", col = "ivory2")
 abline(v=MPstart, lty=2)
-text(MPstart+1, 4, "MP") 
+lines(aggregate(value ~ year, FUN=sum, data=netrev)$year,aggregate(value ~ year, FUN=sum, data=netrev)$value, type="l")
 
-plot(value ~ year, data = aggregate(value ~ year, FUN=sum, data=grossrev),
-     type="l", ylim=c(0,2091351), xlim=c(10,90), ylab = "Total Gross revenue")
+plot(aggregate(value ~ year, FUN=sum, data=grossrev)$year, aggregate(value ~ year, FUN=sum, data=grossrev)$value, type="l", ylim=c(0,2091351), xlim=c(10,90), xlab = "Year", ylab = "Total gross revenue", xaxt = "n", panel.first=grid(NA, NULL,col = "ivory2"))
+axis(1, at = c(10, 30, 40, 50, 70, 90),labels = c(10, 30, "MP", 50,70,90))
+abline(v=c(10, 30, 50, 70, 90), lty="dotted", col = "ivory2")
 abline(v=MPstart, lty=2)
-text(MPstart+1, 4, "MP") 
+lines(aggregate(value ~ year, FUN=sum, data=grossrev)$year, aggregate(value ~ year, FUN=sum, data=grossrev)$value, type="l")
 
-plot(value ~ year, data = aggregate(value ~ year, FUN=sum, data=annualfine),
-     type="l", ylim=c(0,2091351), xlim=c(10,90),ylab = "Total Annual fine")
+plot(aggregate(value ~ year, FUN=sum, data=annualfine)$year, aggregate(value ~ year, FUN=sum, data=annualfine)$value, type="l", ylim=c(0,209130), xlim=c(10,90),xlab = "Year", ylab = "Total annual fine", xaxt = "n", panel.first=grid(NA, NULL,col = "ivory2"))
+axis(1, at = c(10, 30, 40, 50, 70, 90),labels = c(10, 30, "MP", 50,70,90))
+abline(v=c(10, 30, 50, 70, 90), lty="dotted", col = "ivory2")
 abline(v=MPstart, lty=2)
-text(MPstart+1, 4, "MP") 
+lines(aggregate(value ~ year, FUN=sum, data=annualfine)$year, aggregate(value ~ year, FUN=sum, data=annualfine)$value, type="l")
+add_legend("bottomright", legend=paste0("SIGMA ", SIGMA, "; SIMNUMBER ",SIMNUMBER), col="black", horiz=TRUE, bty='n', cex=1)
+dev.off()
 
 
