@@ -121,7 +121,7 @@ yield_curve <- function(hr,lratio, wts, natmortality, R=1, sequence = seq(0.001,
     season        <- 1:6
     areas         <- c("a", "b")
     stab.model    <- 10
-    NUMRUNS       <- 70
+    NUMRUNS       <- 80
     MPstart       <- 40
     SIMNUMBER     <- 700 #pos
     SIGMA         <- 40 #sig 
@@ -181,7 +181,7 @@ yield_curve <- function(hr,lratio, wts, natmortality, R=1, sequence = seq(0.001,
     sp3Price <- sp4Price <- sp5Price <- array(c(0), dim=c(length(ages),length(season)), dimnames=list(cat=ages,season=as.character(season)))
     #---effort and prices used (note that now c is removed (but that if other runs, then make sure to fix/remove code that removes "c" option)                                                                                         
     
-    control     <- DynState.control(spp1LndQuota= 200,  spp2LndQuota=200, spp1LndQuotaFine= 3e6, spp2LndQuotaFine= 3e6, fuelUse = 1, fuelPrice = 50.0, landingCosts= 0,gearMaintenance= 0, addNoFishing= TRUE, increments= 25, spp1DiscardSteps= SPP1DSCSTEPS, spp2DiscardSteps= SPP2DSCSTEPS, sigma= SIGMA, simNumber= SIMNUMBER, numThreads= 20)
+    control     <- DynState.control(spp1LndQuota= 200,  spp2LndQuota=200, spp1LndQuotaFine= 3e6, spp2LndQuotaFine= 3e6, fuelUse = 1, fuelPrice = 150.0, landingCosts= 0,gearMaintenance= 0, addNoFishing= TRUE, increments= 25, spp1DiscardSteps= SPP1DSCSTEPS, spp2DiscardSteps= SPP2DSCSTEPS, sigma= SIGMA, simNumber= SIMNUMBER, numThreads= 20)
     
     #this is where our loop starts, after we set up stable population
     for(yy in (stab.model):(stab.model+NUMRUNS)){
@@ -259,8 +259,13 @@ yield_curve <- function(hr,lratio, wts, natmortality, R=1, sequence = seq(0.001,
       yc1 <- yield_curve(hr=hr1[,yy,], landings.ratio1[,yy,], wts, natmortality, R=recs1, verbose=F)
       yc2 <- yield_curve(hr=hr2[,yy,], landings.ratio2[,yy,], wts, natmortality, R=recs2, verbose=F)
       
-      hr1wanted <- yc1[yc1$landings==max(yc1$landings),]$hr
-      hr2wanted <- yc2[yc2$landings==max(yc2$landings),]$hr
+      #Naive manager
+      #hr1wanted <- yc1[yc1$landings==max(yc1$landings),]$hr
+      #hr2wanted <- yc2[yc2$landings==max(yc2$landings),]$hr
+      
+      #Smart manager    
+      hr1wanted <- yc1[yc1$catch==max(yc1$catch),]$hr
+      hr2wanted <- yc2[yc2$catch==max(yc2$catch),]$hr
       
       #We take the first value of hr1wanted vector to guarantee that we always get a single value in case landingratio is 0
       if (yy > (MPstart-1) & yy < endy){ #if (yy > (MPstart-1))
@@ -296,13 +301,13 @@ yield_curve <- function(hr,lratio, wts, natmortality, R=1, sequence = seq(0.001,
     yc1noMP <- yield_curve(hr=hr1[,pyrnoMP,], landings.ratio1[,pyrnoMP,], wts, natmortality, R=recs1, verbose=F)
     yc2noMP <- yield_curve(hr=hr2[,pyrnoMP,], landings.ratio2[,pyrnoMP,], wts, natmortality, R=recs2, verbose=F)
     
-    Fmsy1noMP <- yc1noMP[yc1noMP$landings==max(yc1noMP$landings),]$hr
+    Fmsy1noMP <- yc1noMP[yc1noMP$catch==max(yc1noMP$catch),]$hr
     Fmsy2noMP <- yc2noMP[yc2noMP$landings==max(yc2noMP$landings),]$hr
     
     yc1MP <- yield_curve(hr=hr1[,pyrMP,], landings.ratio1[,pyrMP,], wts, natmortality, R=recs1, verbose=F)
     yc2MP <- yield_curve(hr=hr2[,pyrMP,], landings.ratio2[,pyrMP,], wts, natmortality, R=recs2, verbose=F)
     
-    Fmsy1MP <- yc1MP[yc1MP$landings==max(yc1MP$landings),]$hr
+    Fmsy1MP <- yc1MP[yc1MP$catch==max(yc1MP$catch),]$hr
     Fmsy2MP <- yc2MP[yc2MP$landings==max(yc2MP$landings),]$hr
     
     ylim <- c(0,1000)
