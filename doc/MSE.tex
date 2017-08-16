@@ -1,5 +1,5 @@
 \documentclass[12pt,oneline,a4paper,numbib]{ouparticle}
-
+\usepackage{array,multirow,graphicx}
 \begin{document}
 
 \title{MSE and dynamic state variable model with sigma function}
@@ -185,21 +185,48 @@ Therefore if we have a harvest rate of 0.32, we will need to reduce the harvest 
 
 Simulations have been performed under four different scenarios. All compared to an unmanaged fishery,  with unconstrained quota for both species.
 
+\begin{table}[!h]
+\centering
+\caption{}
+\label{scenarios}
+\begin{tabular}{|c |c | c |}
+\hline
+ \parbox[c]{2mm}{\multirow{7}{*}{\rotatebox[origin=c]{90}{\textbf{Naive manager}}}} 
+ & &  \\
+ & Discarding allowed & \\
+ & Manager only perceives $L$ &\\
+ & assuming that $C = L$  &\\
+ & YPR based in $F_L$  & \\
+ & assuming $L/C=1$    & No discarding allowed\\
+ & & $C = L$ \\\cline{1-2}
+  \parbox[c]{2mm}{\multirow{7}{*}{\rotatebox[origin=c]{90}{\textbf{Smart manager}}}} 
+ & &  Advice and quota\\
+ & Discarding allowed & based on $C = L$\\
+ & Manager perceives $L$ and $D$ & \\
+ & assuming that $C = L + D$ &\\
+ & YPR based in $F_C$  &\\
+ & assuming $L/C \neq 1$ &\\
+  & &  \\\hline
+
+ & \textbf{NO LO}              & \textbf     {LO}                                  \\ \hline
+\end{tabular}
+\end{table}
+
 \begin{enumerate}
 
 \item
-Scenario I,  decrease the quota on both species to reach the Fmsy.
+Scenario I: \textbf{NO LO + Naive manager},  decrease the quota on both species to reach the Fmsy.
 Reduce the IQs in the same percentage as the change in HR to reach the equilibrium (MSY). 
 
 \item 
-Scenario II, decrease the quota on sp 1 and unconstrained quota for species 2.
+Scenario II: \textbf{NO LO + Smart manager}, decrease the quota on sp 1 and unconstrained quota for species 2.
 CONSTRAINED fishery for sp1 and UNCONSTRAINED sp2 (FIXING QUOTA SP2 to 200). Only sp1 is forced to try to reach the Fmsy. However discarding is allowed for both species.
 
 \item
-Scenario III, same as scenario II but allowing to discard only species 2.
+Scenario III: \textbf{LO}, same as scenario II but allowing to discard only species 2.
 
-\item
-Scenario IV, Same as scenario I but allowing to discard sp2.
+%\item
+%Scenario IV, Same as scenario I but allowing to discard sp2.
 \end{enumerate}
 
 
@@ -223,6 +250,24 @@ The value of a unit weight of the landed catch may vary with the size of individ
 
 In considering TRPs based on economic criteria, it is important to be aware of the effect which the practice of discounting could have on reference points. In evaluating investment projects, including resource management, economists discount the future value of any commodity. Discount rates may be in the order of 10\%. In the case of a fishery where the population growth rate does not exceed the discount rate, then a strict application of economic theory would suggest that in the absence of other considerations (such as an economic value placed on recreational use of resources) the whole stock should be harvested now, and the proceeds of their sale invested. Long-lived species with slow growth rates, such as whales, clearly fall into this category. The blatant contradiction between this common economic approach, and the concept of sustainability, constitutes an unresolved paradox (Hilborn and Walters 1992).
 
+Scenario III:
+%----------------------------------------------------------------------------------------------------------------------------------------
+
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=\textwidth]{Figures/Catch_LO.eps} 
+\caption{}
+\label{fig:catch_lo}
+\end{figure}
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=\textwidth]{Figures/Effort_LO.eps} 
+\caption{}
+\label{fig:effort_lo}
+\end{figure}
+%----------------------------------------------------------------------------------------------------------------------------------------
 
 \section{Discussion}
 \label{sec4}
