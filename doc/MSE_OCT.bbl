@@ -1,16 +1,23 @@
 \begin{thebibliography}{10}
 
-\bibitem{Alzorriz2017}
+\bibitem{Alzorriz2018}
 N.~Alzorriz, E.~Jardim, and J.~J. Poos.
 \newblock {Likely status and changes in the main economic and fishery
-  indicators under various discard policies: the Basque trawl fishery case
+  indicators under the landing obligation: the Basque trawl fishery case
   study}.
-\newblock {\em TBD}, x:xxx--xxx, 2017.
+\newblock {\em TBD}, x:xxx--xxx, 2018.
 
 \bibitem{Batsleer2015}
 J.~Batsleer, K.~G. Hamon, H.~M~J van Overzee, A.~D. Rijnsdorp, and J.~J. Poos.
 \newblock {High-grading and over-quota discarding in mixed fisheries}.
 \newblock {\em Reviews in Fish Biology and Fisheries}, 25(4):715--736, 2015.
+
+\bibitem{Batsleer2016}
+J.~Batsleer, A.~D. Rijnsdorp, K.~G. Hamon, H.~M~J van Overzee, and J.~J. Poos.
+\newblock {Mixed fisheries management: Is the ban on discarding likely to
+  promote more selective and fuel efficient fishing in the Dutch flatfish
+  fishery?}
+\newblock {\em Fisheries Research}, 174:118--128, feb 2016.
 
 \bibitem{ClarkandMangel2000}
 C.~W. Clark and M.~Mangel.
@@ -49,6 +56,14 @@ J.~J. Poos, J.~A. Bogaards, F.~J. Quirijns, D.~M. Gillis, and A.~D. Rijnsdorp.
   discarding in mixed fisheries}.
 \newblock {\em ICES Journal of Marine Science}, 67(2):323--333, oct 2010.
 
+\bibitem{Punt1995}
+A.~E. Punt and D.~S. Butterworth.
+\newblock The effects of future consumption by the cape fur seal on catches and
+  catch rates of the cape hakes. 4. modelling the biological interaction
+  between cape fur seals arctocephalus pusillus pusillus and the cape hakes
+  merluccius capensis and m. paradoxus.
+\newblock {\em South African Journal of Marine Science}, 16(1):255--285, 1995.
+
 \bibitem{Sainsbury2000}
 K.~J. Sainsbury, A.~E. Punt, and A.~D.~M. Smith.
 \newblock {Design of operational management strategies for achieving fishery
@@ -74,5 +89,18 @@ W.~N. Venables, N.~Ellis, A.~E. Punt, C.~M. Dichmont, and R.~A. Deng.
 \newblock {A simulation strategy for fleet dynamics in Australia's northern
   prawn fishery: Effort allocation at two scales}.
 \newblock {\em ICES Journal of Marine Science}, 66(4):631--645, 2009.
+
+\bibitem{Zimmermann2011}
+F.~Zimmermann, M.~Heino, , and S.~I. Steinsham.
+\newblock {Does Size Matter? A Bioeconomic Perspective on Optimal Harvesting
+  when Price is Size-dependent}.
+\newblock {\em Canadian Journal of Fisheries and Aquatic Sciences},
+  68:1651--1659, 2011.
+
+\bibitem{Zimmermann2013}
+F.~Zimmermann and M.~Heino.
+\newblock {Is size-dependent pricing prevalent in fisheries? The case of
+  Norwegian demersal and pelagic fisheries}.
+\newblock {\em ICES Journal of Marine Science}, 70:1389--1395, 2013.
 
 \end{thebibliography}

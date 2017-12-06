@@ -518,10 +518,11 @@ Rprintf("Start of DynStateF\n");
   PITYPE thePriceParms      = (PITYPE) matalloc(sizeof(float), (void *)0, 3, MAXHORIZON, NOSPEC, NOSIZES);
     
   int theEffortArray[320000][MAXHORIZON];
-  double *theIncrementArray = (double *) malloc((size_t)NOSPEC * sizeof (double));
-  double *theShortTermGains = (double *) malloc((size_t)kNPatch * sizeof (double));
-  double *theShortTermCosts = (double *) malloc((size_t)kNPatch * sizeof (double));
-  double *theShortTermEcon  = (double *) malloc((size_t)kNPatch * sizeof (double));
+  double *theIncrementArray     = (double *) malloc((size_t)NOSPEC * sizeof (double));
+  double *theShortTermGains     = (double *) malloc((size_t)kNPatch * sizeof (double));
+  double *theShortTermCosts     = (double *) malloc((size_t)kNPatch * sizeof (double));
+  double *theShortTermCrewShare = (double *) malloc((size_t)kNPatch * sizeof (double));
+  double *theShortTermEcon      = (double *) malloc((size_t)kNPatch * sizeof (double));
 
   if (theLndParms == 0l) Rprintf("error in memory allocation theLndParms \n");
   if (theDisParms == 0l) Rprintf("error in memory allocation theDisParms \n");
@@ -739,7 +740,8 @@ Rprintf("Start of DynStateF\n");
     for (int i = 0; i < kNPatch; i++){     
       theShortTermGains[i] = shortTermGains(t, noInc, theLndParms, i, thePriceParms);
       theShortTermCosts[i] = shortTermCosts(t, i, kPriceEffort, theEffortArray);     //*, noInc, theLndParms, thePriceParms);
-      theShortTermEcon[i]  =  theShortTermGains[i] - theShortTermCosts[i];
+      theShortTermCrewShare[i] = theShortTermGains[i]*0.35;     //*, noInc, theLndParms, thePriceParms);
+      theShortTermEcon[i]  =  theShortTermGains[i] - theShortTermCosts[i] - theShortTermCrewShare[i];
     }
 
     maxspp[t]  = accumulate(whatRangeLT,whatRangeLT+t,0) +2;                         // calc max number of increments to loop over for this timest

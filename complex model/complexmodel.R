@@ -154,14 +154,14 @@ yield_curve <- function(hr,lratio, wts, natmortality, R=1, sequence = seq(0.001,
     effort <- array(c(1), dim=c(length(areas), length(season)), dimnames=list(option =areas,season=as.character(season)))
     
     
-    pop1  <- pop2   <-array(0, dim=c(length(ages),endy+1,length(season),length(areas)), dimnames=list(cat=ages,   year=as.character(1:(endy+1)), season=as.character(season), option =areas))
-    catches.n.dsvm1      <- catches.n.dsvm2      <- array(0, dim=c(length(ages),endy,length(season),length(areas)), dimnames=list(cat=ages,   year=as.character(1:endy), season=as.character(season), option =areas))
+    pop1  <- pop2         <-array(0, dim=c(length(ages),endy+1,length(season),length(areas)), dimnames=list(cat=ages,   year=as.character(1:(endy+1)), season=as.character(season), option =areas))
+    catches.n.dsvm1       <- catches.n.dsvm2       <- array(0, dim=c(length(ages),endy,length(season),length(areas)), dimnames=list(cat=ages,   year=as.character(1:endy), season=as.character(season), option =areas))
     landings.n.dsvm1      <- landings.n.dsvm2      <- array(0, dim=c(length(ages),endy,length(season),length(areas)), dimnames=list(cat=ages,   year=as.character(1:endy), season=as.character(season), option =areas))
-    catches.wt.dsvm1     <- catches.wt.dsvm2     <- array(0, dim=c(length(ages),endy,length(season),length(areas)), dimnames=list(cat=ages,   year=as.character(1:endy), season=as.character(season), option =areas))
+    catches.wt.dsvm1      <- catches.wt.dsvm2      <- array(0, dim=c(length(ages),endy,length(season),length(areas)), dimnames=list(cat=ages,   year=as.character(1:endy), season=as.character(season), option =areas))
     landings.wt.dsvm1     <- landings.wt.dsvm2     <- array(0, dim=c(length(ages),endy,length(season),length(areas)), dimnames=list(cat=ages,   year=as.character(1:endy), season=as.character(season), option =areas))
-    catches.wt.dsvm.tot1 <- catches.wt.dsvm.tot2 <- array(0, dim=c(1           ,endy,              1,            1), dimnames=list(cat="all", year=as.character(1:endy), season="all",                option ="all"))
+    catches.wt.dsvm.tot1  <- catches.wt.dsvm.tot2  <- array(0, dim=c(1           ,endy,              1,            1), dimnames=list(cat="all", year=as.character(1:endy), season="all",                option ="all"))
     landings.wt.dsvm.tot1 <- landings.wt.dsvm.tot2 <- array(0, dim=c(1           ,endy,              1,            1), dimnames=list(cat="all", year=as.character(1:endy), season="all",                option ="all"))
-    quota1               <- quota2               <- array(1.2, dim=c(1           ,endy,              1,            1), dimnames=list(cat="all", year=as.character(1:endy), season="all",                option ="all"))
+    quota1                <- quota2                <- array(1.2, dim=c(1           ,endy,              1,            1), dimnames=list(cat="all", year=as.character(1:endy), season="all",                option ="all"))
     
     
     #run population for 15 year
@@ -177,7 +177,8 @@ yield_curve <- function(hr,lratio, wts, natmortality, R=1, sequence = seq(0.001,
     catchMean(sp3)  <- catchMean(sp4) <- catchMean(sp5) <- array(0.01,dim=c(length(ages),length(season),length(areas)),dimnames=list(cat=ages,season=as.character(season),option =areas))
     catchSigma(sp3) <- catchSigma(sp4)<- catchSigma(sp5)<- array(0.0000001,dim=c(length(ages),length(season),length(areas)),dimnames=list(cat=ages,season=as.character(season),option =areas))
     
-    sp1Price <- sp2Price <-  array(c(1000), dim=c(length(ages),length(season)), dimnames=list(cat=ages,season=as.character(season)))
+    sp1Price <- array(c(1000), dim=c(length(ages),length(season)), dimnames=list(cat=ages,season=as.character(season)))
+    sp2Price <- array(c(1000), dim=c(length(ages),length(season)), dimnames=list(cat=ages,season=as.character(season)))
     sp3Price <- sp4Price <- sp5Price <- array(c(0), dim=c(length(ages),length(season)), dimnames=list(cat=ages,season=as.character(season)))
     #---effort and prices used (note that now c is removed (but that if other runs, then make sure to fix/remove code that removes "c" option)                                                                                         
     
@@ -249,23 +250,70 @@ yield_curve <- function(hr,lratio, wts, natmortality, R=1, sequence = seq(0.001,
       pos_catches1 <- pop1 *q*wts
       pos_catches2 <- pop2 *q*wts
       
+      #------------------------------------------
       #MANAGEMENT PROCEDURE
-      hr1 <- apply(catches.n.dsvm1,1:3,sum)/    (apply(catches.n.dsvm1,1:3,sum) +    apply(pop1[,1:endy,,],1:3,sum))
-      hr2 <- apply(catches.n.dsvm2,1:3,sum)/    (apply(catches.n.dsvm2,1:3,sum) +    apply(pop2[,1:endy,,],1:3,sum))
+      #------------------------------------------
       
-      landings.ratio1 <- apply(landings.n.dsvm1,1:3,sum)/ (apply(catches.n.dsvm1,1:3,sum)+1e-20)
-      landings.ratio2 <- apply(landings.n.dsvm2,1:3,sum)/ (apply(catches.n.dsvm2,1:3,sum)+1e-20)
+
+      # Scenario I: no discards allowed, full avoidance of discards (landings selectivity only). Fulll avoidance of discards, this scenario contemplates the LO with landings selectivity only and fulll avoidance of discards.
+      #----------------
+        # hr1 <- (apply(landings.n.dsvm1,1:3,sum)+1e-20)/ (apply(landings.n.dsvm1,1:3,sum) + apply(pop1[,1:endy,,],1:3,sum))
+        # hr2 <- (apply(landings.n.dsvm2,1:3,sum)+1e-20)/ (apply(landings.n.dsvm2,1:3,sum) + apply(pop2[,1:endy,,],1:3,sum))
+        # 
+        # landings.ratio1 <- (apply(landings.n.dsvm1,1:3,sum)+1e-20)/ apply(catches.n.dsvm1,1:3,sum)
+        # landings.ratio2 <- (apply(landings.n.dsvm2,1:3,sum)+1e-20)/ apply(catches.n.dsvm2,1:3,sum)
+        # landings.ratio1[,yy,] <- landings.ratio2[,yy,] <- 1
+        # 
+        # yc1 <- yield_curve(hr=hr1[,yy,], landings.ratio1[,yy,], wts, natmortality, R=recs1, verbose=F)
+        # yc2 <- yield_curve(hr=hr2[,yy,], landings.ratio2[,yy,], wts, natmortality, R=recs2, verbose=F)
+        # 
+        # hr1wanted <- yc1[yc1$landings==max(yc1$landings),]$hr
+        # hr2wanted <- yc2[yc2$landings==max(yc2$landings),]$hr
       
-      yc1 <- yield_curve(hr=hr1[,yy,], landings.ratio1[,yy,], wts, natmortality, R=recs1, verbose=F)
-      yc2 <- yield_curve(hr=hr2[,yy,], landings.ratio2[,yy,], wts, natmortality, R=recs2, verbose=F)
       
-      #Naive manager
-      #hr1wanted <- yc1[yc1$landings==max(yc1$landings),]$hr
-      #hr2wanted <- yc2[yc2$landings==max(yc2$landings),]$hr
+      # Also Scenario II: where discarding is allowed and manager only perceives LANDINGS. Landings selectivity, under this scenario the fishery is under landings selectivity, only landings contribute to yield.
+      #----------------
+       # hr1 <- apply(catches.n.dsvm1,1:3,sum)/    (apply(catches.n.dsvm1,1:3,sum) +    apply(pop1[,1:endy,,],1:3,sum))
+       # hr2 <- apply(catches.n.dsvm2,1:3,sum)/    (apply(catches.n.dsvm2,1:3,sum) +    apply(pop2[,1:endy,,],1:3,sum))
+       # 
+       # landings.ratio1 <- (apply(landings.n.dsvm1,1:3,sum)+1e-20)/ apply(catches.n.dsvm1,1:3,sum)
+       # landings.ratio2 <- (apply(landings.n.dsvm2,1:3,sum)+1e-20)/ apply(catches.n.dsvm2,1:3,sum)
+       # 
+       # yc1 <- yield_curve(hr=hr1[,yy,], landings.ratio1[,yy,], wts, natmortality, R=recs1, verbose=F)
+       # yc2 <- yield_curve(hr=hr2[,yy,], landings.ratio2[,yy,], wts, natmortality, R=recs2, verbose=F)
+       # 
+       # hr1wanted <- yc1[yc1$landings==max(yc1$landings),]$hr
+       # hr2wanted <- yc2[yc2$landings==max(yc2$landings),]$hr
+
+      # Scenario III: Smart manager,  Catch selectivity, under this scenario the fishery is under a full catch selectivity, but all discards are landed and contribute to yield. Fishing mortality accounts for all catches, regardless wether these catches
+      # are landed or discarded. This results generally in higher F MSY .
+      #----------------
+        hr1 <- apply(catches.n.dsvm1,1:3,sum)/    (apply(catches.n.dsvm1,1:3,sum) +    apply(pop1[,1:endy,,],1:3,sum))
+        hr2 <- apply(catches.n.dsvm2,1:3,sum)/    (apply(catches.n.dsvm2,1:3,sum) +    apply(pop2[,1:endy,,],1:3,sum))
+      # # 
+        landings.ratio1 <- (apply(landings.n.dsvm1,1:3,sum)+1e-20)/ (apply(catches.n.dsvm1,1:3,sum))
+        landings.ratio2 <- (apply(landings.n.dsvm2,1:3,sum)+1e-20)/ (apply(catches.n.dsvm2,1:3,sum))
+      # # 
+        yc1 <- yield_curve(hr=hr1[,yy,], landings.ratio1[,yy,], wts, natmortality, R=recs1, verbose=F)
+        yc2 <- yield_curve(hr=hr2[,yy,], landings.ratio2[,yy,], wts, natmortality, R=recs2, verbose=F) 
+      # # 
+        hr1wanted <- yc1[yc1$catch==max(yc1$catch),]$hr
+        hr2wanted <- yc2[yc2$catch==max(yc2$catch),]$hr
       
-      #Smart manager    
-      hr1wanted <- yc1[yc1$catch==max(yc1$catch),]$hr
-      hr2wanted <- yc2[yc2$catch==max(yc2$catch),]$hr
+      # Scenario IV: No FULL COMPLIANCE in LO, if LO is not fully enforced, therefore, there will be the incentive to continue discarding. However the manager could think that is fully enforced and assumed that only what is landed contribute to yield.
+      #----------------------------
+      # hr1 <- apply(landings.n.dsvm1,1:3,sum)/    (apply(landings.n.dsvm1,1:3,sum) +    apply(pop1[,1:endy,,],1:3,sum))
+      # hr2 <- apply(landings.n.dsvm2,1:3,sum)/    (apply(landings.n.dsvm2,1:3,sum) +    apply(pop2[,1:endy,,],1:3,sum))
+      
+      #landings.ratio1 <- (apply(landings.n.dsvm1,1:3,sum)+1e-20)/ apply(catches.n.dsvm1,1:3,sum)
+      #landings.ratio2 <- (apply(landings.n.dsvm2,1:3,sum)+1e-20)/ apply(catches.n.dsvm2,1:3,sum)
+      #landings.ratio1[,yy,] <- landings.ratio2[,yy,] <- 1
+      
+      # yc1 <- yield_curve(hr=hr1[,yy,], landings.ratio1[,yy,], wts, natmortality, R=recs1, verbose=F)
+      # yc2 <- yield_curve(hr=hr2[,yy,], landings.ratio2[,yy,], wts, natmortality, R=recs2, verbose=F) 
+      
+      # hr1wanted <- yc1[yc1$landings==max(yc1$landings),]$hr
+      # hr2wanted <- yc2[yc2$landings==max(yc2$landings),]$hr
       
       #We take the first value of hr1wanted vector to guarantee that we always get a single value in case landingratio is 0
       if (yy > (MPstart-1) & yy < endy){ #if (yy > (MPstart-1))
@@ -281,8 +329,13 @@ yield_curve <- function(hr,lratio, wts, natmortality, R=1, sequence = seq(0.001,
     #what are the weights?
     wts
     
-    hr1 <- apply(catches.n.dsvm1,1:3,sum)/    (apply(catches.n.dsvm1,1:3,sum) +    apply(pop1[,1:endy,,],1:3,sum))
-    hr2 <- apply(catches.n.dsvm2,1:3,sum)/    (apply(catches.n.dsvm2,1:3,sum) +    apply(pop2[,1:endy,,],1:3,sum))
+    # Scenarios III: Smart manager under LO, full catch selectivity
+     hr1 <- apply(catches.n.dsvm1,1:3,sum)/    (apply(catches.n.dsvm1,1:3,sum) +    apply(pop1[,1:endy,,],1:3,sum))
+     hr2 <- apply(catches.n.dsvm2,1:3,sum)/    (apply(catches.n.dsvm2,1:3,sum) +    apply(pop2[,1:endy,,],1:3,sum))
+   
+    # Scenarios Iand IV: Naive and no full comppliance
+    #hr1 <- apply(landings.n.dsvm1,1:3,sum)/    (apply(landings.n.dsvm1,1:3,sum) +    apply(pop1[,1:endy,,],1:3,sum))
+    #hr2 <- apply(landings.n.dsvm2,1:3,sum)/    (apply(landings.n.dsvm2,1:3,sum) +    apply(pop2[,1:endy,,],1:3,sum))
     
     pyrnoMP <- MPstart- 4
     pyrMP   <- endy   - 4
@@ -301,20 +354,28 @@ yield_curve <- function(hr,lratio, wts, natmortality, R=1, sequence = seq(0.001,
     yc1noMP <- yield_curve(hr=hr1[,pyrnoMP,], landings.ratio1[,pyrnoMP,], wts, natmortality, R=recs1, verbose=F)
     yc2noMP <- yield_curve(hr=hr2[,pyrnoMP,], landings.ratio2[,pyrnoMP,], wts, natmortality, R=recs2, verbose=F)
     
-    Fmsy1noMP <- yc1noMP[yc1noMP$catch==max(yc1noMP$catch),]$hr
-    Fmsy2noMP <- yc2noMP[yc2noMP$landings==max(yc2noMP$landings),]$hr
-    
     yc1MP <- yield_curve(hr=hr1[,pyrMP,], landings.ratio1[,pyrMP,], wts, natmortality, R=recs1, verbose=F)
     yc2MP <- yield_curve(hr=hr2[,pyrMP,], landings.ratio2[,pyrMP,], wts, natmortality, R=recs2, verbose=F)
+
+    # Scenarios I, II and IV: Naive and no full comppliance
+    # Fmsy1noMP <- yc1noMP[yc1noMP$landings==max(yc1noMP$landings),]$hr
+    # Fmsy2noMP <- yc2noMP[yc2noMP$landings==max(yc2noMP$landings),]$hr
+    # 
+    # Fmsy1MP <- yc1MP[yc1MP$landings==max(yc1MP$landings),]$hr
+    # Fmsy2MP <- yc2MP[yc2MP$landings==max(yc2MP$landings),]$hr
     
-    Fmsy1MP <- yc1MP[yc1MP$catch==max(yc1MP$catch),]$hr
-    Fmsy2MP <- yc2MP[yc2MP$landings==max(yc2MP$landings),]$hr
+    # Scenarios III: Smart manager under LO, full catch selectivity
+     Fmsy1noMP <- yc1noMP[yc1noMP$catch==max(yc1noMP$catch),]$hr
+     Fmsy2noMP <- yc2noMP[yc2noMP$catch==max(yc2noMP$catch),]$hr
+    # 
+     Fmsy1MP <- yc1MP[yc1MP$catch==max(yc1MP$catch),]$hr
+     Fmsy2MP <- yc2MP[yc2MP$catch==max(yc2MP$catch),]$hr
     
     ylim <- c(0,1000)
     xlimYPR <- c(0,0.2)
 
     setwd("~/Dropbox/BoB/MSE/Git/Nekane/complex model/figures")
-    png(filename=paste("CATCH_", paste0("SIGMA ", SIGMA, "; SIMNUMBER ",SIMNUMBER, "; DISCARDSTEPS ",SPP1DSCSTEPS, "; MIGRATION ",migconstant, "; REC1 ",paste(recs1, collapse = " "), "; REC2 ",paste(recs2, collapse = " "), "; FUELPRICE ",control@fuelPrice,".png"), sep=""),width=20, height=8, units="cm", res=500, pointsize=6.5)
+    png(filename=paste("CATCH_", paste0("SIGMA ", SIGMA, "; SIMNUMBER ",SIMNUMBER, "; DISCARDSTEPS ",SPP1DSCSTEPS, "; MIGRATION ",migconstant, "; REC1 ",paste(recs1, collapse = " "), "; REC2 ",paste(recs2, collapse = " "),  "; SP1PRICE ",sp1Price[1,1],";SP2PRICE ",sp2Price[1,1], "; FUELPRICE ",control@fuelPrice,".png"), sep=""),width=20, height=8, units="cm", res=500, pointsize=6.5)
     #to check
     
     par(mfrow=c(2,5),oma = c(3,0,0,0) + 0.1, mar = c(4,4,1,1) + 0.1)
@@ -343,25 +404,45 @@ yield_curve <- function(hr,lratio, wts, natmortality, R=1, sequence = seq(0.001,
     points(apply(hr1,c(1,2),mean)[4,], col="red", pch=21)
     legend("topright", inset=.05, legend=c("Age 1","Age 2","Age 3","Age 4"), pch=c(19,19,21,21), col=c("black","red", "black","red"), bty='n', cex=0.8)
     
-    plot(x=yc1noMP$hr, y=yc1noMP$landings, type="l", xlim=xlimYPR, ylim=ylim,xaxs='i', yaxs='i',  xlab="Harvest rate", ylab = "Yield per recruit", panel.first=grid(col = "ivory2"))
-    text(xlimYPR[2]*0.8, yc1noMP$landings[length(yc1noMP$hr)]+5, "Unconstrained")
-    abline(v=Fmsy1noMP)
-    #text(xlimYPR[2]*0.8, ylim[2]*0.9, paste0("SIMNUMBER ",SIMNUMBER))
-    points(mean(hr1[,pyrnoMP,]),yc1noMP$landings[yc1noMP$hr>mean(hr1[,pyrnoMP,])][1], col="red", pch=19)
-    points(mean(hr1[,pyrnoMP-2,]),landings.wt.dsvm.tot1[,pyrnoMP-2,,], col="blue", pch=19)
-    points(mean(hr1[,pyrnoMP-1,]),landings.wt.dsvm.tot1[,pyrnoMP-1,,], col="blue", pch=19)
-    points(mean(hr1[,pyrnoMP,]),landings.wt.dsvm.tot1[,pyrnoMP,,], col="blue", pch=19)
-    points(mean(hr1[,pyrnoMP+1,]),landings.wt.dsvm.tot1[,pyrnoMP+1,,], col="blue", pch=19)
-    points(mean(hr1[,pyrnoMP+2,]),landings.wt.dsvm.tot1[,pyrnoMP+2,,], col="blue", pch=19)
-    lines(x=yc1MP$hr, y=yc1MP$landings, ylim=ylim, col="grey")
-    text(yc1MP$hr[length(yc1MP$hr)]-0.02, yc1MP$landings[length(yc1MP$hr)]+80, "Constrained")
-    abline(v=Fmsy1MP, col="grey")
-    points(mean(hr1[,pyrMP,]),yc1MP$landings[yc1MP$hr>mean(hr1[,pyrMP,])][1], col="red", pch=21, bg="white")
-    points(mean(hr1[,pyrMP-2,]),landings.wt.dsvm.tot1[,pyrMP-2,,], col="blue", pch=21, bg="white")
-    points(mean(hr1[,pyrMP-1,]),landings.wt.dsvm.tot1[,pyrMP-1,,], col="blue", pch=21, bg="white")
-    points(mean(hr1[,pyrMP,]),landings.wt.dsvm.tot1[,pyrMP,,], col="blue", pch=21, bg="white")
-    points(mean(hr1[,pyrMP+1,]),landings.wt.dsvm.tot1[,pyrMP+1,,], col="blue", pch=21, bg="white")
-    points(mean(hr1[,pyrMP+2,]),landings.wt.dsvm.tot1[,pyrMP+2,,], col="blue", pch=21, bg="white")
+     plot(x=yc1noMP$hr, y=yc1noMP$landings, type="l", xlim=xlimYPR, ylim=ylim,xaxs='i', yaxs='i',  xlab="Harvest rate", ylab = "Yield per recruit", panel.first=grid(col = "ivory2"))
+     text(xlimYPR[2]*0.8, yc1noMP$landings[length(yc1noMP$hr)]+5, "Unconstrained")
+     abline(v=Fmsy1noMP)
+     #text(xlimYPR[2]*0.8, ylim[2]*0.9, paste0("SIMNUMBER ",SIMNUMBER))
+     points(mean(hr1[,pyrnoMP,]),yc1noMP$landings[yc1noMP$hr>mean(hr1[,pyrnoMP,])][1], col="red", pch=19)
+     points(mean(hr1[,pyrnoMP-2,]),landings.wt.dsvm.tot1[,pyrnoMP-2,,], col="blue", pch=19)
+     points(mean(hr1[,pyrnoMP-1,]),landings.wt.dsvm.tot1[,pyrnoMP-1,,], col="blue", pch=19)
+     points(mean(hr1[,pyrnoMP,]),landings.wt.dsvm.tot1[,pyrnoMP,,], col="blue", pch=19)
+     points(mean(hr1[,pyrnoMP+1,]),landings.wt.dsvm.tot1[,pyrnoMP+1,,], col="blue", pch=19)
+     points(mean(hr1[,pyrnoMP+2,]),landings.wt.dsvm.tot1[,pyrnoMP+2,,], col="blue", pch=19)
+     lines(x=yc1MP$hr, y=yc1MP$landings, ylim=ylim, col="grey")
+     text(yc1MP$hr[length(yc1MP$hr)]-0.02, yc1MP$landings[length(yc1MP$hr)]+80, "Constrained")
+     abline(v=Fmsy1MP, col="grey")
+     points(mean(hr1[,pyrMP,]),yc1MP$landings[yc1MP$hr>mean(hr1[,pyrMP,])][1], col="red", pch=21, bg="white")
+     points(mean(hr1[,pyrMP-2,]),landings.wt.dsvm.tot1[,pyrMP-2,,], col="blue", pch=21, bg="white")
+     points(mean(hr1[,pyrMP-1,]),landings.wt.dsvm.tot1[,pyrMP-1,,], col="blue", pch=21, bg="white")
+     points(mean(hr1[,pyrMP,]),landings.wt.dsvm.tot1[,pyrMP,,], col="blue", pch=21, bg="white")
+     points(mean(hr1[,pyrMP+1,]),landings.wt.dsvm.tot1[,pyrMP+1,,], col="blue", pch=21, bg="white")
+     points(mean(hr1[,pyrMP+2,]),landings.wt.dsvm.tot1[,pyrMP+2,,], col="blue", pch=21, bg="white")
+    
+    # plot(x=yc1noMP$hr, y=yc1noMP$catch, type="l", xlim=xlimYPR, ylim=ylim,xaxs='i', yaxs='i',  xlab="Harvest rate", ylab = "Yield per recruit", panel.first=grid(col = "ivory2"))
+    # text(xlimYPR[2]*0.8, yc1noMP$catch[length(yc1noMP$hr)]+5, "Unconstrained")
+    # abline(v=Fmsy1noMP)
+    # #text(xlimYPR[2]*0.8, ylim[2]*0.9, paste0("SIMNUMBER ",SIMNUMBER))
+    # points(mean(hr1[,pyrnoMP,]),yc1noMP$catch[yc1noMP$hr>mean(hr1[,pyrnoMP,])][1], col="red", pch=19)
+    # points(mean(hr1[,pyrnoMP-2,]),catches.wt.dsvm.tot1[,pyrnoMP-2,,], col="blue", pch=19)
+    # points(mean(hr1[,pyrnoMP-1,]),catches.wt.dsvm.tot1[,pyrnoMP-1,,], col="blue", pch=19)
+    # points(mean(hr1[,pyrnoMP,]),catches.wt.dsvm.tot1[,pyrnoMP,,], col="blue", pch=19)
+    # points(mean(hr1[,pyrnoMP+1,]),catches.wt.dsvm.tot1[,pyrnoMP+1,,], col="blue", pch=19)
+    # points(mean(hr1[,pyrnoMP+2,]),catches.wt.dsvm.tot1[,pyrnoMP+2,,], col="blue", pch=19)
+    # lines(x=yc1MP$hr, y=yc1MP$catch, ylim=ylim, col="grey")
+    # text(yc1MP$hr[length(yc1MP$hr)]-0.02, yc1MP$catch[length(yc1MP$hr)]+80, "Constrained")
+    # abline(v=Fmsy1MP, col="grey")
+    # points(mean(hr1[,pyrMP,]),yc1MP$catch[yc1MP$hr>mean(hr1[,pyrMP,])][1], col="red", pch=21, bg="white")
+    # points(mean(hr1[,pyrMP-2,]),catches.wt.dsvm.tot1[,pyrMP-2,,], col="blue", pch=21, bg="white")
+    # points(mean(hr1[,pyrMP-1,]),catches.wt.dsvm.tot1[,pyrMP-1,,], col="blue", pch=21, bg="white")
+    # points(mean(hr1[,pyrMP,]),catches.wt.dsvm.tot1[,pyrMP,,], col="blue", pch=21, bg="white")
+    # points(mean(hr1[,pyrMP+1,]),catches.wt.dsvm.tot1[,pyrMP+1,,], col="blue", pch=21, bg="white")
+    # points(mean(hr1[,pyrMP+2,]),catches.wt.dsvm.tot1[,pyrMP+2,,], col="blue", pch=21, bg="white")
     
     plot(rowMeans(hr1[,pyrnoMP,]), type="b", ylim=c(0,.2),  xlab="Age", ylab = "Selectivity", panel.first=grid(col = "ivory2"), xaxt="n")
     text(1.5,rowMeans(hr1[,pyrnoMP,])[1]+0.01, "Unconstrained")
@@ -443,7 +524,7 @@ yield_curve <- function(hr,lratio, wts, natmortality, R=1, sequence = seq(0.001,
     lines(apply(landings.wt.dsvm2,c(2,4),sum)[,2], col="red", lty=2)
     #lines(apply(catches.wt.dsvm2,c(2,4),sum)[,3], col="black")
     
-    add_legend("bottomright", legend=paste0("SIGMA ", SIGMA, "; SIMNUMBER ",SIMNUMBER, "; DISCARDSTEPS ",SPP1DSCSTEPS, "; MIGRATION ",migconstant, "; REC1 ",paste(recs1, collapse = " "), "; REC2 ",paste(recs2, collapse = " "), "; FUELPRICE ",control@fuelPrice), col="black", horiz=TRUE, bty='n', cex=1)
+    add_legend("bottomright", legend=paste0("SIGMA ", SIGMA, "; SIMNUMBER ",SIMNUMBER, "; DISCARDSTEPS ",SPP1DSCSTEPS, "; MIGRATION ",migconstant, "; REC1 ",paste(recs1, collapse = " "), "; REC2 ",paste(recs2, collapse = " "), "; SP1PRICE ",sp1Price[1,1],";SP2PRICE ",sp2Price[1,1], "; FUELPRICE ",control@fuelPrice), col="black", horiz=TRUE, bty='n', cex=1)
     #round(pop2,0)
     #
     dev.off()
@@ -480,7 +561,7 @@ yield_curve <- function(hr,lratio, wts, natmortality, R=1, sequence = seq(0.001,
     fuelcosts   <-  melt(economics_res_allyrs, id.vars = "year", measure.vars = c("Fuelcosts"))
 
     
-    png(filename=paste("EFFORT_", paste0("SIGMA ", SIGMA, "; SIMNUMBER ",SIMNUMBER, "; DISCARDSTEPS ",SPP1DSCSTEPS, "; MIGRATION ",migconstant, "; REC1 ",paste(recs1, collapse = " "), "; REC2 ",paste(recs2, collapse = " "), "; FUELPRICE ",control@fuelPrice,".png"), sep=""),width=20, height=8, units="cm", res=500, pointsize=6.5)
+    png(filename=paste("EFFORT_", paste0("SIGMA ", SIGMA, "; SIMNUMBER ",SIMNUMBER, "; DISCARDSTEPS ",SPP1DSCSTEPS, "; MIGRATION ",migconstant, "; REC1 ",paste(recs1, collapse = " "), "; REC2 ",paste(recs2, collapse = " "),  "; SP1PRICE ",sp1Price[1,1],";SP2PRICE ",sp2Price[1,1], "; FUELPRICE ",control@fuelPrice,".png"), sep=""),width=20, height=8, units="cm", res=500, pointsize=6.5)
     #to check
     
     par(mfrow=c(2,5),oma = c(3,0,0,0) + 0.1, mar = c(4,4,1,1) + 0.1)
@@ -557,7 +638,7 @@ yield_curve <- function(hr,lratio, wts, natmortality, R=1, sequence = seq(0.001,
     abline(v=c(10, 30, 50, 70, 90), lty="dotted", col = "ivory2")
     abline(v=MPstart, lty=2)
     lines(aggregate(value ~ year, FUN=sum, data=annualfine)$year, aggregate(value ~ year, FUN=sum, data=annualfine)$value, type="l")
-    add_legend("bottomright", legend=paste0("SIGMA ", SIGMA, "; SIMNUMBER ",SIMNUMBER, "; DISCARDSTEPS ",SPP1DSCSTEPS, "; MIGRATION ",migconstant, "; REC1 ",paste(recs1, collapse = " "), "; REC2 ",paste(recs2, collapse = " "),"; FUELPRICE ",control@fuelPrice), col="black", horiz=TRUE, bty='n', cex=1)
+    add_legend("bottomright", legend=paste0("SIGMA ", SIGMA, "; SIMNUMBER ",SIMNUMBER, "; DISCARDSTEPS ",SPP1DSCSTEPS, "; MIGRATION ",migconstant, "; REC1 ",paste(recs1, collapse = " "), "; REC2 ",paste(recs2, collapse = " "), "; SP1PRICE ",sp1Price[1,1],";SP2PRICE ",sp2Price[1,1], "; FUELPRICE ",control@fuelPrice), col="black", horiz=TRUE, bty='n', cex=1)
 
     dev.off()
     
