@@ -123,9 +123,10 @@ areas         <- c("a", "b")
 stab.model    <- 10
 NUMRUNS       <- 80
 MPstart       <- 40
+MPstartLO     <- 65
 SIMNUMBER     <- 700 #pos
 SIGMA         <- 40 #sig 
-SPP1DSCSTEPS  <- 0
+SPP1DSCSTEPS  <- 2
 SPP2DSCSTEPS  <- 0
 endy          <- stab.model + NUMRUNS
 Linf          <- 20
@@ -134,9 +135,9 @@ wts           <- Linf*(1-exp(-K*ages))
 q             <- 0.0005
 natmortality  <- 0.0001
 migconstant   <- 0.2
-scenario      <- "1" 
-sp1price      <- slope1price <- 150
-sp2price      <- slope2price <- 150
+sp1price      <- sp2price      <- 150
+slope1price <- 150
+slope2price <- 150
 # scenario I: discarding is not allowed, YPR based in C (C=L)
 # scenario II: discarding is allowed, YPR based in L, hr wanted based in catches
 # scenario III: discarding ocurred but not perceived, YPR based in L, hr wanted based in landings
@@ -188,15 +189,14 @@ sp1Price <- array(c(sp1price+ slope1price*((wts-mean(wts)/mean(wts)))), dim=c(le
 sp2Price <- array(c(sp2price+ slope2price*((wts-mean(wts)/mean(wts)))), dim=c(length(ages),length(season)), dimnames=list(cat=ages,season=as.character(season)))
 sp3Price <- sp4Price <- sp5Price <- array(c(0), dim=c(length(ages),length(season)), dimnames=list(cat=ages,season=as.character(season)))
 #---effort and prices used (note that now c is removed (but that if other runs, then make sure to fix/remove code that removes "c" option)                                                                                         
-
-control     <- DynState.control(spp1LndQuota= 200,  spp2LndQuota=200, spp1LndQuotaFine= 3e6, spp2LndQuotaFine= 3e6, fuelUse = 1, fuelPrice = 150.0, landingCosts= 0,gearMaintenance= 0, addNoFishing= TRUE, increments= 25, spp1DiscardSteps= SPP1DSCSTEPS, spp2DiscardSteps= SPP2DSCSTEPS, sigma= SIGMA, simNumber= SIMNUMBER, numThreads= 20)
+control     <- DynState.control(spp1LndQuota= 200,  spp2LndQuota=200, spp1LndQuotaFine= 3e6, spp2LndQuotaFine= 3e6, fuelUse = 1, fuelPrice = 150.0, landingCosts= 0,gearMaintenance= 0, addNoFishing= TRUE, increments= 7, spp1DiscardSteps= SPP1DSCSTEPS, spp2DiscardSteps= SPP2DSCSTEPS, sigma= SIGMA, simNumber= SIMNUMBER, numThreads= 20)
 
 #this is where our loop starts, after we set up stable population
 for(yy in (stab.model):(stab.model+NUMRUNS)){
   
   print("====== year yy ========")
   print(yy)
-  
+
   catchMean(sp1)  <- array(apply(pos_catches1[,(yy-2):yy,,,drop=F],c(1,3,4),mean), dim=c(length(ages), length(season),length(areas)),  dimnames=list("cat"=ages,"season"= season,"option"=areas))
   catchMean(sp2)  <- array(apply(pos_catches2[,(yy-2):yy,,,drop=F],c(1,3,4),mean), dim=c(length(ages), length(season),length(areas)),  dimnames=list("cat"=ages,"season"= season,"option"=areas))
   
@@ -205,8 +205,17 @@ for(yy in (stab.model):(stab.model+NUMRUNS)){
   catchSigma(sp2) <- catchMean(sp2) *0.08
   
   # if we are in MP period, then set quota based on last year
-  if (yy > MPstart)
+  if (yy > MPstart){
     control@spp1LndQuota <-  quota1[,yy,,]
+    #control@spp2LndQuota <-  quota2[,yy,,]
+  }
+
+  # if we are in MPLO period, then set discardsteps =0 
+  if (yy > MPstartLO){
+    control@spp1DiscardSteps <-  0
+    #control@spp2DiscardSteps <-  0
+  }
+
   
   #run DSVM (wiht quota constraining if in MP time)   
   z <- DynState(sp1, sp2, sp3, sp4, sp5, sp1Price, sp2Price, sp3Price, sp4Price, sp5Price, effort, control)
@@ -260,65 +269,40 @@ for(yy in (stab.model):(stab.model+NUMRUNS)){
   #------------------------------------------
   #MANAGEMENT PROCEDURE
   #------------------------------------------
-  for(scen in (scenario)){
-    
-    if (scen=="1"){
-      # Scenario I: no discards allowed, full avoidance of discards (landings selectivity only). Fulll avoidance of discards, this scenario contemplates the LO with landings selectivity only and fulll avoidance of discards.
-      #----------------
-      hr1 <- (apply(landings.n.dsvm1,1:3,sum)+1e-20)/ (apply(landings.n.dsvm1,1:3,sum) + apply(pop1[,1:endy,,],1:3,sum))
-      hr2 <- (apply(landings.n.dsvm2,1:3,sum)+1e-20)/ (apply(landings.n.dsvm2,1:3,sum) + apply(pop2[,1:endy,,],1:3,sum))
-      
-      landings.ratio1 <- (apply(landings.n.dsvm1,1:3,sum)+1e-20)/ apply(catches.n.dsvm1,1:3,sum)
-      landings.ratio2 <- (apply(landings.n.dsvm2,1:3,sum)+1e-20)/ apply(catches.n.dsvm2,1:3,sum)
-      landings.ratio1[,yy,] <- landings.ratio2[,yy,] <- 1
-      
-      yc1 <- yield_curve(hr=hr1[,yy,], landings.ratio1[,yy,], wts, natmortality, R=recs1, verbose=F)
-      yc2 <- yield_curve(hr=hr2[,yy,], landings.ratio2[,yy,], wts, natmortality, R=recs2, verbose=F)
-      
-      hr1wanted <- yc1[yc1$landings==max(yc1$landings),]$hr
-      hr2wanted <- yc2[yc2$landings==max(yc2$landings),]$hr
-    } 
-    
-    if (scen=="2"){
-      # Also Scenario II: where discarding is allowed and manager only perceives LANDINGS. Landings selectivity, under this scenario the fishery is under landings selectivity, only landings contribute to yield.
-      #----------------
-      hr1 <- apply(catches.n.dsvm1,1:3,sum)/    (apply(catches.n.dsvm1,1:3,sum) +    apply(pop1[,1:endy,,],1:3,sum))
-      hr2 <- apply(catches.n.dsvm2,1:3,sum)/    (apply(catches.n.dsvm2,1:3,sum) +    apply(pop2[,1:endy,,],1:3,sum))
-      
-      landings.ratio1 <- (apply(landings.n.dsvm1,1:3,sum)+1e-20)/ apply(catches.n.dsvm1,1:3,sum)
-      landings.ratio2 <- (apply(landings.n.dsvm2,1:3,sum)+1e-20)/ apply(catches.n.dsvm2,1:3,sum)
-      
-      yc1 <- yield_curve(hr=hr1[,yy,], landings.ratio1[,yy,], wts, natmortality, R=recs1, verbose=F)
-      yc2 <- yield_curve(hr=hr2[,yy,], landings.ratio2[,yy,], wts, natmortality, R=recs2, verbose=F)
-      
-      hr1wanted <- yc1[yc1$landings==max(yc1$landings),]$hr
-      hr2wanted <- yc2[yc2$landings==max(yc2$landings),]$hr
-    } 
-    
-    if (scen=="3"){
-      # Scenario III: No FULL COMPLIANCE in LO, if LO is not fully enforced, therefore, there will be the incentive to continue discarding. However the manager could think that is fully enforced and assumed that only what is landed contribute to yield.
-      #----------------------------
-      hr1 <- apply(landings.n.dsvm1,1:3,sum)/    (apply(landings.n.dsvm1,1:3,sum) +    apply(pop1[,1:endy,,],1:3,sum))
-      hr2 <- apply(landings.n.dsvm2,1:3,sum)/    (apply(landings.n.dsvm2,1:3,sum) +    apply(pop2[,1:endy,,],1:3,sum))
-      
-      landings.ratio1 <- (apply(landings.n.dsvm1,1:3,sum)+1e-20)/ apply(catches.n.dsvm1,1:3,sum)
-      landings.ratio2 <- (apply(landings.n.dsvm2,1:3,sum)+1e-20)/ apply(catches.n.dsvm2,1:3,sum)
-      landings.ratio1[,yy,] <- landings.ratio2[,yy,] <- 1
-      
-      yc1 <- yield_curve(hr=hr1[,yy,], landings.ratio1[,yy,], wts, natmortality, R=recs1, verbose=F)
-      yc2 <- yield_curve(hr=hr2[,yy,], landings.ratio2[,yy,], wts, natmortality, R=recs2, verbose=F) 
-      
-      hr1wanted <- yc1[yc1$landings==max(yc1$landings),]$hr
-      hr2wanted <- yc2[yc2$landings==max(yc2$landings),]$hr
-    } 
+  
+  hr1 <- (apply(catches.n.dsvm1,1:3,sum)+1e-20)/    (apply(catches.n.dsvm1,1:3,sum) +  apply(pop1[,1:endy,,],1:3,sum))
+  hr2 <- (apply(catches.n.dsvm2,1:3,sum)+1e-20)/    (apply(catches.n.dsvm2,1:3,sum) +  apply(pop2[,1:endy,,],1:3,sum))
+  
+  landings.ratio1 <- (apply(landings.n.dsvm1,1:3,sum)+1e-20)/ (apply(catches.n.dsvm1,1:3,sum)+1e-20)
+  landings.ratio2 <- (apply(landings.n.dsvm2,1:3,sum)+1e-20)/ (apply(catches.n.dsvm2,1:3,sum)+1e-20)
+  
+  if (yy == MPstartLO){
+    landings.ratio1[,yy,]<- 1
+    landings.ratio2[,yy,]<- 1
   }
+  
+  yc1 <- yield_curve(hr=hr1[,yy,], landings.ratio1[,yy,], wts, natmortality, R=recs1, verbose=F)
+  yc2 <- yield_curve(hr=hr2[,yy,], landings.ratio2[,yy,], wts, natmortality, R=recs2, verbose=F)
+      
+  hr1wanted <- yc1[yc1$landings==max(yc1$landings),]$hr
+  hr2wanted <- yc2[yc2$landings==max(yc2$landings),]$hr
   
   #We take the first value of hr1wanted vector to guarantee that we always get a single value in case landingratio is 0
   if (yy > (MPstart-1) & yy < endy){ #if (yy > (MPstart-1))
-    prel.quota <-  sum(sweep((hr1wanted[1]/mean(hr1[,yy,]))* hr1[,yy,]*landings.ratio1[,yy,]*apply(pop1[,yy+1,,],c(1,2), sum) ,1,wts,"*"))/SIMNUMBER
-    tac.constrained <- c(quota1[,yy,,]*0.85, quota1[,yy,,]*1.15)
-    quota1[,yy+1,,] <- max(min(prel.quota, tac.constrained[2]), tac.constrained[1])    
-    
+    prel.quota1 <-  sum(sweep((hr1wanted[1]/mean(hr1[,yy,]))* hr1[,yy,]*landings.ratio1[,yy,]*apply(pop1[,yy+1,,],c(1,2), sum) ,1,wts,"*"))/SIMNUMBER
+    #prel.quota2 <-  sum(sweep((hr2wanted[1]/mean(hr2[,yy,]))* hr2[,yy,]*landings.ratio2[,yy,]*apply(pop2[,yy+1,,],c(1,2), sum) ,1,wts,"*"))/SIMNUMBER
+    # We constrained +- 15% TAC change, until the LO implementation, where we allow the HR wanted just for the transition
+    # In the transition we assume landing ratio equal 1
+    if (yy == MPstartLO){ # landing.ratio are equal to 1 for all years before estimating them
+      quota1[,yy+1,,] <- prel.quota1
+      #quota2[,yy+1,,] <- prel.quota2
+    }else{
+      tac.constrained1 <- c(quota1[,yy,,]*0.85, quota1[,yy,,]*1.15)
+      #tac.constrained2 <- c(quota2[,yy,,]*0.85, quota2[,yy,,]*1.15)
+      quota1[,yy+1,,] <- max(min(prel.quota1, tac.constrained1[2]), tac.constrained1[1]) 
+      #quota2[,yy+1,,] <- max(min(prel.quota2, tac.constrained2[2]), tac.constrained2[1]) 
+    }
+       
   }
 }
 
@@ -326,39 +310,37 @@ for(yy in (stab.model):(stab.model+NUMRUNS)){
 #what are the weights?
 wts
 
-pyrnoMP <- MPstart- 4
-pyrMP   <- endy   - 4
+pyrnoMP   <- MPstart- 4
+pyrMP     <- MPstartLO - 4
+pyrMPLO   <- endy   - 4
 
-for(scen in (scenario)){
-  if (scen=="2"){
-    # Scenarios II: full landings selectivity, when discarding is allowed
-    hr1 <- apply(catches.n.dsvm1,1:3,sum)/    (apply(catches.n.dsvm1,1:3,sum) +    apply(pop1[,1:endy,,],1:3,sum))
-    hr2 <- apply(catches.n.dsvm2,1:3,sum)/    (apply(catches.n.dsvm2,1:3,sum) +    apply(pop2[,1:endy,,],1:3,sum))
-  } else {
-    # Scenarios I and III: manager under LO and no full comppliance
-    hr1 <- apply(landings.n.dsvm1,1:3,sum)/    (apply(landings.n.dsvm1,1:3,sum) +    apply(pop1[,1:endy,,],1:3,sum))
-    hr2 <- apply(landings.n.dsvm2,1:3,sum)/    (apply(landings.n.dsvm2,1:3,sum) +    apply(pop2[,1:endy,,],1:3,sum))
-  }
-}
 
-#what happens in our yield curve for this hr?
-#yield_curve(hr=hr1[,pyrnoMP,], landings.ratio1[,pyrnoMP,], wts, natmortality, R=recs1, sequence = 1, verbose=T)
-#yield_curve(hr=hr2[,pyrnoMP,], landings.ratio2[,pyrnoMP,], wts, natmortality, R=recs2, sequence = 1, verbose=T)
+# Scenarios II: full landings selectivity, when discarding is allowed
+hr1 <- (apply(catches.n.dsvm1,1:3,sum)+1e-20)/    ((apply(catches.n.dsvm1,1:3,sum)+1e-20) +    apply(pop1[,1:endy,,],1:3,sum))
+hr2 <- (apply(catches.n.dsvm2,1:3,sum)+1e-20)/    ((apply(catches.n.dsvm2,1:3,sum)+1e-20) +    apply(pop2[,1:endy,,],1:3,sum))
+landings.ratio1 <- (apply(landings.n.dsvm1,1:3,sum)+1e-20)/ (apply(catches.n.dsvm1,1:3,sum)+1e-20)
+landings.ratio2 <- (apply(landings.n.dsvm2,1:3,sum)+1e-20)/ (apply(catches.n.dsvm2,1:3,sum)+1e-20)
+
 yc1noMP <- yield_curve(hr=hr1[,pyrnoMP,], landings.ratio1[,pyrnoMP,], wts, natmortality, R=recs1, verbose=F)
 yc2noMP <- yield_curve(hr=hr2[,pyrnoMP,], landings.ratio2[,pyrnoMP,], wts, natmortality, R=recs2, verbose=F)
-
 #what happens in our yield curve for this hr?
 #yield_curve(hr=hr1[,pyrnoMP,], landings.ratio1[,pyrnoMP,], wts, natmortality, R=recs1, sequence = 1, verbose=T)
 #yield_curve(hr=hr2[,pyrnoMP,], landings.ratio2[,pyrnoMP,], wts, natmortality, R=recs2, sequence = 1, verbose=T)
+
 yc1MP <- yield_curve(hr=hr1[,pyrMP,], landings.ratio1[,pyrMP,], wts, natmortality, R=recs1, verbose=F)
 yc2MP <- yield_curve(hr=hr2[,pyrMP,], landings.ratio2[,pyrMP,], wts, natmortality, R=recs2, verbose=F)
 
+yc1MPLO <- yield_curve(hr=hr1[,pyrMPLO,], landings.ratio1[,pyrMPLO,], wts, natmortality, R=recs1, verbose=F)
+yc2MPLO <- yield_curve(hr=hr2[,pyrMPLO,], landings.ratio2[,pyrMPLO,], wts, natmortality, R=recs2, verbose=F)
  
 Fmsy1noMP <- yc1noMP[yc1noMP$landings==max(yc1noMP$landings),]$hr
 Fmsy2noMP <- yc2noMP[yc2noMP$landings==max(yc2noMP$landings),]$hr
 
 Fmsy1MP <- yc1MP[yc1MP$landings==max(yc1MP$landings),]$hr
 Fmsy2MP <- yc2MP[yc2MP$landings==max(yc2MP$landings),]$hr
+
+Fmsy1MPLO <- yc1MPLO[yc1MPLO$landings==max(yc1MPLO$landings),]$hr
+Fmsy2MPLO <- yc2MPLO[yc2MPLO$landings==max(yc2MPLO$landings),]$hr
 
 #round(catches.n.dsvm1[,pyrnoMP,,],2)
 #round(pop1[,pyrnoMP,,],2)
@@ -372,30 +354,39 @@ Fmsy2MP <- yc2MP[yc2MP$landings==max(yc2MP$landings),]$hr
 ylim <- c(0,1000)
 xlimYPR <- c(0,0.2)
 
-setwd("~/Dropbox/BoB/MSE/Git/Nekane/complex model/figures")
-png(filename=paste("CATCH_", paste0("SIGMA ", SIGMA, "; SIMNUMBER ",SIMNUMBER, "; DISCARDSTEPS ",SPP1DSCSTEPS, "; MIGRATION ",migconstant, "; REC1 ",paste(recs1, collapse = " "), "; REC2 ",paste(recs2, collapse = " "), "; SP1PRICE ",paste0(round(sp1Price[,1]), sep = ', ', collapse = ''),";SP2PRICE ",paste0(round(sp2Price[,1]), sep = ', ', collapse = ''), "; FUELPRICE ",control@fuelPrice,".png"), sep=""),width=20, height=8, units="cm", res=500, pointsize=6.5)
+setwd("~/Dropbox/BoB/MSE/Git/Nekane/doc/Figures")
+png(filename=paste("MIXEDMP2_CATCH_", paste0("SIGMA ", SIGMA, "; INCREMENTS ",control@increments, "; SIMNUMBER ",SIMNUMBER, "; DISCARDSTEPS ",SPP1DSCSTEPS, "; MIGRATION ",migconstant, "; REC1 ",paste(recs1, collapse = " "), "; REC2 ",paste(recs2, collapse = " "), "; SP1PRICE ",paste0(round(sp1Price[,1]), sep = ', ', collapse = ''),";SP2PRICE ",paste0(round(sp2Price[,1]), sep = ', ', collapse = ''), "; FUELPRICE ",control@fuelPrice,".png"), sep=""),width=20, height=8, units="cm", res=500, pointsize=6.5)
 #to check
 
 par(mfrow=c(2,5),oma = c(3,0,0,0) + 0.1, mar = c(4,4,1,1) + 0.1)
 #,oma = c(4,3,1,1) + 0.1, mar = c(4,4,1,1) + 0.1)
 
 plot(catches.wt.dsvm.tot1, type="l",  xlim=c(10,90), ylim=ylim, xaxs='i', yaxs='i', xlab= "Year", ylab = "Total catches (weight)", xaxt = "n", panel.first=grid(NA, NULL,col = "ivory2"))
-polygon(x=c(pyrnoMP-2,pyrnoMP+2,pyrnoMP+2,pyrnoMP-2), border=NA, y=c(rep(ylim,each=2)), col="gray")
-polygon(x=c(pyrMP-2,pyrMP+2,pyrMP+2,pyrMP-2)        , border=NA, y=c(rep(ylim,each=2)), col="ivory2")
-axis(1, at = c(10, 30, 40, 50, 70, 90),labels = c(10, 30, "MP", 50,70,90))
+polygon(x=c(pyrnoMP-2,pyrnoMP+2,pyrnoMP+2,pyrnoMP-2), border=NA, y=c(rep(ylim,each=2)), col="ivory4")
+polygon(x=c(pyrMP-2,pyrMP+2,pyrMP+2,pyrMP-2)        , border=NA, y=c(rep(ylim,each=2)), col="ivory3")
+polygon(x=c(pyrMPLO-2,pyrMPLO+2,pyrMPLO+2,pyrMPLO-2), border=NA, y=c(rep(ylim,each=2)), col="darkgreen")
+axis(1, at = c(10, 30, 40, 50, 65, 70, 90),
+     labels = c(10, 30, "MP", 50, "LO" ,70,90))
+axis(1, at = c(40, 65),labels = c("MP",  "LO" ))
 abline(v=c(30, 50, 70), lty="dotted", col = "ivory2")
 abline(v=MPstart, lty=2)
-lines((quota1* SIMNUMBER), col="red" )
+abline(v=MPstartLO, lty=2)
+lines((quota1* SIMNUMBER), col="red")
 lines(catches.wt.dsvm.tot1,  type="l", ylim=ylim)
-lines(landings.wt.dsvm.tot1, type="l", ylim=ylim, lty= 2)
-legend("bottomright", inset=.05, legend=c("Catches","TAC"), pch=c(1,1), col=c("black","red"), bty='n', cex=0.8)
+lines(landings.wt.dsvm.tot1, type="l", lty=2, ylim=ylim)
+legend("bottomright", inset=.05, legend=c("Catches","Landings","TAC"), pch=c(1,46,1), col=c("black","black","red"), bty='n', cex=0.8)
 
 plot(apply(hr1,c(1,2),mean)[1,], type="p",  xlim=c(10,90), ylim=c(0,0.2), xaxs='i', yaxs='i', xlab= "Year", ylab = "Harvest rates", xaxt = "n", panel.first=grid(NA, NULL,col = "ivory2"))
-polygon(x=c(pyrnoMP-2,pyrnoMP+2,pyrnoMP+2,pyrnoMP-2), border=NA, y=c(rep(ylim,each=2)), col="gray")
-polygon(x=c(pyrMP-2,pyrMP+2,pyrMP+2,pyrMP-2)        , border=NA, y=c(rep(ylim,each=2)), col="ivory2")
-axis(1, at = c(10, 30, 40, 50, 70, 90),labels = c(10, 30, "MP", 50,70,90))
+polygon(x=c(pyrnoMP-2,pyrnoMP+2,pyrnoMP+2,pyrnoMP-2), border=NA, y=c(rep(ylim,each=2)), col="ivory4")
+polygon(x=c(pyrMP-2,pyrMP+2,pyrMP+2,pyrMP-2)        , border=NA, y=c(rep(ylim,each=2)), col="ivory3")
+polygon(x=c(pyrMPLO-2,pyrMPLO+2,pyrMPLO+2,pyrMPLO-2), border=NA, y=c(rep(ylim,each=2)), col="darkgreen")
+axis(1, at = c(10, 30, 40, 50, 65, 70, 90),
+     labels = c(10, 30, "MP", 50, "LO" ,70,90))
+axis(1, at = c(40, 65),labels = c("MP",  "LO" ))
 abline(v=c(30, 50, 70), lty="dotted", col = "ivory2")
+abline(h=c(0.05, 0.1, 0.15), lty="dotted", col = "ivory2")
 abline(v=MPstart, lty=2)
+abline(v=MPstartLO, lty=2)
 points(apply(hr1,c(1,2),mean)[1,], col="black", pch=19)
 points(apply(hr1,c(1,2),mean)[2,], col="red", pch=19)
 points(apply(hr1,c(1,2),mean)[3,], col="black", pch=21)
@@ -404,36 +395,51 @@ legend("topright", inset=.05, legend=c("Age 1","Age 2","Age 3","Age 4"), pch=c(1
 
 plot(x=yc1noMP$hr, y=yc1noMP$landings, type="l", xlim=xlimYPR, ylim=ylim,xaxs='i', yaxs='i',  xlab="Harvest rate", ylab = "Yield per recruit", panel.first=grid(col = "ivory2"))
 text(xlimYPR[2]*0.8, yc1noMP$landings[length(yc1noMP$hr)]+5, "Unconstrained")
-abline(v=Fmsy1noMP)
+abline(v=Fmsy1noMP, col="ivory4")
 #text(xlimYPR[2]*0.8, ylim[2]*0.9, paste0("SIMNUMBER ",SIMNUMBER))
 points(mean(hr1[,pyrnoMP,]),yc1noMP$landings[yc1noMP$hr>mean(hr1[,pyrnoMP,])][1], col="red", pch=19)
-points(mean(hr1[,pyrnoMP-2,]),landings.wt.dsvm.tot1[,pyrnoMP-2,,], col="blue", pch=19)
-points(mean(hr1[,pyrnoMP-1,]),landings.wt.dsvm.tot1[,pyrnoMP-1,,], col="blue", pch=19)
-points(mean(hr1[,pyrnoMP,]),landings.wt.dsvm.tot1[,pyrnoMP,,], col="blue", pch=19)
-points(mean(hr1[,pyrnoMP+1,]),landings.wt.dsvm.tot1[,pyrnoMP+1,,], col="blue", pch=19)
-points(mean(hr1[,pyrnoMP+2,]),landings.wt.dsvm.tot1[,pyrnoMP+2,,], col="blue", pch=19)
-lines(x=yc1MP$hr, y=yc1MP$landings, ylim=ylim, col="grey")
-text(yc1MP$hr[length(yc1MP$hr)]-0.02, yc1MP$landings[length(yc1MP$hr)]+80, "Constrained")
-abline(v=Fmsy1MP, col="grey")
+points(mean(hr1[,pyrnoMP-2,]),landings.wt.dsvm.tot1[,pyrnoMP-2,,],col="ivory4", pch=19)
+points(mean(hr1[,pyrnoMP-1,]),landings.wt.dsvm.tot1[,pyrnoMP-1,,], col="ivory4", pch=19)
+points(mean(hr1[,pyrnoMP,]),landings.wt.dsvm.tot1[,pyrnoMP,,], col="ivory4", pch=19)
+points(mean(hr1[,pyrnoMP+1,]),landings.wt.dsvm.tot1[,pyrnoMP+1,,], col="ivory4", pch=19)
+points(mean(hr1[,pyrnoMP+2,]),landings.wt.dsvm.tot1[,pyrnoMP+2,,], col="ivory4", pch=19)
+lines(x=yc1MP$hr, y=yc1MP$landings, ylim=ylim, col="ivory3")
+text(0.15, yc1MP$landings[length(yc1MP$hr)]+80, "Constrained \n 15% TAC change")
+abline(v=Fmsy1MP, col="ivory3")
 points(mean(hr1[,pyrMP,]),yc1MP$landings[yc1MP$hr>mean(hr1[,pyrMP,])][1], col="red", pch=21, bg="white")
-points(mean(hr1[,pyrMP-2,]),landings.wt.dsvm.tot1[,pyrMP-2,,], col="blue", pch=21, bg="white")
-points(mean(hr1[,pyrMP-1,]),landings.wt.dsvm.tot1[,pyrMP-1,,], col="blue", pch=21, bg="white")
-points(mean(hr1[,pyrMP,]),landings.wt.dsvm.tot1[,pyrMP,,], col="blue", pch=21, bg="white")
-points(mean(hr1[,pyrMP+1,]),landings.wt.dsvm.tot1[,pyrMP+1,,], col="blue", pch=21, bg="white")
-points(mean(hr1[,pyrMP+2,]),landings.wt.dsvm.tot1[,pyrMP+2,,], col="blue", pch=21, bg="white")
+points(mean(hr1[,pyrMP-2,]),landings.wt.dsvm.tot1[,pyrMP-2,,], col="ivory3", pch=21, bg="white")
+points(mean(hr1[,pyrMP-1,]),landings.wt.dsvm.tot1[,pyrMP-1,,], col="ivory3", pch=21, bg="white")
+points(mean(hr1[,pyrMP,]),landings.wt.dsvm.tot1[,pyrMP,,], col="ivory3", pch=21, bg="white")
+points(mean(hr1[,pyrMP+1,]),landings.wt.dsvm.tot1[,pyrMP+1,,], col="ivory3", pch=21, bg="white")
+points(mean(hr1[,pyrMP+2,]),landings.wt.dsvm.tot1[,pyrMP+2,,], col="ivory3", pch=21, bg="white")
+lines(x=yc1MPLO$hr, y=yc1MPLO$landings, ylim=ylim, col="darkgreen")
+text(yc1MPLO$hr[length(yc1MPLO$hr)]-0.02, yc1MPLO$landings[length(yc1MPLO$hr)]+80, "Constrained LO (MSY)")
+abline(v=Fmsy1MPLO, col="darkgreen")
+points(mean(hr1[,pyrMPLO,]),yc1MPLO$landings[yc1MPLO$hr>mean(hr1[,pyrMPLO,])][1], col="red", pch=21, bg="white")
+points(mean(hr1[,pyrMPLO-2,]),landings.wt.dsvm.tot1[,pyrMPLO-2,,], col="darkgreen", pch=21, bg="white")
+points(mean(hr1[,pyrMPLO-1,]),landings.wt.dsvm.tot1[,pyrMPLO-1,,], col="darkgreen", pch=21, bg="white")
+points(mean(hr1[,pyrMPLO,]),landings.wt.dsvm.tot1[,pyrMPLO,,], col="darkgreen", pch=21, bg="white")
+points(mean(hr1[,pyrMPLO+1,]),landings.wt.dsvm.tot1[,pyrMPLO+1,,], col="darkgreen", pch=21, bg="white")
+points(mean(hr1[,pyrMPLO+2,]),landings.wt.dsvm.tot1[,pyrMPLO+2,,], col="darkgreen", pch=21, bg="white")
 
 plot(rowMeans(hr1[,pyrnoMP,]), type="b", ylim=c(0,.2),  xlab="Age", ylab = "Selectivity", panel.first=grid(col = "ivory2"), xaxt="n")
-text(1.5,rowMeans(hr1[,pyrnoMP,])[1]+0.01, "Unconstrained")
+text(1,rowMeans(hr1[,pyrnoMP,])[1]+0.01, "Unconstrained", pos=4)
 lines(rowMeans(hr1[,pyrMP,]), type="b", ylim=c(0,.2), col="grey")
-text(1.5,rowMeans(hr1[,pyrMP,])[1]-0.01, "Constrained")
+text(1,rowMeans(hr1[,pyrMP,])[1]+0.01, "Constrained 15% TAC change", pos=4)
+lines(rowMeans(hr1[,pyrMPLO,]), type="b", ylim=c(0,.2), col="darkgreen")
+text(1,rowMeans(hr1[,pyrMPLO,])[1]-0.01, "Constrained LO (MSY)", pos=4)
 axis(1, at = seq(1, 4, by = 1))
 
 plot(apply(catches.wt.dsvm1,c(2,4),sum)[,1], col="blue", type="l",  ylim=ylim,xaxs='i', yaxs='i', xlim=c(10,90),xlab = "Year", ylab = "Catches by area (weight)",xaxt = "n", panel.first=grid(NA, NULL,col = "ivory2"))
-polygon(x=c(pyrnoMP-2,pyrnoMP+2,pyrnoMP+2,pyrnoMP-2), border=NA, y=c(rep(ylim,each=2)), col="gray")
-polygon(x=c(pyrMP-2,pyrMP+2,pyrMP+2,pyrMP-2)        , border=NA, y=c(rep(ylim,each=2)), col="ivory2")
-axis(1, at = c(10, 30, 40, 50, 70, 90),labels = c(10, 30, "MP", 50,70,90))
+polygon(x=c(pyrnoMP-2,pyrnoMP+2,pyrnoMP+2,pyrnoMP-2), border=NA, y=c(rep(ylim,each=2)), col="ivory4")
+polygon(x=c(pyrMP-2,pyrMP+2,pyrMP+2,pyrMP-2)        , border=NA, y=c(rep(ylim,each=2)), col="ivory3")
+polygon(x=c(pyrMPLO-2,pyrMPLO+2,pyrMPLO+2,pyrMPLO-2), border=NA, y=c(rep(ylim,each=2)), col="darkgreen")
+axis(1, at = c(10, 30, 40, 50, 65, 70, 90),
+     labels = c(10, 30, "MP", 50, "LO" ,70,90))
+axis(1, at = c(40, 65),labels = c("MP",  "LO" ))
 abline(v=c(30, 50, 70), lty="dotted", col = "ivory2")
 abline(v=MPstart, lty=2)
+abline(v=MPstartLO, lty=2)
 lines(apply(catches.wt.dsvm1,c(2,4),sum)[,1], col="blue", type="l")
 lines(apply(catches.wt.dsvm1,c(2,4),sum)[,2], col="red")
 lines(apply(landings.wt.dsvm1,c(2,4),sum)[,1], col="blue", lty=2)
@@ -446,20 +452,29 @@ abline(v=MPstart, lty=2)
 #round(pop1,0)
 
 plot(catches.wt.dsvm.tot2, type="l",  xlim=c(10,90), ylim=ylim, xaxs='i', yaxs='i', xlab= "Year", ylab = "Total catches (weight)", xaxt = "n", panel.first=grid(NA, NULL,col = "ivory2"))
-polygon(x=c(pyrnoMP-2,pyrnoMP+2,pyrnoMP+2,pyrnoMP-2), border=NA, y=c(rep(ylim,each=2)), col="gray")
-polygon(x=c(pyrMP-2,pyrMP+2,pyrMP+2,pyrMP-2)        , border=NA, y=c(rep(ylim,each=2)), col="ivory2")
-axis(1, at = c(10, 30, 40, 50, 70, 90),labels = c(10, 30, "MP", 50,70,90))
+polygon(x=c(pyrnoMP-2,pyrnoMP+2,pyrnoMP+2,pyrnoMP-2), border=NA, y=c(rep(ylim,each=2)), col="ivory4")
+polygon(x=c(pyrMP-2,pyrMP+2,pyrMP+2,pyrMP-2)        , border=NA, y=c(rep(ylim,each=2)), col="ivory3")
+polygon(x=c(pyrMPLO-2,pyrMPLO+2,pyrMPLO+2,pyrMPLO-2), border=NA, y=c(rep(ylim,each=2)), col="darkgreen")
+axis(1, at = c(10, 30, 40, 50, 65, 70, 90),
+     labels = c(10, 30, "MP", 50, "LO" ,70,90))
+axis(1, at = c(40, 65),labels = c("MP",  "LO" ))
 abline(v=c(30, 50, 70), lty="dotted", col = "ivory2")
 abline(v=MPstart, lty=2)
+abline(v=MPstartLO, lty=2)
+lines((quota2* SIMNUMBER), col="red")
 lines(catches.wt.dsvm.tot2,  type="l", ylim=ylim)
 lines(landings.wt.dsvm.tot2, type="l", ylim=ylim, lty= 2)
 
 plot(apply(hr2,c(1,2),mean)[1,], type="p",  xlim=c(10,90), ylim=c(0,0.2), xaxs='i', yaxs='i', xlab= "Year", ylab = "Harvest rates", xaxt = "n", panel.first=grid(NA, NULL,col = "ivory2"))
-polygon(x=c(pyrnoMP-2,pyrnoMP+2,pyrnoMP+2,pyrnoMP-2), border=NA, y=c(rep(ylim,each=2)), col="gray")
-polygon(x=c(pyrMP-2,pyrMP+2,pyrMP+2,pyrMP-2)        , border=NA, y=c(rep(ylim,each=2)), col="ivory2")
-axis(1, at = c(10, 30, 40, 50, 70, 90),labels = c(10, 30, "MP", 50,70,90))
+polygon(x=c(pyrnoMP-2,pyrnoMP+2,pyrnoMP+2,pyrnoMP-2), border=NA, y=c(rep(ylim,each=2)), col="ivory4")
+polygon(x=c(pyrMP-2,pyrMP+2,pyrMP+2,pyrMP-2)        , border=NA, y=c(rep(ylim,each=2)), col="ivory3")
+polygon(x=c(pyrMPLO-2,pyrMPLO+2,pyrMPLO+2,pyrMPLO-2), border=NA, y=c(rep(ylim,each=2)), col="darkgreen")
+axis(1, at = c(10, 30, 40, 50, 65, 70, 90),
+     labels = c(10, 30, "MP", 50, "LO" ,70,90))
+axis(1, at = c(40, 65),labels = c("MP",  "LO" ))
 abline(v=c(30, 50, 70), lty="dotted", col = "ivory2")
 abline(v=MPstart, lty=2)
+abline(v=MPstartLO, lty=2)
 points(apply(hr2,c(1,2),mean)[1,], col="black", pch=19)
 points(apply(hr2,c(1,2),mean)[2,], col="red", pch=19)
 points(apply(hr2,c(1,2),mean)[3,], col="black", pch=21)
@@ -475,7 +490,7 @@ points(mean(hr2[,pyrnoMP,]),landings.wt.dsvm.tot2[,pyrnoMP,,], col="blue", pch=1
 points(mean(hr2[,pyrnoMP+1,]),landings.wt.dsvm.tot2[,pyrnoMP+1,,], col="blue", pch=19)
 points(mean(hr2[,pyrnoMP+2,]),landings.wt.dsvm.tot2[,pyrnoMP+2,,], col="blue", pch=19)
 lines(x=yc2MP$hr, y=yc2MP$landings, ylim=ylim, col="grey")
-text(yc2MP$hr[length(yc2MP$hr)]-0.02, yc2MP$landings[length(yc2MP$hr)]+80, "Constrained")
+text(yc2MP$hr[length(yc2MP$hr)]-0.02, yc2MP$landings[length(yc2MP$hr)]+80, "Constrained 15% TAC change")
 abline(v=Fmsy2MP, col="grey")
 points(mean(hr2[,pyrMP,]),yc2MP$landings[yc2MP$hr>mean(hr2[,pyrMP,])][1], col="red", pch=21, bg="white")
 points(mean(hr2[,pyrMP-2,]),landings.wt.dsvm.tot2[,pyrMP-2,,], col="blue", pch=21, bg="white")
@@ -483,26 +498,42 @@ points(mean(hr2[,pyrMP-1,]),landings.wt.dsvm.tot2[,pyrMP-1,,], col="blue", pch=2
 points(mean(hr2[,pyrMP,]),landings.wt.dsvm.tot2[,pyrMP,,], col="blue", pch=21, bg="white")
 points(mean(hr2[,pyrMP+1,]),landings.wt.dsvm.tot2[,pyrMP+1,,], col="blue", pch=21, bg="white")
 points(mean(hr2[,pyrMP+2,]),landings.wt.dsvm.tot2[,pyrMP+2,,], col="blue", pch=21, bg="white")
+lines(x=yc2MPLO$hr, y=yc2MPLO$landings, ylim=ylim, col="darkgreen")
+text(yc2MPLO$hr[length(yc2MPLO$hr)]-0.02, yc2MPLO$landings[length(yc2MPLO$hr)]+80, "Constrained LO (MSY)")
+abline(v=Fmsy2MP, col="darkgreen")
+points(mean(hr2[,pyrMPLO,]),yc2MPLO$landings[yc2MPLO$hr>mean(hr2[,pyrMPLO,])][1], col="red", pch=21, bg="white")
+points(mean(hr2[,pyrMPLO-2,]),landings.wt.dsvm.tot2[,pyrMPLO-2,,], col="darkgreen", pch=21, bg="white")
+points(mean(hr2[,pyrMPLO-1,]),landings.wt.dsvm.tot2[,pyrMPLO-1,,], col="darkgreen", pch=21, bg="white")
+points(mean(hr2[,pyrMPLO,]),landings.wt.dsvm.tot2[,pyrMPLO,,], col="darkgreen", pch=21, bg="white")
+points(mean(hr2[,pyrMPLO+1,]),landings.wt.dsvm.tot2[,pyrMPLO+1,,], col="darkgreen", pch=21, bg="white")
+points(mean(hr2[,pyrMPLO+2,]),landings.wt.dsvm.tot2[,pyrMPLO+2,,], col="darkgreen", pch=21, bg="white")
+
 
 plot(rowMeans(hr2[,pyrnoMP,]), type="b", ylim=c(0,.2), xlab = "Age", ylab = "Selectivity", panel.first=grid(col = "ivory2"), xaxt="n")
-text(1.5,rowMeans(hr2[,pyrnoMP,])[1]+0.01, "Unconstrained")
+text(1,rowMeans(hr2[,pyrnoMP,])[1]+0.01, "Unconstrained",pos=4)
 lines(rowMeans(hr2[,pyrMP,]), type="b", ylim=c(0,.2), col="grey")
-text(1.5,rowMeans(hr2[,pyrMP,])[1]-0.01, "Constrained")
+text(1,rowMeans(hr2[,pyrMP,])[1]+0.01, "Constrained 15% TAC change",pos=4)
+lines(rowMeans(hr2[,pyrMPLO,]), type="b", ylim=c(0,.2), col="darkgreen")
+text(1,rowMeans(hr2[,pyrMPLO,])[1]-0.03, "Constrained LO (MSY)",pos=4)
 axis(1, at = seq(1, 4, by = 1))
 
 plot(apply(catches.wt.dsvm2,c(2,4),sum)[,1], col="blue", type="l",  ylim=ylim,xaxs='i', yaxs='i', xlim=c(10,90),xlab = "Year", ylab = "Catches by area (weight)",xaxt = "n", panel.first=grid(NA, NULL,col = "ivory2"))
-polygon(x=c(pyrnoMP-2,pyrnoMP+2,pyrnoMP+2,pyrnoMP-2), border=NA, y=c(rep(ylim,each=2)), col="gray")
-polygon(x=c(pyrMP-2,pyrMP+2,pyrMP+2,pyrMP-2)        , border=NA, y=c(rep(ylim,each=2)), col="ivory2")
-axis(1, at = c(10, 30, 40, 50, 70, 90),labels = c(10, 30, "MP", 50,70,90))
-abline(v=c(30, 50, 70), lty="dotted", col = "ivory2")
+polygon(x=c(pyrnoMP-2,pyrnoMP+2,pyrnoMP+2,pyrnoMP-2), border=NA, y=c(rep(ylim,each=2)), col="ivory4")
+polygon(x=c(pyrMP-2,pyrMP+2,pyrMP+2,pyrMP-2)        , border=NA, y=c(rep(ylim,each=2)), col="ivory3")
+polygon(x=c(pyrMPLO-2,pyrMPLO+2,pyrMPLO+2,pyrMPLO-2), border=NA, y=c(rep(ylim,each=2)), col="darkgreen")
+axis(1, at = c(10, 30, 40, 50, 65, 70, 90),
+     labels = c(10, 30, "MP", 50, "LO" ,70,90))
+axis(1, at = c(40, 65),labels = c("MP",  "LO" ))
+
 abline(v=MPstart, lty=2)
+abline(v=MPstartLO, lty=2)
 lines(apply(catches.wt.dsvm2,c(2,4),sum)[,1], col="blue", type="l")
 lines(apply(catches.wt.dsvm2,c(2,4),sum)[,2], col="red")
 lines(apply(landings.wt.dsvm2,c(2,4),sum)[,1], col="blue", lty=2)
 lines(apply(landings.wt.dsvm2,c(2,4),sum)[,2], col="red", lty=2)
 #lines(apply(catches.wt.dsvm2,c(2,4),sum)[,3], col="black")
 
-add_legend("bottomright", legend=paste0("SIGMA ", SIGMA, "; SIMNUMBER ",SIMNUMBER, "; DISCARDSTEPS ",SPP1DSCSTEPS, "; MIGRATION ",migconstant, "; REC1 ",paste(recs1, collapse = " "), "; REC2 ",paste(recs2, collapse = " "), "; SP1PRICE ",paste0(round(sp1Price[,1]), sep = ', ', collapse = ''),";SP2PRICE ",paste0(round(sp2Price[,1]), sep = ', ', collapse = ''), "; FUELPRICE ",control@fuelPrice), col="black", horiz=TRUE, bty='n', cex=1)
+add_legend("bottomright", legend=paste0("SIGMA ", SIGMA, "; INCREMENTS ",control@increments, "; SIMNUMBER ",SIMNUMBER, "; DISCARDSTEPS1 ",SPP1DSCSTEPS,"; DISCARDSTEPS2 ",SPP2DSCSTEPS, "; MIGRATION ",migconstant, "; REC1 ",paste(recs1, collapse = " "), "; REC2 ",paste(recs2, collapse = " "), "; SP1PRICE ",paste0(round(sp1Price[,1]), sep = ', ', collapse = ''),";SP2PRICE ",paste0(round(sp2Price[,1]), sep = ', ', collapse = ''), "; FUELPRICE ",control@fuelPrice), col="black", horiz=TRUE, bty='n', cex=1)
 #round(pop2,0)
 #
 dev.off()
@@ -539,7 +570,7 @@ annualfine  <-  melt(economics_res_allyrs, id.vars = "year", measure.vars = c("A
 fuelcosts   <-  melt(economics_res_allyrs, id.vars = "year", measure.vars = c("Fuelcosts"))
 
 
-png(filename=paste("EFFORT_", paste0("SIGMA ", SIGMA, "; SIMNUMBER ",SIMNUMBER, "; DISCARDSTEPS ",SPP1DSCSTEPS, "; MIGRATION ",migconstant, "; REC1 ",paste(recs1, collapse = " "), "; REC2 ",paste(recs2, collapse = " "), "; SP1PRICE ",paste0(round(sp1Price[,1]), sep = ', ', collapse = ''),";SP2PRICE ",paste0(round(sp2Price[,1]), sep = ', ', collapse = ''), "; FUELPRICE ",control@fuelPrice,".png"), sep=""),width=20, height=8, units="cm", res=500, pointsize=6.5)
+png(filename=paste("MIXEDMP2_EFFORT_", paste0("SIGMA ", SIGMA, "; INCREMENTS ",control@increments,"; SIMNUMBER ",SIMNUMBER, "; DISCARDSTEPS ",SPP1DSCSTEPS, "; MIGRATION ",migconstant, "; REC1 ",paste(recs1, collapse = " "), "; REC2 ",paste(recs2, collapse = " "), "; SP1PRICE ",paste0(round(sp1Price[,1]), sep = ', ', collapse = ''),";SP2PRICE ",paste0(round(sp2Price[,1]), sep = ', ', collapse = ''), "; FUELPRICE ",control@fuelPrice,".png"), sep=""),width=20, height=8, units="cm", res=500, pointsize=6.5)
 #to check
 par(mfrow=c(2,5),oma = c(3,0,0,0) + 0.1, mar = c(4,4,1,1) + 0.1)
 
