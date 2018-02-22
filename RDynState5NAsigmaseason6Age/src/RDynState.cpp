@@ -18,21 +18,21 @@ bool            outofbounds_bool;
 double          outofbounds_double;
 
 // 160 by 98  works fine
-#define SPP1CAPACITY      950    // max number of first choke sp (larger than MAXNOINC * MAXHORIZON *NOSIZES= 64 * 5 * 2 = 640) 
-#define SPP2CAPACITY      950    // max number of second choke sp (MAXNOINC * MAXHORIZON *NOSIZES= 64* 5* 2 = 640)
+#define SPP1CAPACITY      600    // max number of first choke sp (larger than MAXNOINC * MAXHORIZON *NOSIZES= 25 * 6* 4 = 600) 
+#define SPP2CAPACITY      600    // max number of second choke sp 
 #define NOSPEC              5    // number of species used in the analysis
 #define NOSIZES             4    // number of size classes used in the analysis
-#define MAXNOINC           30    // max number of increments
+#define MAXNOINC           25    // max number of increments
 #define MAXHORIZON          6    // number of seasons to fish (= time)
 
 typedef unsigned UFINT;
 
-typedef float         (**FTYPE); /* make pointer called FTYPE for FF0Star and FF1 arrays (that only has states and stores V for best choices) */
-typedef float         (***FCTYPE); /* make pointer called FCTYPE for FF0 array (that has states and patch, storing V for all patches/choices)_  */
-typedef float         (****ITYPE); /* make pointer called ITYPE optimal choice array*/
-typedef float         (*****PTYPE);/* make pointer called PTYPE for information on statistical distribution prey*/
-typedef float         (****ATYPE);/* make pointer called ATYPE for information on statistical distribution prey aggregated over sizes*/
-typedef float         (***PITYPE); /* make pointer called PITYPE for price information*/
+typedef float  (*FTYPE)[SPP2CAPACITY]; //matalloc(sizeof(float), (void *)0, 2, kSpp1Cap, kSpp2Cap); /* make pointer called FTYPE for FF0Star and FF1 arrays (that only has states and stores V for best choices) */
+typedef float  (*FCTYPE)[SPP2CAPACITY][600]; // (FCTYPE) matalloc(sizeof(float), (void*) 0,3, kSpp1Capacity, kSpp2Capacity,kNPatch) ;  /* make pointer called FCTYPE for FF0 array (that has states and patch, storing V for all patches/choices)_  */
+typedef float  (*ITYPE)[SPP1CAPACITY][SPP2CAPACITY][600]; //  matalloc(sizeof(float), (void *)0, 4, MAXHORIZON, kSpp1Capacity,kSpp2Capacity,kNPatch);  /* make pointer called ITYPE optimal choice array*/
+typedef float  (*PTYPE)[MAXHORIZON][NOSPEC][NOSIZES][MAXNOINC]; /* make pointer called PTYPE for information on statistical distribution prey*/
+typedef float  (*ATYPE)[MAXHORIZON][NOSPEC][NOSIZES*MAXNOINC - 1];  /* make pointer called ATYPE for information on statistical distribution prey aggregated over sizes*/
+typedef float  (*PITYPE)[NOSPEC][NOSIZES];                         // matalloc(sizeof(float), (void *)0, 3, MAXHORIZON, NOSPEC, NOSIZES);; /* make pointer called PITYPE for price information*/
 
 
 /* random number generator*/
@@ -496,6 +496,7 @@ Rprintf("Start of DynStateF\n");
     Rprintf("Warning, sigma = 0, giving it a small value (0.000001) \n");
     sigma = 0.000001;
   }
+  
   /********************************************************************************************************************/
   /* Check if khorizon is not bigger than HORIZON, if so simulations will not extend arrays                           */
   /********************************************************************************************************************/
@@ -512,10 +513,10 @@ Rprintf("Start of DynStateF\n");
   /* DEFINE INPUT ARRAYS AND CHECK                                                                                      */
   /**********************************************************************************************************************/
 
-  PTYPE theLndParms         = (PTYPE) matalloc(sizeof(float), (void *)0, 5, kNPatch, MAXHORIZON, NOSPEC, NOSIZES, noInc);
-  PTYPE theDisParms         = (PTYPE) matalloc(sizeof(float), (void *)0, 5, kNPatch, MAXHORIZON, NOSPEC, NOSIZES, noInc);
-  ATYPE theLndParmsAgg      = (ATYPE) matalloc(sizeof(float), (void *)0, 4, kNPatch, MAXHORIZON, NOSPEC,  (NOSIZES*noInc) - 1);
-  PITYPE thePriceParms      = (PITYPE) matalloc(sizeof(float), (void *)0, 3, MAXHORIZON, NOSPEC, NOSIZES);
+  PTYPE theLndParms         = (PTYPE)  malloc((size_t)sizeof(*theLndParms) *  kNPatch);
+  PTYPE theDisParms         = (PTYPE)  malloc((size_t)sizeof(*theDisParms) *  kNPatch); 
+  ATYPE theLndParmsAgg      = (ATYPE)  malloc((size_t)sizeof(*theLndParmsAgg) * kNPatch); // matalloc(sizeof(float), (void *)0, 4, kNPatch, MAXHORIZON, NOSPEC,  (NOSIZES*noInc) - 1);
+  PITYPE thePriceParms      = (PITYPE) malloc((size_t)sizeof(*thePriceParms) * MAXHORIZON); // matalloc(sizeof(float), (void *)0, 3, MAXHORIZON, NOSPEC, NOSIZES);
     
   int theEffortArray[320000][MAXHORIZON];
   double *theIncrementArray     = (double *) malloc((size_t)NOSPEC * sizeof (double));
@@ -597,14 +598,15 @@ Rprintf("Start of DynStateF\n");
   /* DEFINE OUTPUT ARRAYS AND CHECK                                                                                    */
   /*********************************************************************************************************************/
  
-  FCTYPE theFF0             = (FCTYPE) matalloc(sizeof(float), (void*) 0,3, kSpp1Capacity, kSpp2Capacity,kNPatch) ;
-  FCTYPE numerator          = (FCTYPE) matalloc(sizeof(float), (void*) 0,3, kSpp1Capacity, kSpp2Capacity,kNPatch) ;
-  FTYPE theFF0Star          = (FTYPE) matalloc(sizeof(float), (void *)0, 2, kSpp1Capacity, kSpp2Capacity);
-  FTYPE theFF1              = (FTYPE) matalloc(sizeof(float), (void *)0, 2, kSpp1Capacity, kSpp2Capacity);
-  FTYPE deltaSum            = (FTYPE) matalloc(sizeof(float), (void *)0, 2, kSpp1Capacity, kSpp2Capacity);
-  ITYPE theProbChoice       = (ITYPE) matalloc(sizeof(float), (void *)0, 4, MAXHORIZON, kSpp1Capacity,kSpp2Capacity,kNPatch);
+  FCTYPE theFF0             = (FCTYPE) malloc((size_t)sizeof(*theFF0) *  kSpp1Capacity); //   (FCTYPE) matalloc(sizeof(float), (void*) 0,3, kSpp1Capacity, kSpp2Capacity,kNPatch) ;
+  FCTYPE numerator          = (FCTYPE) malloc((size_t)sizeof(*numerator) * kSpp1Capacity); //   (FCTYPE) matalloc(sizeof(float), (void*) 0,3, kSpp1Capacity, kSpp2Capacity,kNPatch) ;
+  FTYPE theFF0Star          = (FTYPE)  malloc((size_t)sizeof(*theFF0Star) * kSpp1Capacity); //matalloc(sizeof(float), (void *)0, 2, kSpp1Capacity, kSpp2Capacity);
+  FTYPE theFF1              = (FTYPE)  malloc((size_t)sizeof(*theFF1) * kSpp1Capacity);    //  (FTYPE) matalloc(sizeof(float), (void *)0, 2, kSpp1Capacity, kSpp2Capacity);
+  FTYPE deltaSum            = (FTYPE)  malloc((size_t)sizeof(*deltaSum) * kSpp1Capacity); //(FTYPE) matalloc(sizeof(float), (void *)0, 2, kSpp1Capacity, kSpp2Capacity);
+  ITYPE theProbChoice       = (ITYPE)  malloc((size_t)sizeof(*theProbChoice) * MAXHORIZON); //matalloc(sizeof(float), (void *)0, 4, MAXHORIZON, kSpp1Capacity,kSpp2Capacity,kNPatch);
 
   if (theFF0 == 0l) Rprintf("error in memory allocation FF0 \n");
+  if (theFF0Star == 0l) Rprintf("error in memory allocation FF0 \n");
   if (theFF1 == 0l) Rprintf("error in memory allocation FF1 \n");
   if (theProbChoice == 0l) Rprintf("error in memory allocation ProbChoice \n");
   
@@ -653,8 +655,9 @@ Rprintf("Start of DynStateF\n");
   /*************************************************************************************************************************************/
   /*DEBUGCHECK                                                                                                                         */
   /*************************************************************************************************************************************/
-  Rprintf("vSpp1LndQuota ");  Rprintf("%f", vSpp1LndQuota);   Rprintf("vSpp2LndQuota ");   Rprintf("%f\n", vSpp2LndQuota);
-  Rprintf("kSpp1LndQuota ");  Rprintf("%f", kSpp1LndQuota);   Rprintf("kSpp2LndQuota ");   Rprintf("%f\n", kSpp2LndQuota);
+  Rprintf("numPatches "); Rprintf("%d\n", kNPatch);
+  Rprintf("vSpp1LndQuota ");  Rprintf("%f", vSpp1LndQuota);   Rprintf("; vSpp2LndQuota ");   Rprintf("%f\n", vSpp2LndQuota);
+  Rprintf("kSpp1LndQuota ");  Rprintf("%f", kSpp1LndQuota);   Rprintf("; kSpp2LndQuota ");   Rprintf("%f\n", kSpp2LndQuota);
   Rprintf("noInc ");          Rprintf("%d\n", noInc);
   Rprintf("Capacity ");       Rprintf("%d\n", kSpp1Capacity);
   Rprintf("sizeSpp1Inc   ");                  Rprintf("%f\n", sizeSpp1Inc);

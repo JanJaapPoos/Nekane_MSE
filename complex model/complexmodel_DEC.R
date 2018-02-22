@@ -126,8 +126,8 @@ MPstart       <- 40
 MPstartLO     <- 65
 SIMNUMBER     <- 700 #pos
 SIGMA         <- 40 #sig 
-SPP1DSCSTEPS  <- 2
-SPP2DSCSTEPS  <- 0
+SPP1DSCSTEPS  <- 1
+SPP2DSCSTEPS  <- 1
 endy          <- stab.model + NUMRUNS
 Linf          <- 20
 K             <- 0.3
@@ -137,7 +137,7 @@ natmortality  <- 0.0001
 migconstant   <- 0.2
 sp1price      <- sp2price      <- 150
 slope1price <- 150
-slope2price <- 150
+slope2price <- 0.50*150
 # scenario I: discarding is not allowed, YPR based in C (C=L)
 # scenario II: discarding is allowed, YPR based in L, hr wanted based in catches
 # scenario III: discarding ocurred but not perceived, YPR based in L, hr wanted based in landings
@@ -189,7 +189,7 @@ sp1Price <- array(c(sp1price+ slope1price*((wts-mean(wts)/mean(wts)))), dim=c(le
 sp2Price <- array(c(sp2price+ slope2price*((wts-mean(wts)/mean(wts)))), dim=c(length(ages),length(season)), dimnames=list(cat=ages,season=as.character(season)))
 sp3Price <- sp4Price <- sp5Price <- array(c(0), dim=c(length(ages),length(season)), dimnames=list(cat=ages,season=as.character(season)))
 #---effort and prices used (note that now c is removed (but that if other runs, then make sure to fix/remove code that removes "c" option)                                                                                         
-control     <- DynState.control(spp1LndQuota= 200,  spp2LndQuota=200, spp1LndQuotaFine= 3e6, spp2LndQuotaFine= 3e6, fuelUse = 1, fuelPrice = 150.0, landingCosts= 0,gearMaintenance= 0, addNoFishing= TRUE, increments= 7, spp1DiscardSteps= SPP1DSCSTEPS, spp2DiscardSteps= SPP2DSCSTEPS, sigma= SIGMA, simNumber= SIMNUMBER, numThreads= 20)
+control     <- DynState.control(spp1LndQuota= 200,  spp2LndQuota=200, spp1LndQuotaFine= 3e6, spp2LndQuotaFine= 3e6, fuelUse = 1, fuelPrice = 150.0, landingCosts= 0,gearMaintenance= 0, addNoFishing= TRUE, increments= 25, spp1DiscardSteps= SPP1DSCSTEPS, spp2DiscardSteps= SPP2DSCSTEPS, sigma= SIGMA, simNumber= SIMNUMBER, numThreads= 20)
 
 #this is where our loop starts, after we set up stable population
 for(yy in (stab.model):(stab.model+NUMRUNS)){
@@ -207,13 +207,13 @@ for(yy in (stab.model):(stab.model+NUMRUNS)){
   # if we are in MP period, then set quota based on last year
   if (yy > MPstart){
     control@spp1LndQuota <-  quota1[,yy,,]
-    #control@spp2LndQuota <-  quota2[,yy,,]
+    control@spp2LndQuota <-  quota2[,yy,,]
   }
 
   # if we are in MPLO period, then set discardsteps =0 
   if (yy > MPstartLO){
     control@spp1DiscardSteps <-  0
-    #control@spp2DiscardSteps <-  0
+    control@spp2DiscardSteps <-  0
   }
 
   
@@ -290,17 +290,18 @@ for(yy in (stab.model):(stab.model+NUMRUNS)){
   #We take the first value of hr1wanted vector to guarantee that we always get a single value in case landingratio is 0
   if (yy > (MPstart-1) & yy < endy){ #if (yy > (MPstart-1))
     prel.quota1 <-  sum(sweep((hr1wanted[1]/mean(hr1[,yy,]))* hr1[,yy,]*landings.ratio1[,yy,]*apply(pop1[,yy+1,,],c(1,2), sum) ,1,wts,"*"))/SIMNUMBER
-    #prel.quota2 <-  sum(sweep((hr2wanted[1]/mean(hr2[,yy,]))* hr2[,yy,]*landings.ratio2[,yy,]*apply(pop2[,yy+1,,],c(1,2), sum) ,1,wts,"*"))/SIMNUMBER
+    prel.quota2 <-  sum(sweep((hr2wanted[1]/mean(hr2[,yy,]))* hr2[,yy,]*landings.ratio2[,yy,]*apply(pop2[,yy+1,,],c(1,2), sum) ,1,wts,"*"))/SIMNUMBER
+    
     # We constrained +- 15% TAC change, until the LO implementation, where we allow the HR wanted just for the transition
     # In the transition we assume landing ratio equal 1
     if (yy == MPstartLO){ # landing.ratio are equal to 1 for all years before estimating them
       quota1[,yy+1,,] <- prel.quota1
-      #quota2[,yy+1,,] <- prel.quota2
+      quota2[,yy+1,,] <- prel.quota2
     }else{
       tac.constrained1 <- c(quota1[,yy,,]*0.85, quota1[,yy,,]*1.15)
-      #tac.constrained2 <- c(quota2[,yy,,]*0.85, quota2[,yy,,]*1.15)
+      tac.constrained2 <- c(quota2[,yy,,]*0.85, quota2[,yy,,]*1.15)
       quota1[,yy+1,,] <- max(min(prel.quota1, tac.constrained1[2]), tac.constrained1[1]) 
-      #quota2[,yy+1,,] <- max(min(prel.quota2, tac.constrained2[2]), tac.constrained2[1]) 
+      quota2[,yy+1,,] <- max(min(prel.quota2, tac.constrained2[2]), tac.constrained2[1]) 
     }
        
   }
