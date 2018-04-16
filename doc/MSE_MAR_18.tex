@@ -77,27 +77,35 @@ The essential elements of the MSE framework that we followed is summarized in Fi
 \label{sec2.1}
 
 For purposes of model simplicity, we considered a hypothetical mixed fishery on two species. The fishery was modelled in a individual based dynamic state variable model. In order to allowed for fishing effort allocation, the model was seasonally (6 seasons) and spatially (areas A and B) explicit. The dynamics of the two fish species were governed by a simple age-structured model that is also seasonally and spatially explicit. The age structured model for the fish species was based on 4 cohorts, and individuals were assumed to be born at age 0, and in season 1. The number of fish $i$ of age $a$ at year $y$, in season $s$ and area $p$ was written as $N_i (a, y, s, p)$. The number of new-born individuals in the model was independent of the size of the adult population, but was function of area $p$ ($R_i (p)$). Numbers of recruits were set to 100 individuals during the first season, and spawning population of species 1 ocurred in area $A$, while species 2 did so in area B. Thus, individuals could be born in each of the areas, such that:  
+
 \begin{equation}
 N_i (0, y, 1, p) = R_i (p)
 \end{equation}
 
 Moreover, combining the weight-based von Bertalanffy growth equation ($L\infty= 20$, $k= 0.093$), with the age-weight relationship ($W= L\infty*(1-e^{-k*a})$); weight per fish was higher for the older fish. Mortality in the model could occur from catches in the fishery, and natural causes such as predation, diseases, and scenesens. However, for simplicity we assumed that his natural mortality was negligible. Althought such absence of natural mortality impossible in reality, one could argue that the model thus mimics long-lived species. The decrease in population numbers was thus the result of the catches ($C_i (a, y, s, p)$), which were in turn a function of age dependent catchability $q(a)$, and fishing effort $E (y,s,p)$ in any time, season, and area. 
+
 \begin{equation}
 C_i (a, y, s, p) = q(a) * E(y,s,p),
 \end{equation}
+
 and 
+
 \begin{equation}
 N_i (a, y, s, p) = N_i (a, y, s, p) - C (a, y, s, p). 
 \end{equation}
 
-It was assumed that fishing mortality ocurred before migration ocurred. Migration for each species was defined by a matrix $Mig$ that defines the impact of migration (.e. immigration-emigration) on a given stock was also dependent on the relative sizes of the stocks. The size of that matrix  was defined by the number of age classes, seasons and number of immigrants into area $p$ ($im$) and emigrants leaving area $p$ ($em$) in the model. A 20 \% constant migration during any season was set between areas. The migration in population numbers ($Mig (a, 1, s, im, em)$) was thus the proportion ($P (a, y, s, i, em, im)$) of the population available or vulnerable to fishing after migration occurs.   
+It was assumed that fishing mortality ocurred before migration ocurred. Migration for each species was defined by a matrix $M$ that defines the impact of migration (.e. immigration-emigration) on a given stock was also dependent on the relative sizes of the stocks. The size of that matrix  was defined by the number of age classes, seasons and number of immigrants into area $p$ ($im$) and emigrants leaving area $p$ ($em$) in the model. A 20 \% constant migration during any season was set between areas. The migration in population numbers ($Mig (a, 1, s, im, em)$) was thus the proportion ($P (a, y, s, i, em, im)$) of the population available or vulnerable to fishing after migration occurs:   
+
 \begin{equation}
-Mig (a, 1, s, im, em) = Mig(a, 1, s, im, em) + N (a, y, s, em) * P (a, y, s, i, em, im),
+M (a, 1, s, im, em) = M (a, 1, s, im, em) + N (a, y, s, em) * P (a, y, s, i, em, im),
 \end{equation}
+
 and then population numbers
+
 \begin{equation}
-N (a, y, s, im) = N (a, y, s, im) +  Mig (a, 1, s, im, em).
+N (a, y, s, im) = N (a, y, s, im) +  M (a, 1, s, im, em).
 \end{equation}
+
 
 \subsection{The dynamic-state variable model}
 \label{sec2.2}
@@ -106,12 +114,14 @@ To simulate the process of monitoring the stock, we developed models for state-d
 \begin{equation}
 \Phi (C_i, Q_i, F_i)= -\sum_i (max( 0, (C_i - Q_i))* F_i),
 \end{equation}
+
 where $C_i$ was the cumulative annual landings or catches for species $i$ for an individual vessel. These cumulative landings defined the state of the individual. $Q_i$ was the annual individual quota for landings or catches for the quota species. Individual quotas were not transferable. In order to reduce computation time, we set quota only for two species. $F_i$ was the fine per unit weight for exceeding individual landings or catch quotas was set to $3 x 10^3$ Euro day\textsuperscript{-1}. These high fines combined with an assumed 100\% detection of exceeding quotas resulted in model results in which fishers comply with quota regulations.
 
 The maximum expected utility between current season $s$ and the end of the year was $V (C_i, Q_i, F_i, s)$, and the model started by setting $V (C_i, Q_i, F_i, s)= \Phi (C_i, Q_i, F_i)$. For preceding seasons, the expected utility depended on individual choices, and each time step individuals chose to visit fishing area $p$ (A, B and including area 0: “staying in port”), and to keep or discard any combination of the age classes caught of the quota species. This discarding was defined by a matrix $d$. The size of that matrix was defined by the number of species under quota constraints and the number of age classes. Each element could take the value 0 (discard) or 1 (keep on board and land). The expected utility for each state and each time step $s$ was calculated backward using stochastic dynamic programming \cite{ClarkandMangel2000}:
 \begin{equation}
 V (C_i, Q_i, F_i, s) = max_{p,d}( R(p, d, s)- G(p) - C(p) + E_{p, d}[V (C_i^\prime, Q_i, F_i, s+1])),
 \end{equation}
+
 where $R(p, d, s)$ was the expected immediate contribution of the gross revenue from the sales of fish in a season resulting from choices $p$, and $d$ (gross revenues resulted from multiplying catches different age classes of species 1, species 2 and prices). Prices of fish were assumed to be dependent over fish age (subsection \ref{sec2.2.1}). $G(p)$ represented the incurred fuel costs per season from the choice of fishing area $a$, while  $ C(p)$ represented the variable operating costs (crew share, gear maintenance and landing costs, Table~\ref{t:fishery}), which in turn depended on the change in cumulative landings and fish prices. The term $E_{p, d}[V (C_i^\prime, Q_i, F_i, s+1]$ denoted the expected future utility taken over all possible states resulting from choices $p$, and $d$. The transition of these states were based on normal distributions of catch rates, using the means and variances for the species, as explained in the model conditioning section, following \cite{Poos2010}.
 
 Rather than assuming that each individual always made the optimal choice, we assigned a probability to each choice proportional to its expected utility, following \cite{Dowling2011}. The expected utility for any choice was
@@ -120,10 +130,13 @@ U (C_i, Q_i, F_i, s) = R(p, d, s)- G(p) - C(p) + E_{p, d}[V (C_i^\prime, Q_i, F_
 \end{equation}
 
 If $U^*$ was the expected utility at the optimal choice for a given t, we set
+
 \begin{equation}
 \Delta_{p, d}(C_i, Q_i, F_i, s) =  U^* (C_i, Q_i, F_i, s) - U (C_i, Q_i, F_i, s),
 \end{equation}
+
 and then defined the probability of a choice for a given area and discarding as	
+
 \begin{equation} \label{eq:solve}
 P_{p, d}(C_i, Q_i, F_i, s) = \frac
                 % Nominator
@@ -141,17 +154,31 @@ Once the backward calculations were finished, the forward part is a Monte Carlo 
 \centering
 \caption{Model and fishery conditioning.}
 \label{t:fishery}
-\resizebox{0.9\textwidth}{!}{%
-\begin{tabular}{@{}lc lc lc @{}} 
+\resizebox{0.6\textwidth}{!}{%
+\begin{tabular}{@{}lc@{}} 
 \hline
-\textbf{model}                              &               & \textbf{Fishery variable costs}                &      &\textbf{Fishery }&  \\ \hline
-& & & \\%& & \\
-number of vessels                           &700            &fuel costs (Euro day\textsuperscript{-1})       & 1240  & q                 & 0.0005 \\ 
-$\sigma $                                   & 40            &gear maintenance (Euro day\textsuperscript{-1}) & 0    & effort (p,s)      & 1   \\
-number of areas                             & 2             &crew share                                      & 35\% & CPUE & mean($pop*q*wts(yy-2:yy)$)\\
-number of seasons                           & 6             &landing costs (Euro t\textsuperscript{-1})      & 0    & CPUE dev& $0.08*CPUE$\\
-intial quota $Q_{sp1}$ and $Q_{sp2}$  & 200&                 &      \\%& & \\
-& & & \\\hline%& & \\\hline
+\textbf{model}                              &               \\ \hline
+&  \\%& & \\
+number of vessels                           &700            \\ 
+$\sigma $                                   & 40           \\
+number of areas                             & 2            \\
+number of seasons                           & 6            \\
+intial quota $Q_{sp1}$ and $Q_{sp2}$        & 200 \\%& & \\
+&  \\
+\textbf{Fishery variable costs}             &               \\ \hline   
+&  \\%& & \\
+fuel costs (Euro day\textsuperscript{-1})       & 1240  \\ 
+gear maintenance (Euro day\textsuperscript{-1}) & 0     \\ 
+crew share                                      & 35\% \\ 
+landing costs (Euro t\textsuperscript{-1})      & 0    \\ 
+&                 \\  
+\textbf{Fishery }&                 \\ \hline   
+&  \\%& & \\
+q                 & 0.0005 \\ 
+effort (p,s)      & 1  \\ 
+CPUE & mean($pop*q*wts(yy-2:yy)$)\\ 
+CPUE dev& $0.08*CPUE$\\ 
+&                 \\  \hline%& & \\\hline
 \end{tabular}
 }
 \end{table}
@@ -169,18 +196,14 @@ where $p$ is the mean price of species $i$, $\bar{w_i}$ is the mean weight of th
 \caption{Linear mass-prices estimated based on mean prices per mass age-classes. The price slopes $\beta_0$ were assumed to be similar to mean prices.}
 \label{t:pricing}
 \resizebox{0.5\textwidth}{!}{%
-\begin{tabular}{@{}llcccc@{}} 
+\begin{tabular}{@{}lcccc@{}} 
 \hline
 \textbf{Market value (Euro kg\textsuperscript{-1})}& \multicolumn{4}{c}{age} \\ 
-&                         & 1     & 2     & 3    & 4   \\ \hline
-                      \\
-Scenario I &              &       &        &       &     \\                       
-&species 1                &  778  & 1354   & 1780  & 2096  \\
-&species 2                &  778  & 1354   & 1780  & 2096  \\
-                      \\
-Scenario II &              &       &        &       &     \\ 
-&species 1                &  778  & 1354   & 1780  & 2096  \\
-&species 2                &  464  & 752    & 965   & 1123 \\
+                         & 1     & 2     & 3    & 4   \\ \hline
+                      \\                      
+species 1                &  778  & 1354   & 1780  & 2096  \\
+species 2                &  778  & 1354   & 1780  & 2096  \\
+
 \\
 \hline 
 \end{tabular}
@@ -217,10 +240,10 @@ Yield per recruitment model     & based in $F_L$                 &       based i
 \begin{enumerate}
 
 \item
-\textbf{Scenario I: Landings selectivity},  under this scenario the fishery is under landings selectivity, only landings contribute to yield. Fishing mortality accounts for all catches, regardless wether these catches are landed or discarded.
+\textbf{MP Scenario: Landings selectivity},  under this scenario the fishery is under landings selectivity, only landings contribute to yield. Fishing mortality accounts for all catches, regardless wether these catches are landed or discarded.
 
 \item
-\textbf{Scenario II: Fulll avoidance of discards}, this scenario contemplates the LO with landings selectivity only and fulll avoidance of discards.
+\textbf{LO Scenario: Fulll avoidance of discards}, this scenario contemplates the LO with landings selectivity only and fulll avoidance of discards.
 
 
 \end{enumerate}
@@ -286,50 +309,38 @@ Through a yield per recruitment model, knowing growth, harvest rates and recruit
 \section{Results}
 \label{sec3}
 
-We simulated the effects of implementing a Management Plan (MP) and the Landing Obligation (LO) without any exceptions or flexibility. To be able to analyse the results of this complex actions of implementing the Mp and the LO, the implementations should start simultaneously for all stocks and fleets. Under the MP, the Harvest Control Rule for the TACs is to advise $F_{MSY}$ unless the biomass falls below a trigger biomass. If the biomass falls below this value, the advised TAC is based on the biomass trends. To check for trends, the latest biomass levels are compared to previous ones. If there is a decrease of a 20\% or more, the TAC is reduced by 15\%. If the comparision shows an increase of more then 20 \% the TAC is increased by 15\%.
+We simulated the effects of implementing a Management Plan (MP) and the Landing Obligation (LO) without any exceptions or flexibility. To be able to analyse the results of this complex actions of implementing the MP and the LO, the implementations should start simultaneously for all stocks and fleets. Under the MP, the Harvest Control Rule for the TACs is to advise $F_{MSY}$ unless the biomass falls below a trigger biomass. If the biomass falls below this value, the advised TAC is based on the biomass trends. To check for trends, the latest biomass levels are compared to previous ones. If there is a decrease of a 20\% or more, the TAC is reduced by 15\%. If the comparision shows an increase of more then 20 \% the TAC is increased by 15\%.
 
-\newpage
-%\begin{landscape}
-Scenario I: prices of the two species are equal (a truly mixed fishery)
-%----------------------------------------------------------------------------------------------------------------------------------------
-\begin{figure}[!h]
-\centering
-\begin{minipage}{.45\textwidth}
-\includegraphics[width=0.9\textheight, angle=90]{Figures/Catch_scenarioI.eps} 
-\end{minipage}
-\hfill
-\begin{minipage}{.45\textwidth}
-\includegraphics[width=0.9\textheight, angle=90]{Figures/Effort_scenarioI.eps} 
-\end{minipage}
-\caption{}
-\end{figure}
-%\end{landscape}
-
-%----------------------------------------------------------------------------------------------------------------------------------------
-
-Scenario II: prices of the species 2 are 50\% of species 1 prices
-%----------------------------------------------------------------------------------------------------------------------------------------
-\begin{figure}[!h]
-\centering
-\begin{minipage}{.45\textwidth}
-\includegraphics[width=0.9\textheight, angle=90]{Figures/Catch_scenarioII.eps} 
-\end{minipage}
-\hfill
-\begin{minipage}{.45\textwidth}
-\includegraphics[width=0.9\textheight, angle=90]{Figures/Effort_scenarioII.eps} 
-\end{minipage}
-\caption{}
-\end{figure}
-
-
-\subsection{ catch decisions and location choice}
+\subsection{Catch decisions and location choice}
 \label{sec3.1}
 When discarding was allowed, but TACs changed by 15\% based on previous year but trying approximate to Fmsy, TACS showed a reduction and discards increased. 
 
 The implementation of LO caused an increase in TACs and revenues were higher than when discarding was allowed. Some fishing opportunities are always lost under the landing obligation; the final fishing mortalities are lower than the target fishing mortalities (at least for one species). However, this does not necessarily imply that the catches will be lower with landing obligation than without it. Catches will be reduced in the initial years of landing obligation implementation. However, at Spawning stock biomass increases with LO, the catches will increase too. Although the fishing opportunities are lost due to the choke effect, the biomass of some stocks might increase; after a few years, this extra abundance could be converted into more catches. This implies that are fleets that, in the mid-term, could benefit from the landing obligation.
 
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=.69\textwidth]{Figures/figurecatches.eps} 
+\caption{Caches and harvest rates- Prices of the two species are equal (a truly mixed fishery)}
+\end{figure}
 
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=.69\textwidth]{Figures/figurecatches2.eps} 
+\caption{Change in selectivity- Prices of the two species are equal (a truly mixed fishery)}
+\end{figure}
 
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=.82\textwidth]{Figures/figureffort.eps} 
+\caption{Effort- Prices of the two species are equal (a truly mixed fishery)}
+\end{figure}
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=\textwidth]{Figures/figurerevenue.eps} 
+\caption{Revenues- Prices of the two species are equal (a truly mixed fishery)}
+\end{figure}
+%---
 
 \newpage
 \section{Discussion}
@@ -354,8 +365,103 @@ In considering TRPs based on economic criteria, it is important to be aware of t
 The content of this paper does not reflect the official opinion of the European Commission. Responsibility for the information and views expressed in this paper relies entirely with the authors.
 \end{notes}
 
-\newpage
+
 \bibliographystyle{plain}
 \bibliography{mylib}
+
+\newpage
+\begin{notes}[Apendix]
+
+Different scenarios, considering wether prices of the two species are equal or not. 
+
+\begin{table}[!h]
+\centering
+\caption{Linear mass-prices estimated based on mean prices per mass age-classes. The price slopes $\beta_0$ were assumed to be similar to mean prices.}
+\label{t:pricing}
+\resizebox{0.8\textwidth}{!}{%
+\begin{tabular}{@{}llcccc@{}} 
+\hline
+\textbf{Market value (Euro kg\textsuperscript{-1})}& \multicolumn{4}{c}{age} \\ 
+&                         & 1     & 2     & 3    & 4   \\ \hline
+                      \\
+Scenario I &              &       &        &       &     \\                       
+&species 1                &  778  & 1354   & 1780  & 2096  \\
+&species 2                &  778  & 1354   & 1780  & 2096  \\
+                      \\
+Scenario II &              &       &        &       &     \\ 
+&species 1                &  778  & 1354   & 1780  & 2096  \\
+&species 2                &  621  & 1053    & 1373   & 1610 \\
+                      \\
+Scenario III &              &       &        &       &     \\ 
+&species 1                &  778  & 1354   & 1780  & 2096  \\
+&species 2                &  464  & 752    & 965   & 1123 \\
+                      \\
+Scenario IV &              &       &        &       &     \\ 
+&species 1                &  778  & 1354   & 1780  & 2096  \\
+&species 2                &  307  & 451    & 558   & 637 \\
+
+\\
+\hline 
+\end{tabular}
+}
+\end{table}
+
+%----------------------------------------------------------------------------------------------------------------------------------------
+\newpage
+\begin{landscape}
+\begin{figure}[!h]
+\centering
+\includegraphics[.45\textwidth]{Figures/Catch_scenarioI.eps} 
+\includegraphics[.45\textwidth]{Figures/Effort_scenarioI.eps}
+\caption{Scenario I: Prices of the two species are equal (a truly mixed fishery)}
+\end{figure}
+\end{landscape}
+
+\newpage
+\begin{landscape}
+\begin{figure}[!h]
+\centering
+\includegraphics[.45\textwidth]{Figures/Catch_scenarioII.eps} 
+\includegraphics[.45\textwidth]{Figures/Effort_scenarioII.eps}
+\caption{Scenario II: prices of the species 2 are 75\% of species 1 prices)}
+\end{figure}
+\end{landscape}
+
+\newpage
+\begin{landscape}
+\begin{figure}[!h]
+\centering
+\includegraphics[.45\textwidth]{Figures/Catch_scenarioIII.eps} 
+\includegraphics[.45\textwidth]{Figures/Effort_scenarioIII.eps}
+\caption{Scenario III: prices of the species 2 are 50\% of species 1 prices)}
+\end{figure}
+\end{landscape}
+
+\newpage
+\begin{landscape}
+\begin{figure}[!h]
+\centering
+\includegraphics[.45\textwidth]{Figures/Catch_scenarioIV.eps} 
+\includegraphics[.45\textwidth]{Figures/Effort_scenarioIV.eps}
+\caption{Scenario IV: prices of the species 2 are 25\% of species 1 prices)}
+\end{figure}
+\end{landscape}
+
+%----------------------------------------------------------------------------------------------------------------------------------------
+
+%\begin{figure}[!h]
+%\centering
+%\begin{minipage}{.45\textwidth}
+%\includegraphics[width=0.9\textheight]{Figures/Catch_scenarioII.eps} 
+%\end{minipage}
+%\hfill
+%\begin{minipage}{.45\textwidth}
+%\includegraphics[width=0.9\textheight]{Figures/Effort_scenarioII.eps} 
+%\end{minipage}
+%\caption{Scenario II: prices of the species 2 are 50\% of species 1 prices}
+%\end{figure}
+
+
+\end{notes}
 
 \end{document}
