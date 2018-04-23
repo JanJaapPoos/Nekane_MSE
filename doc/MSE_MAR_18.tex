@@ -38,15 +38,13 @@ We contrast three types of management plans to achieve maximum sustainable yield
 \section{Introduction}
 \label{sec1}
 
-The new Common Fisheries Policy marks a number of key changes to European fisheries management, including the introduction of multi-annual management plans aimed at achieving the Maximum Sustainable Yield (MSY) for all stocks and the gradual introduction of a landings obligation (LO) to encourage more selective fishing practices \cite{CFP2013}. Their implementation cannot be seen in isolation from each other as strategies aimed at one objective may have consequences for achieving the other. LO and catch quotas should provide incentives for change in the fisheries, including adoption through taking up selective gears and spatiotemporal effort allocation \cite{Alzorriz2016, Alzorriz2018}.
+The European fisheries management reform of 2013 included the introduction of multi-annual management plans aimed at achieving Maximum Sustainable Yield (MSY) for commericially important fish stocks and the gradual introduction of a landings obligation (LO) \cite{CFP2013}. The LO  should provide incentives for the use of more selective gears and for fisheries to  move away from areas with high levels of unwanted catch \cite{Alzorriz2016, Alzorriz2018}. Achieving single species MSY while landing all commercial catches in fisheries targeting multiple species (mixed fisheries) is challenging because achieving the objective for one species may mean missing the objective for another \cite{Ulrich2017, Batsleer2013}. Forecasting whether such management will be effective depends on understanding the response of individual effort allocation to the management. There is a substantial literature addressing the question of effort allocation in fisheries and the more general question of state-dependent foraging decisions in ecological systems \cite{ClarkandMangel2000,Houston1999}. New tools for state-dependent behaviour of individual fishing vessels, translated into behaviour of the fleet and implemented using stochastic dynamic programming \cite{Alzorriz2018,Batsleer2015, Dowling2011, Poos2010} have been developed. These models generally predict the effect in the short term (within a year) by optimizing an objective function and determine which area best suits this behaviour given the set of incentives that exist (which may also depend on factors such as size, home port, distance to fishing grounds and expected catch rates). Effects of e.g. relocation costs of marine protected areas, the implementation of the landings obligation, have been modelled under these approaches. Using spatial and temporal distributions of catch rates within a single year, these models forecast  high costs in mixed fisheries in the short term as a result of the LO. These costs result from removing the option to adapt landings to quota by discarding parts of the catch \cite{ Alzorriz2018, Batsleer2013,Batsleer2015}. This will result in fishig effort reallocation and early closures of fisheries once quota have been reached. However, the  long term benefits to fisheries that could result from improved selectivity are ignored in those studies 
 
-Fisheries management typically focuses on the sustainable exploitation of single target species, but the potentially negative effects on, for example, reaching other species conservation objectives, should also be evaluated. Achieving single species MSY in complex and dynamic fisheries targeting multiple species (mixed fisheries) is challenging because achieving the objective for one species may mean missing the objective for another \cite{Ulrich2017}. There is no unique way of translating the single-species MSY objective to the multispecies case. Maximisation of yield from one stock will generally require different strategies than maximisation of yield from another.  Whatever the management regime, the performance of management strategies is conditioned by population dynamics, but also by exploitation dynamics, and particularly by the response of the fleets to management measures. Management strategy evaluation (MSE; \cite{Sainsbury2000, Smith1994, Venables2009}) seeks to study the likely implications of potential harvest policies, or strategies, by evaluating management scenarios on the operation of a mixed fishery and on the fished stocks by including stakeholders and by assessing its robustness to uncertainty \cite{Andersen2010, Kell2007, Prellezo2016, Punt2016}. 
-
-There is a substantial literature addressing the question of effort allocation in fisheries and the more general question of state-dependent foraging decisions in ecological systems \cite{ClarkandMangel2000,Houston1999}. New tools for state-dependent behaviour of individual fishing vessels, translated into behaviour of the fleet and implemented using stochastic dynamic programming \cite{Alzorriz2018,Batsleer2015, Dowling2011, Poos2010} have been developed. These models generally predict the effect in the short term (within a year) by optimizing an objective function and determine which area best suits this behaviour given the set of incentives that exist (which may also depend on factors such as size, home port, distance to fishing grounds and expected catch rates). Effects of e.g. relocation costs of marine protected areas, the implementation of the landings obligation, have been modelled under these approaches. In contrast, to enable longer term prediction accounting for the impact of these choices on the populations and consequently on the future yields, this fleet dynamic model should be coupled to a biological dynamic model where the feedback between fleet and stock dynamics are explicity modelled.
+To enable longer term prediction of the effects of changes in fisheires management, one needs to couple the fleet dynamic models that forecast the fleet response to management to  biological dynamic models that forecast the fish population responses to the changing fleet response. Such a link allow to explicilty model the feedback that exists between the fleet dynamics and the populaiton dynamics. Whatever the management regime, the performance of management strategies is conditioned by population dynamics, but also by exploitation dynamics, and particularly by the response of the fleets to management measures. Management strategy evaluation (MSE; \cite{Sainsbury2000, Smith1994, Venables2009}) seeks to study the likely implications of potential harvest policies, or strategies, by evaluating management scenarios on the operation of a mixed fishery and on the fished stocks by including stakeholders and by assessing its robustness to uncertainty \cite{Andersen2010, Kell2007, Prellezo2016, Punt2016}. 
 
 MSE involves building a simulation model for the entire process under study, complex enough both to address the current knowledge and uncertainty on the dynamics of fish stocks under fishing pressure, the effect on fishers of variations in stock status and availability, and their responses to those changes and those in management regimes \cite{Venables2009}. At the same time being simple enough to build and calibrate reliably with the available data. More comprehensive MSEs may also take the effects of the fishery on the broader environment, and economic and social effects into account \cite{Dichmont2008, Fulton2007}. In such modelling framework, advice and management systems can be quantitatively evaluated through simulation testing \cite{Dichmont2013, Kell2007}. 
 
-We review the potential of MSE, emphasazing the role of individual harvester decision-making and socioeconomic drivers on management effectiveness, i.e. if the fleet dynamic model results in a short term movement of vessels to allocate effort both spatially and temporally, we also expect longer term changes to occur in fish populations and the economy of the fishery \cite{Alzorriz2018}. Such combination needs to be responsive to all the drivers that influence and motivate the actual fleet and to respect existing constraints \cite{Venables2009}. The drivers will include the (real or perceived) local abundance and catchability of the fished stocks and various resource costs, principally that of fuel. The constraints will include the obvious management-imposed constraints such as levels of total allowable catch, and economical constraints such as the contribution of the annual fines for exceeding catch quotas.
+We present an MSE that encompasses the individual harvester decision-making process and socioeconomic drivers on management effectiveness, i.e. if the fleet dynamic model results in a short term movement of vessels to allocate effort both spatially and temporally, we also expect longer term changes to occur in fish populations and the economy of the fishery \cite{Alzorriz2018}. Such combination needs to be responsive to all the drivers that influence and motivate the actual fleet and to respect existing constraints \cite{Venables2009}. The drivers will include the (real or perceived) local abundance and catchability of the fished stocks and various resource costs, principally that of fuel. The constraints will include the obvious management-imposed constraints such as levels of total allowable catch, and economical constraints such as the contribution of the annual fines for exceeding catch quotas.
 
 Using a MSE, the main objective of this work is not to reproduce the entire complexity of a real mixed fishery, but to defined plausible hypothesis about population dynamics and then to implemented the processes of interest, i.e., changes in population abundance, to finally measure the effect of the potential consequences associated with the fishers optimal choice location underlying assumption of the current state-dependent behaviour of individual fishing vessels.to understand the fleet dynamics in a spatially and temporally heterogeneous mixed quota-regulated fishery when reducing from unmanaged (unconstrained catch quota) to MSY managed and to compare it with a situation where discards are allowed in order to assess on the biological and economic consequences. If LO and catch quotas are not fully enforced, there will be an incentive to continue discarding. Therefore, this manuscript tends to understand the likely adaptive change in fishing patterns that will help us to understand if this leads to a better balance between quotas and catches.
 
@@ -56,7 +54,7 @@ Using a MSE, the main objective of this work is not to reproduce the entire comp
 \section{Methods}
 \label{sec2}
 
-The essential elements of the MSE framework that we followed is summarized in Figure \ref{fig:MSE}. The operating model (OM) aimed capturing the key processes in the dynamics of the fish population given the best knowledge available, and can be thought of as a minimum realistic model \cite{Punt1995}. The OM was built using a set of models of the dynamics of fish stocks under fishing pressure and coupled with the effect on fishers of variations in stock status and availability (sections \ref{sec2.1} and \ref{sec2.2} respectively). This resulted in simulated measurements (called "observation model") such as individual harvester decision-making (including error) and the consequent biomass of fish stocks, including the essential elements for calculating the individual harvester economic performance. The observation data were then passed to the "management model" (section \ref{sec2.3}). The management model encompassed the harvest control rules (HCR). The HCR referenced to biological reference points (Fmsy) to produce management actions in the form of a harvest or effort level: changes in selectivity or spatial and temporal reallocations or restrictions of fishing effort. Costs and benefits, both economic and in terms of risks to both stock and livelihoods, could be computed and compared across different scenarios and management procedures (section \ref{sec2.3}).
+A Managament Strategy Evaluation framework was used to forecast the dynamics of the mixed fishery. The essential elements of the framework are summarized in Figure \ref{fig:MSE}. The framework consists of an Operating Model (OM) and a Management Procedure (MP). The OM captured key processes in the dynamics of the fish populations, and can be thought of as a minimum realistic model \cite{Punt1995}. This resulted in simulated measurements (called "observation model") such as individual harvester decision-making (including error) and the consequent biomass of fish stocks, including the essential elements for calculating the individual harvester economic performance. The observation data were then passed to the "management model" (section \ref{sec2.3}). The management model encompassed the harvest control rules (HCR). The HCR referenced to biological reference points (Fmsy) to produce management actions in the form of a harvest or effort level: changes in selectivity or spatial and temporal reallocations or restrictions of fishing effort. Costs and benefits, both economic and in terms of risks to both stock and livelihoods, could be computed and compared across different scenarios and management procedures (section \ref{sec2.3}).
 
 % Management actions are rarely implemented without error. This error can come from two main sourrces: (i) resource users do not comply with the regulations, and (ii) the individual dynamics of resource users (e.g. when and where harvest is taken) are not accounted for in the HCR. By evaluating a range of HCRs against a set of plausible operating models using multiple performance metrics (section \ref{sec2.3}), MSE enables to study the different trade-offs involved with each management procedure.  
  
@@ -367,99 +365,6 @@ The content of this paper does not reflect the official opinion of the European 
 \bibliographystyle{plain}
 \bibliography{mylib}
 
-\newpage
-\begin{notes}[Apendix]
 
-Different scenarios, considering wether prices of the two species are equal or not. 
-
-\begin{table}[!h]
-\centering
-\caption{Linear mass-prices estimated based on mean prices per mass age-classes. The price slopes $\beta_0$ were assumed to be similar to mean prices.}
-\label{t:pricing}
-\resizebox{0.8\textwidth}{!}{%
-\begin{tabular}{@{}llcccc@{}} 
-\hline
-\textbf{Market value (Euro kg\textsuperscript{-1})}& \multicolumn{4}{c}{age} \\ 
-&                         & 1     & 2     & 3    & 4   \\ \hline
-                      \\
-Scenario I &              &       &        &       &     \\                       
-&species 1                &  778  & 1354   & 1780  & 2096  \\
-&species 2                &  778  & 1354   & 1780  & 2096  \\
-                      \\
-Scenario II &              &       &        &       &     \\ 
-&species 1                &  778  & 1354   & 1780  & 2096  \\
-&species 2                &  621  & 1053    & 1373   & 1610 \\
-                      \\
-Scenario III &              &       &        &       &     \\ 
-&species 1                &  778  & 1354   & 1780  & 2096  \\
-&species 2                &  464  & 752    & 965   & 1123 \\
-                      \\
-Scenario IV &              &       &        &       &     \\ 
-&species 1                &  778  & 1354   & 1780  & 2096  \\
-&species 2                &  307  & 451    & 558   & 637 \\
-
-\\
-\hline 
-\end{tabular}
-}
-\end{table}
-
-%----------------------------------------------------------------------------------------------------------------------------------------
-\newpage
-\begin{landscape}
-\begin{figure}[!h]
-\centering
-\includegraphics[.45\textwidth]{Figures/Catch_scenarioI.eps} 
-\includegraphics[.45\textwidth]{Figures/Effort_scenarioI.eps}
-\caption{Scenario I: Prices of the two species are equal (a truly mixed fishery)}
-\end{figure}
-\end{landscape}
-
-\newpage
-\begin{landscape}
-\begin{figure}[!h]
-\centering
-\includegraphics[.45\textwidth]{Figures/Catch_scenarioII.eps} 
-\includegraphics[.45\textwidth]{Figures/Effort_scenarioII.eps}
-\caption{Scenario II: prices of the species 2 are 75\% of species 1 prices)}
-\end{figure}
-\end{landscape}
-
-\newpage
-\begin{landscape}
-\begin{figure}[!h]
-\centering
-\includegraphics[.45\textwidth]{Figures/Catch_scenarioIII.eps} 
-\includegraphics[.45\textwidth]{Figures/Effort_scenarioIII.eps}
-\caption{Scenario III: prices of the species 2 are 50\% of species 1 prices)}
-\end{figure}
-\end{landscape}
-
-\newpage
-\begin{landscape}
-\begin{figure}[!h]
-\centering
-\includegraphics[.45\textwidth]{Figures/Catch_scenarioIV.eps} 
-\includegraphics[.45\textwidth]{Figures/Effort_scenarioIV.eps}
-\caption{Scenario IV: prices of the species 2 are 25\% of species 1 prices)}
-\end{figure}
-\end{landscape}
-
-%----------------------------------------------------------------------------------------------------------------------------------------
-
-%\begin{figure}[!h]
-%\centering
-%\begin{minipage}{.45\textwidth}
-%\includegraphics[width=0.9\textheight]{Figures/Catch_scenarioII.eps} 
-%\end{minipage}
-%\hfill
-%\begin{minipage}{.45\textwidth}
-%\includegraphics[width=0.9\textheight]{Figures/Effort_scenarioII.eps} 
-%\end{minipage}
-%\caption{Scenario II: prices of the species 2 are 50\% of species 1 prices}
-%\end{figure}
-
-
-\end{notes}
 
 \end{document}
