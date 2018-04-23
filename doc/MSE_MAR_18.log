@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex 2017.9.14)  16 APR 2018 21:23
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex 2017.9.14)  18 APR 2018 11:37
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -560,11 +560,7 @@ Missing character: There is no ù in font cmr12!
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
-[9]
-
-LaTeX Warning: `!h' float specifier changed to `!ht'.
-
-[10] [11] [12]
+[9] [10] [11] [12]
 Package epstopdf Info: Source file: <Figures/figurecatches.eps>
 (epstopdf)                    date: 2018-04-16 20:27:33
 (epstopdf)                    size: 1174189 bytes
@@ -574,7 +570,7 @@ Package epstopdf Info: Source file: <Figures/figurecatches.eps>
 (epstopdf)                    size: 926906 bytes
 (epstopdf)             Command: <repstopdf --outfile=Figures/figurecatches-eps-
 converted-to.pdf Figures/figurecatches.eps>
-(epstopdf)             \includegraphics on input line 322.
+(epstopdf)             \includegraphics on input line 320.
 Package epstopdf Info: Output file is already uptodate.
 
 <Figures/figurecatches-eps-converted-to.pdf, id=61, 570.13pt x 544.0325pt>
@@ -582,7 +578,7 @@ File: Figures/figurecatches-eps-converted-to.pdf Graphic file (type pdf)
 
 <use Figures/figurecatches-eps-converted-to.pdf>
 Package pdftex.def Info: Figures/figurecatches-eps-converted-to.pdf used on inp
-ut line 322.
+ut line 320.
 (pdftex.def)             Requested size: 312.54895pt x 298.23924pt.
 Package epstopdf Info: Source file: <Figures/figurecatches2.eps>
 (epstopdf)                    date: 2018-04-16 20:47:49
@@ -593,7 +589,7 @@ f>
 (epstopdf)                    size: 926912 bytes
 (epstopdf)             Command: <repstopdf --outfile=Figures/figurecatches2-eps
 -converted-to.pdf Figures/figurecatches2.eps>
-(epstopdf)             \includegraphics on input line 328.
+(epstopdf)             \includegraphics on input line 326.
 Package epstopdf Info: Output file is already uptodate.
 
 <Figures/figurecatches2-eps-converted-to.pdf, id=62, 393.47pt x 376.40625pt>
@@ -601,7 +597,7 @@ File: Figures/figurecatches2-eps-converted-to.pdf Graphic file (type pdf)
 
 <use Figures/figurecatches2-eps-converted-to.pdf>
 Package pdftex.def Info: Figures/figurecatches2-eps-converted-to.pdf used on in
-put line 328.
+put line 326.
 (pdftex.def)             Requested size: 312.54895pt x 298.99457pt.
 Package epstopdf Info: Source file: <Figures/figureffort.eps>
 (epstopdf)                    date: 2018-04-16 20:49:46
@@ -611,7 +607,7 @@ Package epstopdf Info: Source file: <Figures/figureffort.eps>
 (epstopdf)                    size: 1413683 bytes
 (epstopdf)             Command: <repstopdf --outfile=Figures/figureffort-eps-co
 nverted-to.pdf Figures/figureffort.eps>
-(epstopdf)             \includegraphics on input line 334.
+(epstopdf)             \includegraphics on input line 332.
 Package epstopdf Info: Output file is already uptodate.
 
 <Figures/figureffort-eps-converted-to.pdf, id=63, 404.51125pt x 383.4325pt>
@@ -619,7 +615,7 @@ File: Figures/figureffort-eps-converted-to.pdf Graphic file (type pdf)
 
 <use Figures/figureffort-eps-converted-to.pdf>
 Package pdftex.def Info: Figures/figureffort-eps-converted-to.pdf used on input
- line 334.
+ line 332.
 (pdftex.def)             Requested size: 371.43698pt x 352.08936pt.
 Package epstopdf Info: Source file: <Figures/figurerevenue.eps>
 (epstopdf)                    date: 2018-04-16 20:52:36
@@ -630,7 +626,7 @@ Package epstopdf Info: Source file: <Figures/figurerevenue.eps>
 (epstopdf)                    size: 468080 bytes
 (epstopdf)             Command: <repstopdf --outfile=Figures/figurerevenue-eps-
 converted-to.pdf Figures/figurerevenue.eps>
-(epstopdf)             \includegraphics on input line 340.
+(epstopdf)             \includegraphics on input line 338.
 Package epstopdf Info: Output file is already uptodate.
 
 <Figures/figurerevenue-eps-converted-to.pdf, id=64, 481.8pt x 232.87pt>
@@ -638,31 +634,19 @@ File: Figures/figurerevenue-eps-converted-to.pdf Graphic file (type pdf)
 
 <use Figures/figurerevenue-eps-converted-to.pdf>
 Package pdftex.def Info: Figures/figurerevenue-eps-converted-to.pdf used on inp
-ut line 340.
+ut line 338.
 (pdftex.def)             Requested size: 452.9679pt x 218.94044pt.
- [13]
-
-LaTeX Warning: Text page 14 contains only floats.
-
-
-Overfull \vbox (2.22694pt too high) has occurred while \output is active []
-
-
-[14 <./Figures/figurecatches-eps-converted-to.pdf> <./Figures/figurecatches2-ep
-s-converted-to.pdf>]
-Overfull \vbox (21.40125pt too high) has occurred while \output is active []
-
-
-[15 <./Figures/figureffort-eps-converted-to.pdf> <./Figures/figurerevenue-eps-c
-onverted-to.pdf>]
+ [13 <./Figures/figurecatches-eps-converted-to.pdf>]
 Missing character: There is no ‚ in font cmr12!
 Missing character: There is no Ä in font cmr12!
 Missing character: There is no ô in font cmr12!
- [16] [17] (./MSE_MAR_18.bbl [18] [19]) [20] [21]
+ [14 <./Figures/figurecatches2-eps-converted-to.pdf>]
+[15 <./Figures/figureffort-eps-converted-to.pdf> <./Figures/figurerevenue-eps-c
+onverted-to.pdf>] [16] (./MSE_MAR_18.bbl [17] [18] [19]) [20] [21]
 ! Missing \endcsname inserted.
 <to be read again> 
                    \textwidth 
-l.414 ...5\textwidth]{Figures/Catch_scenarioI.eps}
+l.412 ...5\textwidth]{Figures/Catch_scenarioI.eps}
                                                   
 ? 
 
@@ -672,7 +656,7 @@ See the xkeyval package documentation for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.414 ...5\textwidth]{Figures/Catch_scenarioI.eps}
+l.412 ...5\textwidth]{Figures/Catch_scenarioI.eps}
                                                   
 ? 
 Package epstopdf Info: Source file: <Figures/Catch_scenarioI.eps>
@@ -684,20 +668,20 @@ df>
 (epstopdf)                    size: 702425 bytes
 (epstopdf)             Command: <repstopdf --outfile=Figures/Catch_scenarioI-ep
 s-converted-to.pdf Figures/Catch_scenarioI.eps>
-(epstopdf)             \includegraphics on input line 414.
+(epstopdf)             \includegraphics on input line 412.
 Package epstopdf Info: Output file is already uptodate.
 
 <Figures/Catch_scenarioI-eps-converted-to.pdf, id=107, 569.12625pt x 228.855pt>
 File: Figures/Catch_scenarioI-eps-converted-to.pdf Graphic file (type pdf)
 <use Figures/Catch_scenarioI-eps-converted-to.pdf>
 Package pdftex.def Info: Figures/Catch_scenarioI-eps-converted-to.pdf used on i
-nput line 414.
+nput line 412.
 (pdftex.def)             Requested size: 569.12486pt x 228.85443pt.
 
 ! Missing \endcsname inserted.
 <to be read again> 
                    \textwidth 
-l.415 ...\textwidth]{Figures/Effort_scenarioI.eps}
+l.413 ...\textwidth]{Figures/Effort_scenarioI.eps}
                                                   
 ? 
 
@@ -707,7 +691,7 @@ See the xkeyval package documentation for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.415 ...\textwidth]{Figures/Effort_scenarioI.eps}
+l.413 ...\textwidth]{Figures/Effort_scenarioI.eps}
                                                   
 ? 
 Package epstopdf Info: Source file: <Figures/Effort_scenarioI.eps>
@@ -719,7 +703,7 @@ pdf>
 (epstopdf)                    size: 429803 bytes
 (epstopdf)             Command: <repstopdf --outfile=Figures/Effort_scenarioI-e
 ps-converted-to.pdf Figures/Effort_scenarioI.eps>
-(epstopdf)             \includegraphics on input line 415.
+(epstopdf)             \includegraphics on input line 413.
 Package epstopdf Info: Output file is already uptodate.
 
 <Figures/Effort_scenarioI-eps-converted-to.pdf, id=108, 569.12625pt x 228.855pt
@@ -727,11 +711,11 @@ Package epstopdf Info: Output file is already uptodate.
 File: Figures/Effort_scenarioI-eps-converted-to.pdf Graphic file (type pdf)
  <use Figures/Effort_scenarioI-eps-converted-to.pdf>
 Package pdftex.def Info: Figures/Effort_scenarioI-eps-converted-to.pdf used on 
-input line 415.
+input line 413.
 (pdftex.def)             Requested size: 569.12486pt x 228.85443pt.
 
 
-LaTeX Warning: Float too large for page by 33.24097pt on input line 417.
+LaTeX Warning: Float too large for page by 33.24097pt on input line 415.
 
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
@@ -741,7 +725,7 @@ I-eps-converted-to.pdf>]
 ! Missing \endcsname inserted.
 <to be read again> 
                    \textwidth 
-l.424 ...\textwidth]{Figures/Catch_scenarioII.eps}
+l.422 ...\textwidth]{Figures/Catch_scenarioII.eps}
                                                   
 ? 
 
@@ -751,7 +735,7 @@ See the xkeyval package documentation for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.424 ...\textwidth]{Figures/Catch_scenarioII.eps}
+l.422 ...\textwidth]{Figures/Catch_scenarioII.eps}
                                                   
 ? 
 Package epstopdf Info: Source file: <Figures/Catch_scenarioII.eps>
@@ -763,7 +747,7 @@ pdf>
 (epstopdf)                    size: 683655 bytes
 (epstopdf)             Command: <repstopdf --outfile=Figures/Catch_scenarioII-e
 ps-converted-to.pdf Figures/Catch_scenarioII.eps>
-(epstopdf)             \includegraphics on input line 424.
+(epstopdf)             \includegraphics on input line 422.
 Package epstopdf Info: Output file is already uptodate.
 
 <Figures/Catch_scenarioII-eps-converted-to.pdf, id=118, 569.12625pt x 228.855pt
@@ -771,13 +755,13 @@ Package epstopdf Info: Output file is already uptodate.
 File: Figures/Catch_scenarioII-eps-converted-to.pdf Graphic file (type pdf)
  <use Figures/Catch_scenarioII-eps-converted-to.pdf>
 Package pdftex.def Info: Figures/Catch_scenarioII-eps-converted-to.pdf used on 
-input line 424.
+input line 422.
 (pdftex.def)             Requested size: 569.12486pt x 228.85443pt.
 
 ! Missing \endcsname inserted.
 <to be read again> 
                    \textwidth 
-l.425 ...textwidth]{Figures/Effort_scenarioII.eps}
+l.423 ...textwidth]{Figures/Effort_scenarioII.eps}
                                                   
 ? 
 
@@ -787,7 +771,7 @@ See the xkeyval package documentation for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.425 ...textwidth]{Figures/Effort_scenarioII.eps}
+l.423 ...textwidth]{Figures/Effort_scenarioII.eps}
                                                   
 ? 
 Package epstopdf Info: Source file: <Figures/Effort_scenarioII.eps>
@@ -799,7 +783,7 @@ Package epstopdf Info: Source file: <Figures/Effort_scenarioII.eps>
 (epstopdf)                    size: 427107 bytes
 (epstopdf)             Command: <repstopdf --outfile=Figures/Effort_scenarioII-
 eps-converted-to.pdf Figures/Effort_scenarioII.eps>
-(epstopdf)             \includegraphics on input line 425.
+(epstopdf)             \includegraphics on input line 423.
 Package epstopdf Info: Output file is already uptodate.
 
 <Figures/Effort_scenarioII-eps-converted-to.pdf, id=119, 569.12625pt x 228.855p
@@ -807,11 +791,11 @@ t>
 File: Figures/Effort_scenarioII-eps-converted-to.pdf Graphic file (type pdf)
  <use Figures/Effort_scenarioII-eps-converted-to.pdf>
 Package pdftex.def Info: Figures/Effort_scenarioII-eps-converted-to.pdf used on
- input line 425.
+ input line 423.
 (pdftex.def)             Requested size: 569.12486pt x 228.85443pt.
 
 
-LaTeX Warning: Float too large for page by 33.24097pt on input line 427.
+LaTeX Warning: Float too large for page by 33.24097pt on input line 425.
 
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
@@ -821,7 +805,7 @@ oII-eps-converted-to.pdf>]
 ! Missing \endcsname inserted.
 <to be read again> 
                    \textwidth 
-l.434 ...textwidth]{Figures/Catch_scenarioIII.eps}
+l.432 ...textwidth]{Figures/Catch_scenarioIII.eps}
                                                   
 ? 
 
@@ -831,7 +815,7 @@ See the xkeyval package documentation for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.434 ...textwidth]{Figures/Catch_scenarioIII.eps}
+l.432 ...textwidth]{Figures/Catch_scenarioIII.eps}
                                                   
 ? 
 Package epstopdf Info: Source file: <Figures/Catch_scenarioIII.eps>
@@ -843,7 +827,7 @@ Package epstopdf Info: Source file: <Figures/Catch_scenarioIII.eps>
 (epstopdf)                    size: 655721 bytes
 (epstopdf)             Command: <repstopdf --outfile=Figures/Catch_scenarioIII-
 eps-converted-to.pdf Figures/Catch_scenarioIII.eps>
-(epstopdf)             \includegraphics on input line 434.
+(epstopdf)             \includegraphics on input line 432.
 Package epstopdf Info: Output file is already uptodate.
 
 <Figures/Catch_scenarioIII-eps-converted-to.pdf, id=129, 569.12625pt x 228.855p
@@ -851,13 +835,13 @@ t>
 File: Figures/Catch_scenarioIII-eps-converted-to.pdf Graphic file (type pdf)
  <use Figures/Catch_scenarioIII-eps-converted-to.pdf>
 Package pdftex.def Info: Figures/Catch_scenarioIII-eps-converted-to.pdf used on
- input line 434.
+ input line 432.
 (pdftex.def)             Requested size: 569.12486pt x 228.85443pt.
 
 ! Missing \endcsname inserted.
 <to be read again> 
                    \textwidth 
-l.435 ...extwidth]{Figures/Effort_scenarioIII.eps}
+l.433 ...extwidth]{Figures/Effort_scenarioIII.eps}
                                                   
 ? 
 
@@ -867,7 +851,7 @@ See the xkeyval package documentation for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.435 ...extwidth]{Figures/Effort_scenarioIII.eps}
+l.433 ...extwidth]{Figures/Effort_scenarioIII.eps}
                                                   
 ? 
 Package epstopdf Info: Source file: <Figures/Effort_scenarioIII.eps>
@@ -879,7 +863,7 @@ o.pdf>
 (epstopdf)                    size: 373357 bytes
 (epstopdf)             Command: <repstopdf --outfile=Figures/Effort_scenarioIII
 -eps-converted-to.pdf Figures/Effort_scenarioIII.eps>
-(epstopdf)             \includegraphics on input line 435.
+(epstopdf)             \includegraphics on input line 433.
 Package epstopdf Info: Output file is already uptodate.
 
 <Figures/Effort_scenarioIII-eps-converted-to.pdf, id=130, 569.12625pt x 228.855
@@ -887,11 +871,11 @@ pt>
 File: Figures/Effort_scenarioIII-eps-converted-to.pdf Graphic file (type pdf)
  <use Figures/Effort_scenarioIII-eps-converted-to.pdf>
 Package pdftex.def Info: Figures/Effort_scenarioIII-eps-converted-to.pdf used o
-n input line 435.
+n input line 433.
 (pdftex.def)             Requested size: 569.12486pt x 228.85443pt.
 
 
-LaTeX Warning: Float too large for page by 33.24097pt on input line 437.
+LaTeX Warning: Float too large for page by 33.24097pt on input line 435.
 
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
@@ -901,7 +885,7 @@ ioIII-eps-converted-to.pdf>]
 ! Missing \endcsname inserted.
 <to be read again> 
                    \textwidth 
-l.444 ...\textwidth]{Figures/Catch_scenarioIV.eps}
+l.442 ...\textwidth]{Figures/Catch_scenarioIV.eps}
                                                   
 ? 
 
@@ -911,7 +895,7 @@ See the xkeyval package documentation for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.444 ...\textwidth]{Figures/Catch_scenarioIV.eps}
+l.442 ...\textwidth]{Figures/Catch_scenarioIV.eps}
                                                   
 ? 
 Package epstopdf Info: Source file: <Figures/Catch_scenarioIV.eps>
@@ -923,7 +907,7 @@ pdf>
 (epstopdf)                    size: 625630 bytes
 (epstopdf)             Command: <repstopdf --outfile=Figures/Catch_scenarioIV-e
 ps-converted-to.pdf Figures/Catch_scenarioIV.eps>
-(epstopdf)             \includegraphics on input line 444.
+(epstopdf)             \includegraphics on input line 442.
 Package epstopdf Info: Output file is already uptodate.
 
 <Figures/Catch_scenarioIV-eps-converted-to.pdf, id=140, 569.12625pt x 228.855pt
@@ -931,13 +915,13 @@ Package epstopdf Info: Output file is already uptodate.
 File: Figures/Catch_scenarioIV-eps-converted-to.pdf Graphic file (type pdf)
  <use Figures/Catch_scenarioIV-eps-converted-to.pdf>
 Package pdftex.def Info: Figures/Catch_scenarioIV-eps-converted-to.pdf used on 
-input line 444.
+input line 442.
 (pdftex.def)             Requested size: 569.12486pt x 228.85443pt.
 
 ! Missing \endcsname inserted.
 <to be read again> 
                    \textwidth 
-l.445 ...textwidth]{Figures/Effort_scenarioIV.eps}
+l.443 ...textwidth]{Figures/Effort_scenarioIV.eps}
                                                   
 ? 
 
@@ -947,7 +931,7 @@ See the xkeyval package documentation for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.445 ...textwidth]{Figures/Effort_scenarioIV.eps}
+l.443 ...textwidth]{Figures/Effort_scenarioIV.eps}
                                                   
 ? 
 Package epstopdf Info: Source file: <Figures/Effort_scenarioIV.eps>
@@ -959,7 +943,7 @@ Package epstopdf Info: Source file: <Figures/Effort_scenarioIV.eps>
 (epstopdf)                    size: 368329 bytes
 (epstopdf)             Command: <repstopdf --outfile=Figures/Effort_scenarioIV-
 eps-converted-to.pdf Figures/Effort_scenarioIV.eps>
-(epstopdf)             \includegraphics on input line 445.
+(epstopdf)             \includegraphics on input line 443.
 Package epstopdf Info: Output file is already uptodate.
 
 <Figures/Effort_scenarioIV-eps-converted-to.pdf, id=141, 569.12625pt x 228.855p
@@ -967,11 +951,11 @@ t>
 File: Figures/Effort_scenarioIV-eps-converted-to.pdf Graphic file (type pdf)
  <use Figures/Effort_scenarioIV-eps-converted-to.pdf>
 Package pdftex.def Info: Figures/Effort_scenarioIV-eps-converted-to.pdf used on
- input line 445.
+ input line 443.
 (pdftex.def)             Requested size: 569.12486pt x 228.85443pt.
 
 
-LaTeX Warning: Float too large for page by 33.24097pt on input line 447.
+LaTeX Warning: Float too large for page by 33.24097pt on input line 445.
 
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
@@ -983,10 +967,10 @@ LaTeX Warning: There were multiply-defined labels.
 
  ) 
 Here is how much of TeX's memory you used:
- 5050 strings out of 493029
- 72071 string characters out of 6136234
- 149722 words of memory out of 5000000
- 8416 multiletter control sequences out of 15000+600000
+ 5056 strings out of 493029
+ 72141 string characters out of 6136234
+ 149741 words of memory out of 5000000
+ 8422 multiletter control sequences out of 15000+600000
  11684 words of font info for 45 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  38i,14n,35p,1404b,302s stack positions out of 5000i,500n,10000p,200000b,80000s
@@ -1003,7 +987,7 @@ s/cm/cmr17.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cm
 r8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb
 ></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/
 share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmti12.pfb>
-Output written on MSE_MAR_18.pdf (25 pages, 8905994 bytes).
+Output written on MSE_MAR_18.pdf (25 pages, 8907002 bytes).
 PDF statistics:
  198 PDF objects out of 1000 (max. 8388607)
  127 compressed objects within 2 object streams

@@ -3,44 +3,44 @@ Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
 The top-level auxiliary file: MSE_MAR_18.aux
 The style file: plain.bst
 Database file #1: mylib.bib
-You've used 18 entries,
+You've used 23 entries,
             2118 wiz_defined-function locations,
-            634 strings with 8310 characters,
-and the built_in function-call counts, 7249 in all, are:
-= -- 688
-> -- 473
+            664 strings with 9392 characters,
+and the built_in function-call counts, 9086 in all, are:
+= -- 865
+> -- 587
 < -- 1
-+ -- 187
-- -- 168
-* -- 631
-:= -- 1262
-add.period$ -- 54
-call.type$ -- 18
-change.case$ -- 136
++ -- 232
+- -- 208
+* -- 778
+:= -- 1578
+add.period$ -- 68
+call.type$ -- 23
+change.case$ -- 171
 chr.to.int$ -- 0
-cite$ -- 18
-duplicate$ -- 198
-empty$ -- 464
-format.name$ -- 168
-if$ -- 1417
+cite$ -- 23
+duplicate$ -- 249
+empty$ -- 589
+format.name$ -- 208
+if$ -- 1780
 int.to.chr$ -- 0
-int.to.str$ -- 18
-missing$ -- 19
-newline$ -- 93
-num.names$ -- 36
-pop$ -- 113
+int.to.str$ -- 23
+missing$ -- 23
+newline$ -- 117
+num.names$ -- 46
+pop$ -- 145
 preamble$ -- 1
-purify$ -- 120
+purify$ -- 150
 quote$ -- 0
-skip$ -- 125
+skip$ -- 161
 stack$ -- 0
-substring$ -- 470
-swap$ -- 18
+substring$ -- 589
+swap$ -- 23
 text.length$ -- 1
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 68
+type$ -- 88
 warning$ -- 0
-while$ -- 64
-width$ -- 20
-write$ -- 200
+while$ -- 82
+width$ -- 25
+write$ -- 252
