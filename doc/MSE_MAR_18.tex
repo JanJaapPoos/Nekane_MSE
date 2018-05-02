@@ -38,6 +38,8 @@ We contrast three types of management plans to achieve maximum sustainable yield
 \section{Introduction}
 \label{sec1}
 
+We have to implement alpha and beta, and make sure that age in VBLG is seasonal 
+
 Management strategy evaluation (MSE; \cite{Sainsbury2000, Smith1994, Bunnefeld2011}) seeks to study the implications of management strategies using simulation\cite{Punt2016}. Such simulation should include all important processes of a fishery, which is inherently a socio-ecological system, with coupled dynamics of the fishing fleets, the exploited stocks, and their governance\cite{Punt2016,Rasemeyer2007}. Given the complexity of such a socio-ecological system the uncertainy about the dynamics and feedbacks are consideable. As a result, any forecasted success in achieving goals in a management strategy may thus be inperceivably small compared to the stochasticity in results generated in the system, or worse, be counteracted by unintended consequences of the management strategy.The robustness of management strategies to the uncertainy in the processes that govern fisheries systems thus need to be accounted for \cite{Andersen2010, Kell2007, Prellezo2016, Punt2016}. 
 
 The adaptive response of fishers to their environment is one of the key uncertainties requiring attention in MSE \cite{Fulton2007}. Simulation tools for such adaptive responses are available in fisheries, borrowing methodology from the more general question of state-dependent foraging decisions in ecological systems \cite{ClarkandMangel2000,Houston1999}. New tools for state-dependent behaviour of individual fishing vessels, translated into behaviour of the fleet and implemented using stochastic dynamic programming \cite{Alzorriz2018,Batsleer2015, Dowling2011, Poos2010, Gillis1995} have been developed. These models generally predict the effect in the short term (within a fishing trip, or a quota year) by optimizing a utility function and determine which choices best yields the best chance of increasing utility, while keeping track of the state of each individual. The effect of a choice on the utility depends on the economic environment,   such as the home port of the vessel and the distance to fishing grounds, and the bioological enviroment, such as the spatial distribution of the resources. Using such dynamic variable state models, effects of e.g. relocation costs of marine protected areas have been modelled \cite{Dowling2011}.
@@ -72,60 +74,56 @@ The OM captured the key processes in the dynamics of the fish populations, the f
 \label{fig:MSE}
 \end{figure}
 
-\subsection{Stock structure and dynamics}
+\subsection{Population dynamics}
 \label{sec2.1}
 
-In order to allow the fishery to make spatial and temporal choices, the model was seasonally (six seasons) and spatially (two areas) explicit. The dynamics of two fish stocks were modelled by an age-structured model that is also seasonally and spatially explicit. The maximum age in the age-structured fish model was 4 years. The number of fish of stock $i$ of age $a$ at year $y$, in season $s$, and area $p$ was written as $N_i (a, y, s, p)$. The two stocks are named "stock 1" and "stock 2". and the areas are named "area a" and "area b". Individuals were born at age 0, at the start of each year $y$, in season 1. The number of new-born individuals in the model was independent of the size of the adult population, but was function of area $p$, and written as $R_i (p)$. Hence,
+In order to allow the fishery to make spatial and temporal choices, the model needed to be seasonally and spatially explicit. The dynamics of the fish stocks were modelled using an age-structured model that was spatially explicit, with seasonal time steps. In each seasonal time step, fish grow, migrate, and die. The number of fish of stock $i$ of age $a$ at year $y$, in season $s$, and area $p$ was written as $N_i (a, y, s, p)$.  The ages in the model range between age 0 and age $A$, the maximum age in the model. the seasons range between season 1 and season $S$, the last season within each year. Individuals were born at age 0, at the start of each year $y$, in season 1. The number of new-born individuals $R_i (p)$ in the model was a function of the area $p$ and independent of the size of the adult population. The population numbers at age 0 are thus
  
 \begin{equation}
-N_i (0, y, 1, p) = R_i (p)
+N_i (0, y, 1, p) = R_i (p).
 \end{equation}
 
-In the example used for our simulations, it was assumed that there were 100 new-borns per year for both stocks. The difference between the stocks is that all new-borns of stock 1 were born in "area a", while all new-borns of stock 2 were born in "area b".   
+Mortality in the model resulted only from catches in the fishery. Mortality from natural causes such as predation, diseases, and scenesens was assumed to be negligible in comparison. Althought such absence of natural mortality impossible in reality, one could argue that the model thus mimiced long-lived species. The decrease in population numbers was thus the result of the catches ($C_i (a, y, s, p)$).
 
-Mortality in the model resulted only from catches in the fishery. Mortality from natural causes such as predation, diseases, and scenesens was assumed to be negligible in comparison. Althought such absence of natural mortality impossible in reality, one could argue that the model thus mimiced long-lived species. The decrease in population numbers was thus the result of the catches ($C_i (a, y, s, p)$), which were in turn a function of age dependent catchability $q_i (a)$, and fishing effort $E (y,s,p)$ in any time, season, and area. Thus, 
+The mortality caused by the catches of the fishery reduce the population numbers. Because the model was seasonally structured, the population numbers for seasons 2 to $S$ were dependent on the previous season,
 
 \begin{equation}
-C_i (a, y, s, p) = N_i (a, y, s, p) * q(a) * E(y,s,p).
+N_i (a, y, s+1, p) = N_i (a, y, s, p) - C_i (a, y, s, p). 
 \end{equation}
 
-The mortality reduces the population numbers as for seasons 2 to 6 as
+the population numbers in season 1 depended on the numbers in season $S$ of the previous year,
 
 \begin{equation}
-N_i (a, y, s+1, p) = N_i (a, y, s, p) - C_i (a, y, s, p), 
+N_i (a+1, y, 1, p) = N_i (a, y, S, p) - C_i (a, y, S, p). 
 \end{equation}
 
-while in season 1, the population numbers were defined as
+Migration for each species was defined by an arrayx $M_i (a, s, em, im)$ that defined  immigration and emigration on a given stock relative to the stock sizes. The size of that array was defined by the number of age classes, seasons and number of areas. emigrants leave area $em$ and move to area $im$. The emigrated part of the population is then substracted from each of the areas, so that that population numbers per year and season remain unaffected by migration.   
+
+Indivdual body growth was modelled by a von Bertalanffy growth equation to convert numbers to lengths, and an allometric equation to convert length to weight. The stock weights are thus calculated from the population numbers as
 
 \begin{equation}
-N_i (a+1, y, 1, p) = N_i (a, y, 6, p) - C_i (a, y, 6, p). 
+W_i(a,y,s,p) =  \alpha * (N_i (a, y, S, p) * L_{\infty_i} * (1-\exp^{(-K * a)}))^{\beta},
 \end{equation}
+ and the same is done for the catch weights.
 
-Migration for each species was defined by a matrix $M_i$ that defines the impact of migration (.e. immigration-emigration) on a given stock was also dependent on the relative sizes of the stocks. The size of that matrix  was defined by the number of age classes, seasons and number of immigrants into area $p$ ($im$) and emigrants leaving area $p$ ($em$) in the model. A 20 \% constant migration during any season was set between areas. The migration in population numbers ($M_i (a, 1, s, im, em)$) was thus the proportion ($P (a, y, s, i, em, im)$) of the population available or vulnerable to fishing after migration occurs:   
+The realized catches are the sum of all individual catches resulting from the Dynamic State Variable Model. The Dynamic State Variable model inputs consist of the expected individual catch rates, which are a random variable. This, random variable is normally distributed, and its mean $\hat c_i (a, y, s, p)$  is a function of population size, age dependent catchability $q_i (a)$, and fishing effort $E (y,s,p)$ in any year, season, and area.  
 
 \begin{equation}
-M_i (a, 1, s, im, em) = N_i (a, y, s, em) * P (a, y, s, i, em, im),
+\hat c_i (a, y, s, p) = N_i (a, y, s, p) * q_i (a) * E(y,s,p).
 \end{equation}
 
-and then population numbers
-
-\begin{equation}
-N (a, y, s, im) = N (a, y, s, im) +  M (a, 1, s, im, em).
-\end{equation}
-
-Moreover, combining the weight-based von Bertalanffy growth equation ($L\infty= 20$, $k= 0.093$), with the age-weight relationship ($W= L\infty*(1-e^{-k*a})$); weight per fish was higher for the older fish.
 
 \subsection{The dynamic-state variable model}
 \label{sec2.2}
 
-To simulate the process of monitoring the stock, we developed models for state-dependent behaviour of individual fishing vessels, translated into behaviour of the fleet and implemented using stochastic dynamic programming \cite{Alzorriz2018, Batsleer2015, ClarkandMangel2000, Dowling2011, Houston1999, Poos2010}. A dynamic state variable model \cite{ClarkandMangel2000, Houston1999} was used to model location choice, extending the model structure in \cite{Batsleer2015}. In order to accommodate each individual vessels set of choices, the model may be constrained by individual vessels quota for the individual species and will respond by changing their fishing pattern in terms of: (i) whether or not to go fishing in one of the two areas ($A$ and $B$), and (ii) whether to discard one or more species and age class combinations. The model had annual fines for exceeding landings or catch quota as in \cite{Alzorriz2018}). In order to calculate state dependent choices during the year, we started by defining the annual fines for exceeding landings or catch quotas at the end of the year:
+To simulate a fleet of individual fishing vessels,we used a Dynamic State Variable Model \cite{Alzorriz2018, Batsleer2015, ClarkandMangel2000, Dowling2011, Houston1999, Poos2010}. The model was used to model location choice, extending the model structure in \cite{Batsleer2015}. Each individual vessels had a set of choices, which include the choice to go fishing in a season,  location choice within that season, and the choice to discard one or more species and size classes during a season. The model had annual fines for exceeding landings quota as in \cite{Alzorriz2018}). In order to calculate state dependent choices during the year, we started by defining the annual fines for exceeding landings quotas at the end of the year:
 \begin{equation}
-\Phi (C_i, Q_i, F_i)= -\sum_i (max( 0, (C_i - Q_i))* F_i),
+\Phi (L_i, Q_i, F_i)= -\sum_i (\textrm{max}( 0, (L_i - Q_i))* F_i),
 \end{equation}
 
-where $C_i$ was the cumulative annual landings or catches for species $i$ for an individual vessel. These cumulative landings defined the state of the individual. $Q_i$ was the annual individual quota for landings or catches for the quota species. Individual quotas were not transferable. In order to reduce computation time, we set quota only for two species. $F_i$ was the fine per unit weight for exceeding individual landings or catch quotas was set to $3 x 10^3$ Euro day\textsuperscript{-1}. These high fines combined with an assumed 100\% detection of exceeding quotas resulted in model results in which fishers comply with quota regulations.
+where $L_i$ was the cumulative annual landings for species $i$ for an individual vessel. These cumulative landings defined the state of the individual. $Q_i$ was the annual individual quota for landings for the different species. Individual quotas were not transferable. $F_i$ was the fine per unit weight for exceeding individual landings quota.
 
-The maximum expected utility between current season $s$ and the end of the year was $V (C_i, Q_i, F_i, s)$, and the model started by setting $V (C_i, Q_i, F_i, s)= \Phi (C_i, Q_i, F_i)$. For preceding seasons, the expected utility depended on individual choices, and each time step individuals chose to visit fishing area $p$ (A, B and including area 0: “staying in port”), and to keep or discard any combination of the age classes caught of the quota species. This discarding was defined by a matrix $d$. The size of that matrix was defined by the number of species under quota constraints and the number of age classes. Each element could take the value 0 (discard) or 1 (keep on board and land). The expected utility for each state and each time step $s$ was calculated backward using stochastic dynamic programming \cite{ClarkandMangel2000}:
+The maximum expected utility between current season $s$ and the end of the year was $V (L_i, Q_i, F_i, s)$, and the model started by setting $V (C_i, Q_i, F_i, S)= \Phi (C_i, Q_i, F_i)$. For preceding seasons, the expected utility depended on individual choices, and each time step individuals chose to visit fishing area $p$, or to stay in port.While fishing, any combination of the age classes caught of the quota species can be landed, or discarded. This discarding was defined by a matrix $d$. The size of that matrix was defined by the number of species under quota constraints and the number of age classes. Each element could take the value 0 (discard) or 1 (keep on board and land). The expected utility for each state and each time step $s$ was calculated backward using stochastic dynamic programming \cite{ClarkandMangel2000}:
 \begin{equation}
 V (C_i, Q_i, F_i, s) = max_{p,d}( R(p, d, s)- G(p) - C(p) + E_{p, d}[V (C_i^\prime, Q_i, F_i, s+1])),
 \end{equation}
@@ -193,7 +191,7 @@ CPUE dev& $0.08*CPUE$\\
 
 \subsubsection{Size dependent pricing}
 \label{sec2.2.1}
-Prices of fish have been assumed to be fixed over time but influenced by the size of the catch. Common knowledge and case studies indicate that size and weight of a fish could be important attributes when determining its economic value \cite{Zimmermann2011, Zimmermann2013}. Therefore, the resulting data of mean weights and average prices were used for further analysis. We fitted linear mixed models, using mean price and mean body weight as the response variable and covariate, respectively. Thus, following \cite{Zimmermann2011}, the statistical models took the form:  
+Prices of fish have been assumed to be fixed over time but influenced by the body weight of the individuals in the catch, as is commonly observed \cite{Zimmermann2011, Zimmermann2013}. Therefore, the resulting data of mean weights and average prices were used for further analysis. We fitted linear mixed models, using mean price and mean body weight as the response variable and covariate, respectively. Thus, following \cite{Zimmermann2011}, the statistical models took the form:  
 \begin{equation}
  pw_{i} \sim p_i \bar{w_i} + \beta_0 \times \frac{w_i-\bar{w_i}}{\bar{w_i}},
 \end{equation}
@@ -215,6 +213,23 @@ species 1 and 2            &  778  & 1354   & 1780  & 2096  \\
 \end{tabular}
 }
 \end{table}
+
+
+\subsection{Case study parameterization}
+
+ (six seasons) and spatially (two areas) explicit
+The maximum age in the age-structured fish model was 4 years.
+The two stocks are named "stock 1" and "stock 2". and the areas are named "area a" and "area b".
+In the example used for our simulations, it was assumed that there were 100 new-borns per year for both stocks. The difference between the stocks is that all new-borns of stock 1 were born in "area a", while all new-borns of stock 2 were born in "area b".   
+
+In our example, the age dependent catchability $q_i (a)$ was assumed independent of age $a$.
+
+ A 20 \% constant migration during any season was set between areas. The migration inpopulation numbers ($M_i (a, s, im, em)$) was thus the proportion ($P (a, y, s, i, em, im)$) of the population available or vulnerable to fishing after migration occurs:
+
+predict fish weight (W) at length (L). while assuming  ($L\infty= 20$, $k= 0.093$), with the age-weight relationship ($W= L\infty*(1-e^{-k*a})$); weight per fish was higher for the older fish.
+
+
+ was set to $3 x 10^3$ Euro day\textsuperscript{-1}. These high fines combined with an assumed 100\% detection of exceeding quotas resulted in model results in which fishers comply with quota regulations.
 
 \subsection{Endogenously determined quotas}
 \label{sec2.3}
