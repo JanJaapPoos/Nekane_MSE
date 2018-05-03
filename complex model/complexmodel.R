@@ -128,14 +128,20 @@ yield_curve <- function(hr,lratio, wts, natmortality, R=1, sequence = seq(0.001,
     SPP1DSCSTEPS  <- 2
     SPP2DSCSTEPS  <- 0
     endy          <- stab.model + NUMRUNS
-    Linf          <- 20
-    K             <- 0.3
-    wts           <- Linf*(1-exp(-K*ages))
+    Linf          <- 50
+    K             <- 0.4
+    alpha         <- 0.00005
+    beta          <- 3
+    sages         <- array(seq(min(ages)+((1/max(season))/2), max(ages+1),1/max(season)), dim=c(length(season),1,length(ages),1), dimnames=list(season=as.character(season),   year="all", cat=ages, option ="all"))
+    lens          <- Linf*(1-exp(-K*(sages)))
+    wts           <- alpha * lens ^ beta
+    wts           <- aperm(wts, c(3,2,1,4) ) 
+    
     q             <- 0.0005
     natmortality  <- 0.0001
     migconstant   <- 0.2
     
-    recs1          <- c(100,0) 
+    recs1          <- c(200,0) 
     mig1     <- array(0, dim=c(length(ages),1,length(season),length(areas), length(areas)), dimnames=list(cat=ages,year="all",season=as.character(season), from =areas, to=areas)) 
     mig1[,,,"a","a"] <- -migconstant
     mig1[,,,"b","b"] <- -migconstant
@@ -143,7 +149,7 @@ yield_curve <- function(hr,lratio, wts, natmortality, R=1, sequence = seq(0.001,
     mig1[,,,"b","a"] <- migconstant
     aperm( mig1,c(1,3,2,4,5))
     
-    recs2          <- c(0,100) 
+    recs2          <- c(0,200) 
     mig2     <- array(0, dim=c(length(ages),1,length(season),length(areas), length(areas)), dimnames=list(cat=ages,year="all",season=as.character(season), from =areas, to=areas)) 
     mig2[,,,"a","a"] <- -migconstant
     mig2[,,,"b","b"] <- -migconstant
