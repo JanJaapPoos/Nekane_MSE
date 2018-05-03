@@ -100,21 +100,20 @@ N_i (a+1, y, 1, p) = N_i (a, y, S, p) - C_i (a, y, S, p).
 
 Migration for each species was defined by an arrayx $M_i (a, s, em, im)$ that defined  immigration and emigration on a given stock relative to the stock sizes. The size of that array was defined by the number of age classes, seasons and number of areas. emigrants leave area $em$ and move to area $im$. The emigrated part of the population is then substracted from each of the areas, so that that population numbers per year and season remain unaffected by migration.   
 
-Indivdual body growth was modelled by a von Bertalanffy growth equation to convert numbers to lengths, and an allometric equation to convert length to weight. The stock weights are thus calculated from the population numbers as
+Individual body growth was modelled by a von Bertalanffy growth equation to convert numbers to lengths, and an allometric equation to convert length to weight. The weights for individuals in the stock and in the catches are thus calculated as
 
 \begin{equation}
-W_i(a,y,s,p) =  \alpha * (N_i (a, y, S, p) * L_{\infty_i} * (1-\exp^{(-K * a)}))^{\beta},
+w_i(a,s) =  \alpha * ( L_{\infty_i} * (1-\exp^{(-K * (a+(s/S))}))^{\beta}.
 \end{equation}
- and the same is done for the catch weights.
 
-The realized catches are the sum of all individual catches resulting from the Dynamic State Variable Model. The Dynamic State Variable model inputs consist of the expected individual catch rates, which are a random variable. This, random variable is normally distributed, and its mean $\hat c_i (a, y, s, p)$  is a function of population size, age dependent catchability $q_i (a)$, and fishing effort $E (y,s,p)$ in any year, season, and area.  
+The realized catches are the sum of all individual catches resulting from the Dynamic State Variable Model. The Dynamic State Variable model inputs consist of the expected individual catch rates, which are random variables. These random variables were normally distributed, with means $\hat c_i (a, y, s, p)$ being a function of population size, age dependent catchability $q_i (a)$ in any year, season, and area,  
 
 \begin{equation}
-\hat c_i (a, y, s, p) = N_i (a, y, s, p) * q_i (a) * E(y,s,p).
+\hat c_i (a, y, s, p) = N_i (a, y, s, p) * q_i (a)  * w_i(a,s).
 \end{equation}
+The standard deviations $\Sigma_i (a, y, s, p)$ of the catch distributions were constant fraction  their means, using a ratio $\eta$. 
 
-
-\subsection{The dynamic-state variable model}
+\subsection{fleet dynamics}
 \label{sec2.2}
 
 To simulate a fleet of individual fishing vessels,we used a Dynamic State Variable Model \cite{Alzorriz2018, Batsleer2015, ClarkandMangel2000, Dowling2011, Houston1999, Poos2010}. The model was used to model location choice, extending the model structure in \cite{Batsleer2015}. Each individual vessels had a set of choices, which include the choice to go fishing in a season,  location choice within that season, and the choice to discard one or more species and size classes during a season. The model had annual fines for exceeding landings quota as in \cite{Alzorriz2018}). In order to calculate state dependent choices during the year, we started by defining the annual fines for exceeding landings quotas at the end of the year:
@@ -155,36 +154,40 @@ where $\sigma$ was a tuning parameter that measured how important it was to be n
 
 The dynamic state variable model was solved by iterating backwards in time, while finding the probability distribution choice in terms of location and discarding behaviour for all possible states, combining the net revenue obtained from the sale of fish and costs of a fishing trip and the effect of the annual fines when exceeding annual quota. Further details for this procedure can be found in \cite{Alzorriz2018, Batsleer2016} and \cite{Dowling2011}.
 
-Once the backward calculations were finished, the forward part is a Monte Carlo simulation where the probabilities of choices were sampled randomly using the probabilities in~\ref{eq:solve}. This was done for 700 individual vessels. 
+Once the backward calculations were finished, the forward part is a Monte Carlo simulation where the probabilities of choices were sampled randomly using the probabilities in~\ref{eq:solve}. For each year, these forward Monte Carlo Simulations determine the fishing effort in each season and area $E(y,s,p)$, and the catches $C_i (a, y, s, p)$ for each age in each season and area
+
 
 \begin{table}[!h]
 \centering
-\caption{Model and fishery conditioning.}
+\caption{Model parameters.}
 \label{t:fishery}
 \resizebox{0.6\textwidth}{!}{%
 \begin{tabular}{@{}lc@{}} 
 \hline
-\textbf{model}                              &               \\ \hline
+
+\textbf{Population dynamics}                                    &                \\ \hline
 &  \\%& & \\
-number of vessels                           &700            \\ 
-$\sigma $                                   & 40           \\
-number of areas                             & 2            \\
-number of seasons                           & 6            \\
-intial quota $Q_{sp1}$ and $Q_{sp2}$        & 200 \\%& & \\
+number of vessels                                                      &700            \\ 
+$\sigma $                                                                    & 40            \\
+number of areas                                                         & 2             \\
+number of seasons                                                     & 6             \\
+intial quota $Q_{sp1}$ and $Q_{sp2}$                     & 200 \\%& & \\
 &  \\
-\textbf{Fishery variable costs}             &               \\ \hline   
+
+\textbf{Fleet dynamics}                                              &               \\ \hline   
 &  \\%& & \\
-fuel costs (Euro day\textsuperscript{-1})       & 1240  \\ 
-gear maintenance (Euro day\textsuperscript{-1}) & 0     \\ 
-crew share                                      & 35\% \\ 
-landing costs (Euro t\textsuperscript{-1})      & 0    \\ 
+Number of vessels                                                     & 700 \\ 
+fuel costs (Euro day\textsuperscript{-1})                 & 1240    \\ 
+gear maintenance (Euro day\textsuperscript{-1})    & 0          \\ 
+crew share                                                                 & 35\%    \\ 
+landing costs (Euro t\textsuperscript{-1})                & 0           \\ 
 &                 \\  
-\textbf{Fishery }&                 \\ \hline   
+
+\textbf{Fishery }                                                       &          \\ \hline   
 &  \\%& & \\
-q                 & 0.0005 \\ 
-effort (p,s)      & 1  \\ 
-CPUE & mean($pop*q*wts(yy-2:yy)$)\\ 
-CPUE dev& $0.08*CPUE$\\ 
+q                                                                                & 0.0005 \\ 
+effort (p,s)                                                                & 1  \\ 
+Ratio of standard deviations to means $\eta$         & $0.08$\\ 
 &                 \\  \hline%& & \\\hline
 \end{tabular}
 }
@@ -192,12 +195,12 @@ CPUE dev& $0.08*CPUE$\\
 
 \subsubsection{Size dependent pricing}
 \label{sec2.2.1}
-Prices of fish have been assumed to be fixed over time but influenced by the body weight of the individuals in the catch, as is commonly observed \cite{Zimmermann2011, Zimmermann2013}. Therefore, the resulting data of mean weights and average prices were used for further analysis. We fitted linear mixed models, using mean price and mean body weight as the response variable and covariate, respectively. Thus, following \cite{Zimmermann2011}, the statistical models took the form:  
+Prices of fish were assumed to be fixed over time but influenced by the body weight of the individuals in the catch, as is commonly observed \cite{Zimmermann2011, Zimmermann2013}. Following \cite{Zimmermann2011}, therelationship between fish price and body weight was modelled as:  
 \begin{equation}
- pw_{i} \sim p_i \bar{w_i} + \beta_0 \times \frac{w_i-\bar{w_i}}{\bar{w_i}},
+ p_i (a,s) = \bar{ p}_i + \gamma_i \times \frac{w_i (a,s) -\bar{w_i}}{\bar{w_i}},
 \end{equation}
-where $p$ is the mean price of species $i$, $\bar{w_i}$ is the mean weight of the corresponding weight classes, and the fraction corresponded to the standarization of the mass relative to the mean observed individual catch mass over all ages classes. $\beta_0$ gave the price increase when individial mass was increased by $\bar{w}$. We used mean prices of 150 Euro kg\textsuperscript{-1} for both species.
- %Because landings corresponding to each weight class varied dramatically, sometimes by several orders of magnitude, we used log-transformed total annual yield per weight class as the statistical weighting factor in the above models. Alternatively, to test the sensitivity of the results, we did not apply any weighting but excluded data corresponding to the lowest 10\% quantile of annual yield, so that observations corresponding to very low yields would not influence the results. All models were fitted independently to each stock.
+where $p_i (a,s) $ is the price of species $i$ at age $a$ and season $s$. The price was a linear function of the weight of inidividuals of species $i$ at age $a$ and season $s$. $\bar{p}_i$ is the price of the species at the mean weight over the age range. The mean weight over the age range is $\bar{w_i}$. $\gamma_i$ gave the price increase when individial mass was increased by $\bar{w_i}$. 
+
 \begin{table}[!h]
 \centering
 \caption{Linear mass-prices estimated based on mean prices per mass age-classes. The price slopes $\beta_0$ were assumed to be similar to mean prices.}
@@ -231,6 +234,8 @@ predict fish weight (W) at length (L). while assuming  ($L\infty= 20$, $k= 0.093
 
 
  was set to $3 x 10^3$ Euro day\textsuperscript{-1}. These high fines combined with an assumed 100\% detection of exceeding quotas resulted in model results in which fishers comply with quota regulations.
+
+We used mean prices of 150 Euro kg\textsuperscript{-1} for both species.
 
 \subsection{Endogenously determined quotas}
 \label{sec2.3}
