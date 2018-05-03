@@ -144,7 +144,7 @@ natmortality  <- 0.0001
 migconstant   <- 0.2
 sp1price      <- sp2price      <- 150
 slope1price <- 150
-slope2price <- 0.50*150
+slope2price <- 150 # 0.50*150
 
 # scenario I: discarding is not allowed, YPR based in C (C=L)
 # scenario II: discarding is allowed, YPR based in L, hr wanted based in catches
