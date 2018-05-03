@@ -97,8 +97,8 @@ yield_curve <- function(hr,lratio, wts, natmortality, R=1, sequence = seq(0.001,
         respop[aa,ss] <- respop[aa,ss]   * (1-natmortality*1)
       }
     }
-    res[iii, ]$catch    <- sum(yld*wts)
-    res[iii, ]$landings <- sum(yld*lratio*wts)
+    res[iii, ]$catch    <- sum(yld*wts[,1,,1])
+    res[iii, ]$landings <- sum(yld*lratio*wts[,1,,1])
     iii <- iii + 1
     if (verbose == T){ 
       print("yields (in numbers)")
@@ -129,20 +129,28 @@ SIGMA         <- 40 #sig
 SPP1DSCSTEPS  <- 1
 SPP2DSCSTEPS  <- 1
 endy          <- stab.model + NUMRUNS
-Linf          <- 20
-K             <- 0.3
-wts           <- Linf*(1-exp(-K*ages))
+Linf          <- 50
+K             <- 0.4
+alpha         <- 0.00005
+beta          <- 3
+sages         <- array(seq(min(ages)+((1/max(season))/2), max(ages+1),1/max(season)), dim=c(length(season),1,length(ages),1), dimnames=list(season=as.character(season),   year="all", cat=ages, option ="all"))
+lens          <- Linf*(1-exp(-K*(sages)))
+wts           <- alpha * lens ^ beta
+wts           <- aperm(wts, c(3,2,1,4))
+
 q             <- 0.0005
 natmortality  <- 0.0001
+
 migconstant   <- 0.2
 sp1price      <- sp2price      <- 150
 slope1price <- 150
 slope2price <- 0.50*150
+
 # scenario I: discarding is not allowed, YPR based in C (C=L)
 # scenario II: discarding is allowed, YPR based in L, hr wanted based in catches
 # scenario III: discarding ocurred but not perceived, YPR based in L, hr wanted based in landings
 
-recs1          <- c(100,0) 
+recs1          <- c(200,0) 
 mig1     <- array(0, dim=c(length(ages),1,length(season),length(areas), length(areas)), dimnames=list(cat=ages,year="all",season=as.character(season), from =areas, to=areas)) 
 mig1[,,,"a","a"] <- -migconstant
 mig1[,,,"b","b"] <- -migconstant
@@ -150,7 +158,7 @@ mig1[,,,"a","b"] <- migconstant
 mig1[,,,"b","a"] <- migconstant
 aperm( mig1,c(1,3,2,4,5))
 
-recs2          <- c(0,100) 
+recs2          <- c(0,200) 
 mig2     <- array(0, dim=c(length(ages),1,length(season),length(areas), length(areas)), dimnames=list(cat=ages,year="all",season=as.character(season), from =areas, to=areas)) 
 mig2[,,,"a","a"] <- -migconstant
 mig2[,,,"b","b"] <- -migconstant
@@ -170,14 +178,19 @@ catches.wt.dsvm.tot1  <- catches.wt.dsvm.tot2  <- array(0, dim=c(1           ,en
 landings.wt.dsvm.tot1 <- landings.wt.dsvm.tot2 <- array(0, dim=c(1           ,endy,              1,            1), dimnames=list(cat="all", year=as.character(1:endy), season="all",                option ="all"))
 quota1                <- quota2                <- array(1.2, dim=c(1           ,endy,              1,            1), dimnames=list(cat="all", year=as.character(1:endy), season="all",                option ="all"))
 
+pos_catches1<- pos_catches2 <- pop1
 
 #run population for 15 year
 pop1 <- population_dynamics(pop=pop1, startyear=2, endyear=stab.model, season=season, natmortality=natmortality, catches=catches.n.dsvm1[,1,,, drop=F], recruitment=recs1, migration=mig1)
 pop2 <- population_dynamics(pop=pop2, startyear=2, endyear=stab.model, season=season, natmortality=natmortality, catches=catches.n.dsvm1[,1,,, drop=F], recruitment=recs2, migration=mig2)
 
 #calculated catches can then be used for input to DSVM (has same dims as pop (1: endyr), endyr=stabmodel+numruns)
-pos_catches1 <- pop1 *q*wts
-pos_catches2 <- pop2 *q*wts
+for (ii in 1:endy){
+  for(jj in areas){
+    pos_catches1[,as.character(ii),,as.character(jj)] <- pop1[,as.character(ii),,as.character(jj)] *q*wts[,1,,1]
+    pos_catches2[,as.character(ii),,as.character(jj)]<- pop2[,as.character(ii),,as.character(jj)] *q*wts[,1,,1]
+  }
+}
 
 #set up dsvm
 sp1<- sp2 <- sp3 <- sp4 <- sp5 <-    new("DynStateInput")
@@ -252,19 +265,24 @@ for(yy in (stab.model):(stab.model+NUMRUNS)){
   landings.wt.dsvm.tot2[] <- apply(landings.wt.dsvm2,c(2),"sum")
   
   #calculate numbers caught from weight caught 
-  catches.n.dsvm1 <- catches.wt.dsvm1/wts
-  catches.n.dsvm2 <- catches.wt.dsvm2/wts
-  
-  landings.n.dsvm1 <- landings.wt.dsvm1/wts
-  landings.n.dsvm2 <- landings.wt.dsvm2/wts
-  
+  for(jj in areas){
+    catches.n.dsvm1 [,yy,,as.character(jj)]  <- catches.wt.dsvm1[,yy,,as.character(jj)]%/%wts[,1,,1]
+    catches.n.dsvm2 [,yy,,as.character(jj)]  <- catches.wt.dsvm2[,yy,,as.character(jj)]%/%wts[,1,,1]
+    
+    landings.n.dsvm1 [,yy,,as.character(jj)] <- landings.wt.dsvm1[,yy,,as.character(jj)]%/%wts[,1,,1]
+    landings.n.dsvm2 [,yy,,as.character(jj)] <- landings.wt.dsvm2[,yy,,as.character(jj)]%/%wts[,1,,1]
+  }
+ 
   # calculatae what happens to population based on catches
   pop1 <- population_dynamics(pop=pop1, startyear=yy, endyear=yy+1, season=season, natmortality=natmortality, catches=catches.n.dsvm1[,yy,,,drop=F], recruitment=recs1, migration=mig1)
   pop2 <- population_dynamics(pop=pop2, startyear=yy, endyear=yy+1, season=season, natmortality=natmortality, catches=catches.n.dsvm2[,yy,,,drop=F], recruitment=recs2, migration=mig2)
   
   #calculate the catches that can be input into DSVM based on updated pop
-  pos_catches1 <- pop1 *q*wts
-  pos_catches2 <- pop2 *q*wts
+  for(jj in areas){
+      pos_catches1[,as.character(yy),,as.character(jj)] <- pop1[,as.character(yy),,as.character(jj)] *q*wts[,1,,1]
+      pos_catches2[,as.character(yy),,as.character(jj)] <- pop2[,as.character(yy),,as.character(jj)] *q*wts[,1,,1]
+    }
+
   
   #------------------------------------------
   #MANAGEMENT PROCEDURE
@@ -289,8 +307,10 @@ for(yy in (stab.model):(stab.model+NUMRUNS)){
   
   #We take the first value of hr1wanted vector to guarantee that we always get a single value in case landingratio is 0
   if (yy > (MPstart-1) & yy < endy){ #if (yy > (MPstart-1))
-    prel.quota1 <-  sum(sweep((hr1wanted[1]/mean(hr1[,yy,]))* hr1[,yy,]*landings.ratio1[,yy,]*apply(pop1[,yy+1,,],c(1,2), sum) ,1,wts,"*"))/SIMNUMBER
-    prel.quota2 <-  sum(sweep((hr2wanted[1]/mean(hr2[,yy,]))* hr2[,yy,]*landings.ratio2[,yy,]*apply(pop2[,yy+1,,],c(1,2), sum) ,1,wts,"*"))/SIMNUMBER
+    prel.quota1 <- sum((hr1wanted[1]/mean(hr1[,yy,]))* hr1[,yy,]*landings.ratio1[,yy,]*apply(pop1[,yy+1,,],c(1,2), sum)*wts[,1,,1])/SIMNUMBER 
+      #sum(sweep((hr1wanted[1]/mean(hr1[,yy,]))* hr1[,yy,]*landings.ratio1[,yy,]*apply(pop1[,yy+1,,],c(1,2), sum) ,1,wts[,1,,1],"*"))/SIMNUMBER
+    prel.quota2 <- sum((hr2wanted[1]/mean(hr2[,yy,]))* hr2[,yy,]*landings.ratio2[,yy,]*apply(pop2[,yy+1,,],c(1,2), sum)*wts[,1,,1])/SIMNUMBER
+      #sum(sweep((hr2wanted[1]/mean(hr2[,yy,]))* hr2[,yy,]*landings.ratio2[,yy,]*apply(pop2[,yy+1,,],c(1,2), sum) ,1,wts,"*"))/SIMNUMBER
     
     # We constrained +- 15% TAC change, until the LO implementation, where we allow the HR wanted just for the transition
     # In the transition we assume landing ratio equal 1
