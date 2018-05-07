@@ -84,21 +84,20 @@ In order to allow the fishery to make spatial and temporal choices, the model ne
 N_i (0, y, 1, p) = R_i (p).
 \end{equation}
 
-Mortality in the model resulted only from catches in the fishery. Mortality from natural causes such as predation, diseases, and scenesens was assumed to be negligible in comparison. Althought such absence of natural mortality impossible in reality, one could argue that the model thus mimiced long-lived species. The decrease in population numbers was thus the result of the catches ($C_i (a, y, s, p)$).
 
-The mortality caused by the catches of the fishery reduce the population numbers. Because the model was seasonally structured, the population numbers for seasons 2 to $S$ were dependent on the previous season,
-
-\begin{equation}
-N_i (a, y, s+1, p) = N_i (a, y, s, p) - C_i (a, y, s, p). 
-\end{equation}
-
-the population numbers in season 1 depended on the numbers in season $S$ of the previous year,
+Mortality in the model resulted from fishery catches and natural causes such as predation, diseases, and scenesens. The decrease in population numbers was thus the result of the catches ($C_i (a, y, s, p)$) and a natural mortality constant $M_i$ that described natural mortality as a fixed fraction of the population. These mortalities reduced the population numbers among a cohort of fish. Because the model was seasonally structured, the population numbers for seasons 2 to $S$ were dependent on the previous season,
 
 \begin{equation}
-N_i (a+1, y, 1, p) = N_i (a, y, S, p) - C_i (a, y, S, p). 
+N_i (a, y, s+1, p) = N_i (a, y, s, p) - C_i (a, y, s, p) - M_i N_i (a, y, s, p) . 
 \end{equation}
 
-Migration for each species was defined by an arrayx $M_i (a, s, em, im)$ that defined  immigration and emigration on a given stock relative to the stock sizes. The size of that array was defined by the number of age classes, seasons and number of areas. emigrants leave area $em$ and move to area $im$. The emigrated part of the population is then substracted from each of the areas, so that that population numbers per year and season remain unaffected by migration.   
+Likewise, the population numbers in season 1 depended on the numbers in season $S$ of the previous year,
+
+\begin{equation}
+N_i (a+1, y, 1, p) = N_i (a, y, S, p) - C_i (a, y, S, p) - M_i N_i (a, y, s, p). 
+\end{equation}
+
+Migration for each species was defined by an array $D_i (a, s, em, im)$ that defined  immigration and emigration on a given stock relative to the stock sizes. The size of that array was defined by the number of age classes, seasons and number of areas. emigrants leave area $em$ and move to area $im$. The emigrated part of the population is then substracted from each of the areas, so that that population numbers per year and season remain unaffected by migration.   
 
 Individual body growth was modelled by a von Bertalanffy growth equation to convert numbers to lengths, and an allometric equation to convert length to weight. The weights for individuals in the stock and in the catches are thus calculated as
 
@@ -128,7 +127,7 @@ The maximum expected utility between current season $s$ and the end of the year 
 V (C_i, Q_i, F_i, s) = max_{p,d}( R(p, d, s)- G(p) - C(p) + E_{p, d}[V (C_i^\prime, Q_i, F_i, s+1])),
 \end{equation}
 
-where $R(p, d, s)$ was the expected immediate contribution of the gross revenue from the sales of fish in a season resulting from choices $p$, and $d$ (gross revenues resulted from multiplying catches different age classes of species 1, species 2 and prices). Prices of fish were assumed to be dependent over fish age (subsection \ref{sec2.2.1}). $G(p)$ represented the incurred fuel costs per season from the choice of fishing area $a$, while  $ C(p)$ represented the variable operating costs (crew share, gear maintenance and landing costs, Table~\ref{t:fishery}), which in turn depended on the change in cumulative landings and fish prices. The term $E_{p, d}[V (C_i^\prime, Q_i, F_i, s+1]$ denoted the expected future utility taken over all possible states resulting from choices $p$, and $d$. The transition of these states were based on normal distributions of catch rates, using the means and variances for the species, as explained in the model conditioning section, following \cite{Poos2010}.
+where $R(p, d, s)$ was the expected immediate contribution of the gross revenue from the sales of fish in a season resulting from choices $p$, and $d$ (gross revenues resulted from multiplying catches different age classes of species 1, species 2 and prices). Prices of fish were assumed to be dependent over fish age (subsection \ref{sec2.2.1}). $G(p)$ represented the incurred fuel costs per season from the choice of fishing area $p$, while  $ C(p)$ represented the variable operating costs (crew share, gear maintenance and landing costs, Table~\ref{t:fishery}), which in turn depended on the change in cumulative landings and fish prices. The term $E_{p, d}[V (C_i^\prime, Q_i, F_i, s+1]$ denoted the expected future utility taken over all possible states resulting from choices $p$, and $d$. The transition of these states were based on normal distributions of catch rates, using the means and variances for the species, as explained in the model conditioning section, following \cite{Poos2010}.
 
 Rather than assuming that each individual always made the optimal choice, we assigned a probability to each choice proportional to its expected utility, following \cite{Dowling2011}. The expected utility for any choice was
 \begin{equation}
@@ -162,32 +161,42 @@ Once the backward calculations were finished, the forward part is a Monte Carlo 
 \caption{Model parameters.}
 \label{t:fishery}
 \resizebox{0.6\textwidth}{!}{%
-\begin{tabular}{@{}lc@{}} 
+\begin{tabular}{@{}llr@{}} 
 \hline
 
 \textbf{Population dynamics}                                    &                \\ \hline
 &  \\%& & \\
-number of vessels                                                      &700            \\ 
-$\sigma $                                                                    & 40            \\
-number of areas                                                         & 2             \\
-number of seasons                                                     & 6             \\
-intial quota $Q_{sp1}$ and $Q_{sp2}$                     & 200 \\%& & \\
-&  \\
 
-\textbf{Fleet dynamics}                                              &               \\ \hline   
+maximum age                                                            & $A$                    & 4               \\
+number of areas                                                       &                            & 2               \\
+number of seasons                                                   & $S$                     & 6               \\
+natural mortality                                                       & $M_i$                 & 0.0001     \\
+Asymptotic length                                                    &  $L_{\infty_i}$   & 50            \\
+Growth rate                                                              & $K_i$                 &  0.4          \\
+                                                                                 & $ \alpha_i$        &  0.00005   \\
+                                                                                 & $\beta_i $         &   3              \\
+&               \\
+\textbf{Fleet dynamics}                                           &               \\ \hline   
 &  \\%& & \\
-Number of vessels                                                     & 700 \\ 
-fuel costs (Euro day\textsuperscript{-1})                 & 1240    \\ 
-gear maintenance (Euro day\textsuperscript{-1})    & 0          \\ 
-crew share                                                                 & 35\%    \\ 
-landing costs (Euro t\textsuperscript{-1})                & 0           \\ 
+
+Number of vessels                                                    &                       & 700           \\ 
+Fuel costs (Euro day\textsuperscript{-1})               &                       & 1240         \\ 
+Gear maintenance (Euro day\textsuperscript{-1})  &                       & 0               \\ 
+Crew share                                                               &                       & 35\%        \\ 
+Landing costs (Euro t\textsuperscript{-1})              &                       & 0               \\
+Optimal choice error                                                 & $\sigma $       & 40             \\ 
+
 &                 \\  
-
-\textbf{Fishery }                                                       &          \\ \hline   
+\textbf{Fishery }                                                      &             \\ \hline   
 &  \\%& & \\
-q                                                                                & 0.0005 \\ 
-effort (p,s)                                                                & 1  \\ 
-Ratio of standard deviations to means $\eta$         & $0.08$\\ 
+
+Intial quota                                                               &                       & 200 \\%& & \\
+catchability                                                               & $q_i (a)$        & 0.0005        \\ 
+effort (p,s)                                                               &                       & 1                 \\ 
+Price of species at mean weight                               & $\bar{p}_i$   & 150             \\
+Slope of species price                                              & $\gamma_i$   &  100            \\
+Fine for overshooting quota                                    &  $F_i$            & 3e6              \\
+Ratio of standard deviations to catch means          & $\eta$           & 0.08           \\ 
 &                 \\  \hline%& & \\\hline
 \end{tabular}
 }
@@ -236,6 +245,8 @@ predict fish weight (W) at length (L). while assuming  ($L\infty= 20$, $k= 0.093
  was set to $3 x 10^3$ Euro day\textsuperscript{-1}. These high fines combined with an assumed 100\% detection of exceeding quotas resulted in model results in which fishers comply with quota regulations.
 
 We used mean prices of 150 Euro kg\textsuperscript{-1} for both species.
+
+Mortality from natural causes such as predation, diseases, and scenesens was assumed to be negligible in comparison. Althought such absence of natural mortality impossible in reality, one could argue that the model thus mimiced long-lived species.
 
 \subsection{Endogenously determined quotas}
 \label{sec2.3}
