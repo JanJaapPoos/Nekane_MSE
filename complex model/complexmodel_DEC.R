@@ -150,7 +150,7 @@ slope2price <- 100 # 0.50*150
 # scenario II: discarding is allowed, YPR based in L, hr wanted based in catches
 # scenario III: discarding ocurred but not perceived, YPR based in L, hr wanted based in landings
 
-recs1          <- c(200,0) 
+recs1          <- c(400,0) 
 mig1     <- array(0, dim=c(length(ages),1,length(season),length(areas), length(areas)), dimnames=list(cat=ages,year="all",season=as.character(season), from =areas, to=areas)) 
 mig1[,,,"a","a"] <- -migconstant
 mig1[,,,"b","b"] <- -migconstant
@@ -158,7 +158,7 @@ mig1[,,,"a","b"] <- migconstant
 mig1[,,,"b","a"] <- migconstant
 aperm( mig1,c(1,3,2,4,5))
 
-recs2          <- c(0,200) 
+recs2          <- c(0,400) 
 mig2     <- array(0, dim=c(length(ages),1,length(season),length(areas), length(areas)), dimnames=list(cat=ages,year="all",season=as.character(season), from =areas, to=areas)) 
 mig2[,,,"a","a"] <- -migconstant
 mig2[,,,"b","b"] <- -migconstant
