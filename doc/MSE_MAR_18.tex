@@ -38,7 +38,7 @@ We contrast three types of management plans to achieve maximum sustainable yield
 \section{Introduction}
 \label{sec1}
 
-We have to implement alpha and beta, and make sure that age in VBLG is seasonal 
+We have to make sure we are clear on the ages of the species: do we start at 0 or at 1?
 
 Management strategy evaluation (MSE; \cite{Bunnefeld2011, Sainsbury2000, Smith1994}) seeks to study the implications of management strategies using simulation\cite{Punt2016}. Such simulation should include all important processes of a fishery, which is inherently a socio-ecological system, with coupled dynamics of the fishing fleets, the exploited stocks, and their governance\cite{Punt2016,Rasemeyer2007}. Given the complexity of such a socio-ecological system the uncertainy about the dynamics and feedbacks are consideable. As a result, any forecasted success in achieving goals in a management strategy may thus be inperceivably small compared to the stochasticity in results generated in the system, or worse, be counteracted by unintended consequences of the management strategy. The robustness of management strategies to the uncertainy in the processes that govern fisheries systems thus need to be accounted for \cite{Andersen2010, Kell2007, Prellezo2016, Punt2016}. 
 
@@ -210,30 +210,16 @@ Prices of fish were assumed to be fixed over time but influenced by the body wei
 \end{equation}
 where $p_i (a,s) $ is the price of species $i$ at age $a$ and season $s$. The price was a linear function of the weight of inidividuals of species $i$ at age $a$ and season $s$. $\bar{p}_i$ is the price of the species at the mean weight over the age range. The mean weight over the age range is $\bar{w_i}$. $\gamma_i$ gave the price increase when individial mass was increased by $\bar{w_i}$. 
 
-\begin{table}[!h]
+\begin{figure}[!ht]
 \centering
-\caption{Linear mass-prices estimated based on mean prices per mass age-classes. The price slopes $\beta_0$ were assumed to be similar to mean prices.}
-\label{t:pricing}
-\resizebox{0.5\textwidth}{!}{%
-\begin{tabular}{@{}lcccc@{}} 
-\hline
-\textbf{Market value (Euro kg\textsuperscript{-1})}& \multicolumn{4}{c}{age} \\ 
-                         & 1     & 2     & 3    & 4   \\ \hline
-                      \\                      
-species 1 and 2            &  778  & 1354   & 1780  & 2096  \\
-\\
-\hline 
-\end{tabular}
-}
-\end{table}
+\includegraphics[width=.69\textwidth]{Figures/prices.eps} 
+\caption{Lenghts and prices of the species}
+\end{figure}
 
 
 \subsection{Case study parameterization}
 
- (six seasons) and spatially (two areas) explicit
-The maximum age in the age-structured fish model was 4 years.
-The two stocks are named ``stock 1" and ``stock 2". and the areas are named ``area a" and ``area b". 
-In the example used for our simulations, it was assumed that there were 100 new-borns per year for both stocks. The difference between the stocks is that all new-borns of stock 1 were born in ``area a", while all new-borns of stock 2 were born in ``area b".   
+To mimic spatially heterogeneous fish populations in a mixed fishery where fishers make sequential choices on fishing areas and discarding patterns, the model was divided into a 'north' and 'south' area, and six fishing seasons per year. There were two fish species in the model, both of which are caught by the fishery. The annual number of newborns is equal for the two species, and arbitrarily set to 400 per year. The species differ with respect to their nursery grounds: all individuals of species 1 are born in the southern area, while all individuals of species 2 are born in the northern area. The maximum age that any individual can reach was 4 years old
 
 In our example, the age dependent catchability $q_i (a)$ was assumed independent of age $a$.
 
