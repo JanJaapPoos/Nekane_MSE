@@ -5,7 +5,7 @@ library(reshape2)
 library(plyr)
 library(scales)
 
-setwd("~/Dropbox/BoB/MSE/Git/Nekane/complex model/")
+setwd("~/Nekane_MSE/complex model/")
 source("functions.R")
 
 
@@ -121,9 +121,9 @@ ages          <- 1:4
 season        <- 1:6
 areas         <- c("a", "b")
 stab.model    <- 10
-NUMRUNS       <- 80
-MPstart       <- 40
-MPstartLO     <- 65
+NUMRUNS       <- 40
+MPstart       <- 20
+MPstartLO     <- 30
 SIMNUMBER     <- 700 #pos
 SIGMA         <- 40 #sig 
 SPP1DSCSTEPS  <- 1
@@ -184,6 +184,31 @@ pos_catches1<- pos_catches2 <- pop1
 pop1 <- population_dynamics(pop=pop1, startyear=2, endyear=stab.model, season=season, natmortality=natmortality, catches=catches.n.dsvm1[,1,,, drop=F], recruitment=recs1, migration=mig1)
 pop2 <- population_dynamics(pop=pop2, startyear=2, endyear=stab.model, season=season, natmortality=natmortality, catches=catches.n.dsvm1[,1,,, drop=F], recruitment=recs2, migration=mig2)
 
+setEPS()
+postscript("distributions.eps")
+par(oma=c(0,0,0,0), mar=c(4.1, 4.1, 3.1, 1.1))
+split.screen( rbind(c(0, .8,0,1), c(.8,1,0,1)))
+split.screen(c(2,1), screen=1)-> ind
+screen( ind[1])
+
+image(matrix(round(aperm(pop1[,5,,],c(2,1,3))), ncol=2), col=gray((0:64)/64), axes=F, main= "Species 1", ylab="Area" )
+box()
+axis(2,at= seq(0.,1,1),labels= c("S","N"), las=1)
+axis(1,at= seq(0.,0.75,0.25),labels= seq(1:4))
+
+screen( ind[2])
+
+image(matrix(round(aperm(pop2[,5,,],c(2,1,3))), ncol=2), col=gray((0:64)/64), axes=F, main="Species 2", xlab="Age (years)", ylab="Area")
+box()
+axis(2,at= seq(0.,1,1),labels= c("S","N"), las=1)
+axis(1,at= seq(0.,0.75,0.25),labels= seq(1:4))
+
+#image.plot(matrix(round(aperm(pop1[,5,,],c(2,1,3))), ncol=2), col=gray((0:64)/64),  main= "Species 1" )
+screen(2)
+image.plot(legend.only=T,zlim=c(0,400),  col=gray((0:64)/64),  smallplot=c(.2,.4, .3,.7))
+close.screen( all=TRUE)
+dev.off()
+
 #calculated catches can then be used for input to DSVM (has same dims as pop (1: endyr), endyr=stabmodel+numruns)
 for (ii in 1:endy){
   for(jj in areas){
@@ -202,7 +227,7 @@ sp1Price <- array(c(sp1price + slope1price*(((wts-mean(wts))/mean(wts)))), dim=c
 sp2Price <- array(c(sp2price + slope2price*(((wts-mean(wts))/mean(wts)))), dim=c(length(ages),length(season)), dimnames=list(cat=ages,season=as.character(season)))
 sp3Price <- sp4Price <- sp5Price <- array(c(0), dim=c(length(ages),length(season)), dimnames=list(cat=ages,season=as.character(season)))
 #---effort and prices used (note that now c is removed (but that if other runs, then make sure to fix/remove code that removes "c" option)                                                                                         
-control     <- DynState.control(spp1LndQuota= 200,  spp2LndQuota=200, spp1LndQuotaFine= 3e6, spp2LndQuotaFine= 3e6, fuelUse = 1, fuelPrice = 150.0, landingCosts= 0,gearMaintenance= 0, addNoFishing= TRUE, increments= 25, spp1DiscardSteps= SPP1DSCSTEPS, spp2DiscardSteps= SPP2DSCSTEPS, sigma= SIGMA, simNumber= SIMNUMBER, numThreads= 20)
+control     <- DynState.control(spp1LndQuota= 200,  spp2LndQuota=200, spp1LndQuotaFine= 3e6, spp2LndQuotaFine= 3e6, fuelUse = 1, fuelPrice = 150.0, landingCosts= 0,gearMaintenance= 0, addNoFishing= TRUE, increments= 25, spp1DiscardSteps= SPP1DSCSTEPS, spp2DiscardSteps= SPP2DSCSTEPS, sigma= SIGMA, simNumber= SIMNUMBER, numThreads= 68)
 
 #this is where our loop starts, after we set up stable population
 for(yy in (stab.model):(stab.model+NUMRUNS)){
