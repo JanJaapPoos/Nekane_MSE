@@ -125,7 +125,7 @@ NUMRUNS       <- 40
 MPstart       <- 20
 MPstartLO     <- 30
 SIMNUMBER     <- 700 #pos
-SIGMA         <- 40 #sig 
+SIGMA         <- 20 #sig 
 SPP1DSCSTEPS  <- 1
 SPP2DSCSTEPS  <- 1
 endy          <- stab.model + NUMRUNS
@@ -176,38 +176,13 @@ catches.wt.dsvm1      <- catches.wt.dsvm2      <- array(0, dim=c(length(ages),en
 landings.wt.dsvm1     <- landings.wt.dsvm2     <- array(0, dim=c(length(ages),endy,length(season),length(areas)), dimnames=list(cat=ages,   year=as.character(1:endy), season=as.character(season), option =areas))
 catches.wt.dsvm.tot1  <- catches.wt.dsvm.tot2  <- array(0, dim=c(1           ,endy,              1,            1), dimnames=list(cat="all", year=as.character(1:endy), season="all",                option ="all"))
 landings.wt.dsvm.tot1 <- landings.wt.dsvm.tot2 <- array(0, dim=c(1           ,endy,              1,            1), dimnames=list(cat="all", year=as.character(1:endy), season="all",                option ="all"))
-quota1                <- quota2                <- array(1.2, dim=c(1           ,endy,              1,            1), dimnames=list(cat="all", year=as.character(1:endy), season="all",                option ="all"))
+quota1                <- quota2                <- array(1.6, dim=c(1           ,endy,              1,            1), dimnames=list(cat="all", year=as.character(1:endy), season="all",                option ="all"))
 
 pos_catches1<- pos_catches2 <- pop1
 
 #run population for 15 year
 pop1 <- population_dynamics(pop=pop1, startyear=2, endyear=stab.model, season=season, natmortality=natmortality, catches=catches.n.dsvm1[,1,,, drop=F], recruitment=recs1, migration=mig1)
 pop2 <- population_dynamics(pop=pop2, startyear=2, endyear=stab.model, season=season, natmortality=natmortality, catches=catches.n.dsvm1[,1,,, drop=F], recruitment=recs2, migration=mig2)
-
-setEPS()
-postscript("distributions.eps")
-par(oma=c(0,0,0,0), mar=c(4.1, 4.1, 3.1, 1.1))
-split.screen( rbind(c(0, .8,0,1), c(.8,1,0,1)))
-split.screen(c(2,1), screen=1)-> ind
-screen( ind[1])
-
-image(matrix(round(aperm(pop1[,5,,],c(2,1,3))), ncol=2), col=gray((0:64)/64), axes=F, main= "Species 1", ylab="Area" )
-box()
-axis(2,at= seq(0.,1,1),labels= c("S","N"), las=1)
-axis(1,at= seq(0.,0.75,0.25),labels= seq(1:4))
-
-screen( ind[2])
-
-image(matrix(round(aperm(pop2[,5,,],c(2,1,3))), ncol=2), col=gray((0:64)/64), axes=F, main="Species 2", xlab="Age (years)", ylab="Area")
-box()
-axis(2,at= seq(0.,1,1),labels= c("S","N"), las=1)
-axis(1,at= seq(0.,0.75,0.25),labels= seq(1:4))
-
-#image.plot(matrix(round(aperm(pop1[,5,,],c(2,1,3))), ncol=2), col=gray((0:64)/64),  main= "Species 1" )
-screen(2)
-image.plot(legend.only=T,zlim=c(0,400),  col=gray((0:64)/64),  smallplot=c(.2,.4, .3,.7))
-close.screen( all=TRUE)
-dev.off()
 
 #calculated catches can then be used for input to DSVM (has same dims as pop (1: endyr), endyr=stabmodel+numruns)
 for (ii in 1:endy){
@@ -254,7 +229,6 @@ for(yy in (stab.model):(stab.model+NUMRUNS)){
     control@spp2DiscardSteps <-  0
   }
 
-  
   #run DSVM (wiht quota constraining if in MP time)   
   z <- DynState(sp1, sp2, sp3, sp4, sp5, sp1Price, sp2Price, sp3Price, sp4Price, sp5Price, effort, control)
   
@@ -308,7 +282,6 @@ for(yy in (stab.model):(stab.model+NUMRUNS)){
       pos_catches2[,as.character(yy),,as.character(jj)] <- pop2[,as.character(yy),,as.character(jj)] *q*wts[,1,,1]
     }
 
-  
   #------------------------------------------
   #MANAGEMENT PROCEDURE
   #------------------------------------------
