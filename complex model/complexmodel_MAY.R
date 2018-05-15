@@ -124,11 +124,13 @@ stab.model    <- 10
 NUMRUNS       <- 40
 MPstart       <- 20
 MPstartLO     <- 30
+
 SIMNUMBER     <- 700 #pos
 SIGMA         <- 20 #sig 
 SPP1DSCSTEPS  <- 1
 SPP2DSCSTEPS  <- 1
 endy          <- stab.model + NUMRUNS
+
 Linf          <- 50
 K             <- 0.4
 alpha         <- 0.00005
@@ -145,6 +147,8 @@ migconstant   <- 0.2
 sp1price      <- sp2price      <- 150
 slope1price <- 100
 slope2price <- 100 # 0.50*150
+
+FuelPrice   <- 100
 
 # scenario I: discarding is not allowed, YPR based in C (C=L)
 # scenario II: discarding is allowed, YPR based in L, hr wanted based in catches
@@ -188,7 +192,7 @@ pop2 <- population_dynamics(pop=pop2, startyear=2, endyear=stab.model, season=se
 for (ii in 1:endy){
   for(jj in areas){
     pos_catches1[,as.character(ii),,as.character(jj)] <- pop1[,as.character(ii),,as.character(jj)] *q*wts[,1,,1]
-    pos_catches2[,as.character(ii),,as.character(jj)]<- pop2[,as.character(ii),,as.character(jj)] *q*wts[,1,,1]
+    pos_catches2[,as.character(ii),,as.character(jj)] <- pop2[,as.character(ii),,as.character(jj)] *q*wts[,1,,1]
   }
 }
 
@@ -202,7 +206,7 @@ sp1Price <- array(c(sp1price + slope1price*(((wts-mean(wts))/mean(wts)))), dim=c
 sp2Price <- array(c(sp2price + slope2price*(((wts-mean(wts))/mean(wts)))), dim=c(length(ages),length(season)), dimnames=list(cat=ages,season=as.character(season)))
 sp3Price <- sp4Price <- sp5Price <- array(c(0), dim=c(length(ages),length(season)), dimnames=list(cat=ages,season=as.character(season)))
 #---effort and prices used (note that now c is removed (but that if other runs, then make sure to fix/remove code that removes "c" option)                                                                                         
-control     <- DynState.control(spp1LndQuota= 200,  spp2LndQuota=200, spp1LndQuotaFine= 3e6, spp2LndQuotaFine= 3e6, fuelUse = 1, fuelPrice = 150.0, landingCosts= 0,gearMaintenance= 0, addNoFishing= TRUE, increments= 25, spp1DiscardSteps= SPP1DSCSTEPS, spp2DiscardSteps= SPP2DSCSTEPS, sigma= SIGMA, simNumber= SIMNUMBER, numThreads= 68)
+control     <- DynState.control(spp1LndQuota= quota1[,1,,],  spp2LndQuota=quota2[,1,,], spp1LndQuotaFine= 3e6, spp2LndQuotaFine= 3e6, fuelUse = 1, fuelPrice = FuelPrice, landingCosts= 0,gearMaintenance= 0, addNoFishing= TRUE, increments= 25, spp1DiscardSteps= SPP1DSCSTEPS, spp2DiscardSteps= SPP2DSCSTEPS, sigma= SIGMA, simNumber= SIMNUMBER, numThreads= 68)
 
 #this is where our loop starts, after we set up stable population
 for(yy in (stab.model):(stab.model+NUMRUNS)){
