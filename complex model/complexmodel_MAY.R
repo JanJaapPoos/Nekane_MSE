@@ -5,7 +5,7 @@ library(reshape2)
 library(plyr)
 library(scales)
 
-setwd("~/Nekane_MSE/complex model/")
+setwd("~/Dropbox/BoB/MSE/Git/Nekane/complex model/")
 source("functions.R")
 
 
@@ -121,19 +121,19 @@ ages          <- 1:4
 season        <- 1:6
 areas         <- c("a", "b")
 stab.model    <- 10
-NUMRUNS       <- 40
-MPstart       <- 20
-MPstartLO     <- 30
+NUMRUNS       <- 30
+MPstart       <- 26
+#MPstartLO     <- 26
 
 SIMNUMBER     <- 700 #pos
-SIGMA         <- 20 #sig 
-SPP1DSCSTEPS  <- 1
-SPP2DSCSTEPS  <- 1
+SIGMA         <- 40 #sig 
+SPP1DSCSTEPS  <- 0
+SPP2DSCSTEPS  <- 0
 endy          <- stab.model + NUMRUNS
 
-Linf          <- 50
-K             <- 0.4
-alpha         <- 0.00005
+Linf          <- 50 #50
+K             <- 0.6 #0.4
+alpha         <- 0.0002#0.00005
 beta          <- 3
 sages         <- array(seq(min(ages)+((1/max(season))/2), max(ages+1),1/max(season)), dim=c(length(season),1,length(ages),1), dimnames=list(season=as.character(season),   year="all", cat=ages, option ="all"))
 lens          <- Linf*(1-exp(-K*(sages)))
@@ -144,17 +144,17 @@ q             <- 0.0005
 natmortality  <- 0.0001
 
 migconstant   <- 0.2
-sp1price      <- sp2price      <- 150
-slope1price <- 100
-slope2price <- 100 # 0.50*150
+sp1price      <- sp2price      <- 1500
+slope1price <- 1000
+slope2price <- 1000 # 0.50*150
 
-FuelPrice   <- 100
+FuelPrice   <- 150
 
 # scenario I: discarding is not allowed, YPR based in C (C=L)
 # scenario II: discarding is allowed, YPR based in L, hr wanted based in catches
 # scenario III: discarding ocurred but not perceived, YPR based in L, hr wanted based in landings
 
-recs1          <- c(400,0) 
+recs1          <- c(100,0) 
 mig1     <- array(0, dim=c(length(ages),1,length(season),length(areas), length(areas)), dimnames=list(cat=ages,year="all",season=as.character(season), from =areas, to=areas)) 
 mig1[,,,"a","a"] <- -migconstant
 mig1[,,,"b","b"] <- -migconstant
@@ -162,7 +162,7 @@ mig1[,,,"a","b"] <- migconstant
 mig1[,,,"b","a"] <- migconstant
 aperm( mig1,c(1,3,2,4,5))
 
-recs2          <- c(0,400) 
+recs2          <- c(0,100) 
 mig2     <- array(0, dim=c(length(ages),1,length(season),length(areas), length(areas)), dimnames=list(cat=ages,year="all",season=as.character(season), from =areas, to=areas)) 
 mig2[,,,"a","a"] <- -migconstant
 mig2[,,,"b","b"] <- -migconstant
@@ -180,9 +180,9 @@ catches.wt.dsvm1      <- catches.wt.dsvm2      <- array(0, dim=c(length(ages),en
 landings.wt.dsvm1     <- landings.wt.dsvm2     <- array(0, dim=c(length(ages),endy,length(season),length(areas)), dimnames=list(cat=ages,   year=as.character(1:endy), season=as.character(season), option =areas))
 catches.wt.dsvm.tot1  <- catches.wt.dsvm.tot2  <- array(0, dim=c(1           ,endy,              1,            1), dimnames=list(cat="all", year=as.character(1:endy), season="all",                option ="all"))
 landings.wt.dsvm.tot1 <- landings.wt.dsvm.tot2 <- array(0, dim=c(1           ,endy,              1,            1), dimnames=list(cat="all", year=as.character(1:endy), season="all",                option ="all"))
-quota1                <- quota2                <- array(1.6, dim=c(1           ,endy,              1,            1), dimnames=list(cat="all", year=as.character(1:endy), season="all",                option ="all"))
+quota1                <- quota2                <- array(10, dim=c(1           ,endy,              1,            1), dimnames=list(cat="all", year=as.character(1:endy), season="all",                option ="all"))
 
-pos_catches1<- pos_catches2 <- pop1
+pos_catches1 <- pos_catches2 <- pop1
 
 #run population for 15 year
 pop1 <- population_dynamics(pop=pop1, startyear=2, endyear=stab.model, season=season, natmortality=natmortality, catches=catches.n.dsvm1[,1,,, drop=F], recruitment=recs1, migration=mig1)
@@ -228,10 +228,10 @@ for(yy in (stab.model):(stab.model+NUMRUNS)){
   }
 
   # if we are in MPLO period, then set discardsteps =0 
-  if (yy > MPstartLO){
-    control@spp1DiscardSteps <-  0
-    control@spp2DiscardSteps <-  0
-  }
+  #if (yy > MPstartLO){
+   # control@spp1DiscardSteps <-  0
+  #  control@spp2DiscardSteps <-  0
+  #}
 
   #run DSVM (wiht quota constraining if in MP time)   
   z <- DynState(sp1, sp2, sp3, sp4, sp5, sp1Price, sp2Price, sp3Price, sp4Price, sp5Price, effort, control)
@@ -244,14 +244,14 @@ for(yy in (stab.model):(stab.model+NUMRUNS)){
   economics_res$Grossrev    <- as.data.frame(as.matrix(grossRev(z)))$V1 
   economics_res$Fuelcosts   <- apply(effort(sim(z)) * control(z)@fuelUse * control(z)@fuelPrice, 2, sum)
   economics_res$Annualfine  <- as.data.frame(as.matrix(annualFine(z)))$V1
-  
-  if (yy == stab.model){ 
+
+  if (yy == stab.model){
     dsvm_res_allyrs       <- cbind("year"= yy,dsvm_res)
     economics_res_allyrs  <- cbind("year"= yy,economics_res)
   } else {
     dsvm_res_allyrs <- rbind(dsvm_res_allyrs, (cbind("year"= yy,dsvm_res)))
     economics_res_allyrs <- rbind(economics_res_allyrs, (cbind("year"= yy,economics_res)))
-  } 
+  }
   
   #get catches in wts from DSVM 
   catches.wt.dsvm1[,yy,,] <- catch_dataframe_to_array(dsvm_res, ages, season, areas, "pop1", catch_option="catch.wt")
@@ -259,6 +259,8 @@ for(yy in (stab.model):(stab.model+NUMRUNS)){
   
   landings.wt.dsvm1[,yy,,] <- catch_dataframe_to_array(dsvm_res, ages, season, areas, "pop1", catch_option="landings.wt")
   landings.wt.dsvm2[,yy,,] <- catch_dataframe_to_array(dsvm_res, ages, season, areas, "pop2", catch_option="landings.wt") 
+  
+  rm(z,dsvm_res)
   
   #calculate total catches (by summing over seasons and ages)
   catches.wt.dsvm.tot1[] <- apply(catches.wt.dsvm1,c(2),"sum")
@@ -275,7 +277,7 @@ for(yy in (stab.model):(stab.model+NUMRUNS)){
     landings.n.dsvm1 [,yy,,as.character(jj)] <- landings.wt.dsvm1[,yy,,as.character(jj)]%/%wts[,1,,1]
     landings.n.dsvm2 [,yy,,as.character(jj)] <- landings.wt.dsvm2[,yy,,as.character(jj)]%/%wts[,1,,1]
   }
- 
+
   # calculatae what happens to population based on catches
   pop1 <- population_dynamics(pop=pop1, startyear=yy, endyear=yy+1, season=season, natmortality=natmortality, catches=catches.n.dsvm1[,yy,,,drop=F], recruitment=recs1, migration=mig1)
   pop2 <- population_dynamics(pop=pop2, startyear=yy, endyear=yy+1, season=season, natmortality=natmortality, catches=catches.n.dsvm2[,yy,,,drop=F], recruitment=recs2, migration=mig2)
@@ -290,16 +292,17 @@ for(yy in (stab.model):(stab.model+NUMRUNS)){
   #MANAGEMENT PROCEDURE
   #------------------------------------------
   
-  hr1 <- (apply(catches.n.dsvm1,1:3,sum)+1e-20)/    (apply(catches.n.dsvm1,1:3,sum) +  apply(pop1[,1:endy,,],1:3,sum))
+  hr1 <- (apply(catches.n.dsvm1,1:3,sum)+1e-20)/    ((apply(catches.n.dsvm1,1:3,sum)+1e-20) +  apply(pop1[,1:endy,,],1:3,sum))
   hr2 <- (apply(catches.n.dsvm2,1:3,sum)+1e-20)/    (apply(catches.n.dsvm2,1:3,sum) +  apply(pop2[,1:endy,,],1:3,sum))
   
   landings.ratio1 <- (apply(landings.n.dsvm1,1:3,sum)+1e-20)/ (apply(catches.n.dsvm1,1:3,sum)+1e-20)
   landings.ratio2 <- (apply(landings.n.dsvm2,1:3,sum)+1e-20)/ (apply(catches.n.dsvm2,1:3,sum)+1e-20)
+
   
-  if (yy == MPstartLO){
-    landings.ratio1[,yy,]<- 1
-    landings.ratio2[,yy,]<- 1
-  }
+  # if (yy == MPstartLO){
+  #   landings.ratio1[,yy,]<- 1
+  #   landings.ratio2[,yy,]<- 1
+  # }
   
   yc1 <- yield_curve(hr=hr1[,yy,], landings.ratio1[,yy,], wts, natmortality, R=recs1, verbose=F)
   yc2 <- yield_curve(hr=hr2[,yy,], landings.ratio2[,yy,], wts, natmortality, R=recs2, verbose=F)
@@ -316,7 +319,7 @@ for(yy in (stab.model):(stab.model+NUMRUNS)){
     
     # We constrained +- 15% TAC change, until the LO implementation, where we allow the HR wanted just for the transition
     # In the transition we assume landing ratio equal 1
-    if (yy == MPstartLO){ # landing.ratio are equal to 1 for all years before estimating them
+    if (yy == MPstart){ #MPstartLO){ # landing.ratio are equal to 1 for all years before estimating them
       quota1[,yy+1,,] <- prel.quota1
       quota2[,yy+1,,] <- prel.quota2
     }else{
@@ -325,7 +328,6 @@ for(yy in (stab.model):(stab.model+NUMRUNS)){
       quota1[,yy+1,,] <- max(min(prel.quota1, tac.constrained1[2]), tac.constrained1[1]) 
       quota2[,yy+1,,] <- max(min(prel.quota2, tac.constrained2[2]), tac.constrained2[1]) 
     }
-       
   }
 }
 
@@ -334,8 +336,9 @@ for(yy in (stab.model):(stab.model+NUMRUNS)){
 wts
 
 pyrnoMP   <- MPstart- 4
-pyrMP     <- MPstartLO - 4
-pyrMPLO   <- endy   - 4
+pyrMP     <- endy   - 4
+# pyrMP     <- MPstartLO - 4
+# pyrMPLO   <- endy   - 4
 
 
 # Scenarios II: full landings selectivity, when discarding is allowed
@@ -353,8 +356,8 @@ yc2noMP <- yield_curve(hr=hr2[,pyrnoMP,], landings.ratio2[,pyrnoMP,], wts, natmo
 yc1MP <- yield_curve(hr=hr1[,pyrMP,], landings.ratio1[,pyrMP,], wts, natmortality, R=recs1, verbose=F)
 yc2MP <- yield_curve(hr=hr2[,pyrMP,], landings.ratio2[,pyrMP,], wts, natmortality, R=recs2, verbose=F)
 
-yc1MPLO <- yield_curve(hr=hr1[,pyrMPLO,], landings.ratio1[,pyrMPLO,], wts, natmortality, R=recs1, verbose=F)
-yc2MPLO <- yield_curve(hr=hr2[,pyrMPLO,], landings.ratio2[,pyrMPLO,], wts, natmortality, R=recs2, verbose=F)
+# yc1MPLO <- yield_curve(hr=hr1[,pyrMPLO,], landings.ratio1[,pyrMPLO,], wts, natmortality, R=recs1, verbose=F)
+# yc2MPLO <- yield_curve(hr=hr2[,pyrMPLO,], landings.ratio2[,pyrMPLO,], wts, natmortality, R=recs2, verbose=F)
  
 Fmsy1noMP <- yc1noMP[yc1noMP$landings==max(yc1noMP$landings),]$hr
 Fmsy2noMP <- yc2noMP[yc2noMP$landings==max(yc2noMP$landings),]$hr
@@ -362,8 +365,8 @@ Fmsy2noMP <- yc2noMP[yc2noMP$landings==max(yc2noMP$landings),]$hr
 Fmsy1MP <- yc1MP[yc1MP$landings==max(yc1MP$landings),]$hr
 Fmsy2MP <- yc2MP[yc2MP$landings==max(yc2MP$landings),]$hr
 
-Fmsy1MPLO <- yc1MPLO[yc1MPLO$landings==max(yc1MPLO$landings),]$hr
-Fmsy2MPLO <- yc2MPLO[yc2MPLO$landings==max(yc2MPLO$landings),]$hr
+# Fmsy1MPLO <- yc1MPLO[yc1MPLO$landings==max(yc1MPLO$landings),]$hr
+# Fmsy2MPLO <- yc2MPLO[yc2MPLO$landings==max(yc2MPLO$landings),]$hr
 
 #round(catches.n.dsvm1[,pyrnoMP,,],2)
 #round(pop1[,pyrnoMP,,],2)
@@ -403,3 +406,7 @@ netrev      <-  melt(economics_res_allyrs, id.vars = "year", measure.vars = c("N
 grossrev    <-  melt(economics_res_allyrs, id.vars = "year", measure.vars = c("Grossrev"))
 annualfine  <-  melt(economics_res_allyrs, id.vars = "year", measure.vars = c("Annualfine"))
 fuelcosts   <-  melt(economics_res_allyrs, id.vars = "year", measure.vars = c("Fuelcosts"))
+
+# rm(dsvm_res,dsvm_res_allyrs)
+# rm(economics_res,economics_res_allyrs)
+# rm(control, sp1, sp2, sp3, sp4, sp5)

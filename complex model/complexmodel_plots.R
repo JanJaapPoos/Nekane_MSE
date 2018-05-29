@@ -52,7 +52,7 @@ lty=c(1,2), pch=c(NA, NA), col=c("black", "black"))
 dev.off()
 
 
-ylim <- c(0,1000)
+ylim <- c(0, ceiling(max(sort(catches.wt.dsvm.tot1,partial=length(catches.wt.dsvm.tot1)-1)[length(catches.wt.dsvm.tot1)-1])/100)*100)
 xlimYPR <- c(0,0.2)
 
 setEPS()
@@ -64,30 +64,23 @@ par(mfrow=c(2,5),oma = c(3,0,0,0) + 0.1, mar = c(4,4,1,1) + 0.1)
 
 plot(catches.wt.dsvm.tot1, type="l",  xlim=c(stab.model,endy), ylim=ylim, xaxs='i', yaxs='i', xlab= "Year", ylab = "Total catches (weight)", xaxt = "n", panel.first=grid(NA, NULL,col = "ivory2"))
 polygon(x=c(pyrnoMP-2,pyrnoMP+2,pyrnoMP+2,pyrnoMP-2), border=NA, y=c(rep(ylim,each=2)), col="ivory4")
-polygon(x=c(pyrMP-2,pyrMP+2,pyrMP+2,pyrMP-2)        , border=NA, y=c(rep(ylim,each=2)), col="ivory3")
-polygon(x=c(pyrMPLO-2,pyrMPLO+2,pyrMPLO+2,pyrMPLO-2), border=NA, y=c(rep(ylim,each=2)), col="darkgreen")
-axis(1,  at = c(stab.model, stab.model+((MPstart-stab.model)/2), MPstart, MPstart+((MPstartLO-MPstart)/2), MPstartLO, MPstartLO+((endy-MPstartLO)/2), endy),
-     labels = c(stab.model, stab.model+((MPstart-stab.model)/2),    "MP", MPstart+((MPstartLO-MPstart)/2),     "LO" , MPstartLO+((endy-MPstartLO)/2), endy))
-axis(1, at = c(MPstart, MPstartLO), labels = c("MP",  "LO" ))
-abline(v=c(stab.model+((MPstart-stab.model)/2), MPstart+((MPstartLO-MPstart)/2), MPstartLO+((endy-MPstartLO)/2)), lty="dotted", col = "ivory2")
+polygon(x=c(pyrMP-2,pyrMP+2,pyrMP+2,pyrMP-2)        , border=NA, y=c(rep(ylim,each=2)), col="darkgreen")
+axis(1,  at = c(stab.model, stab.model+((MPstart-stab.model)/2), MPstart, MPstart+((endy-MPstart)/2), endy),
+     labels = c(stab.model, stab.model+((MPstart-stab.model)/2),    "MP", MPstart+((endy-MPstart)/2), endy))
+axis(1, at = c(MPstart), labels = c("MP"))
 abline(v=MPstart, lty=2)
-abline(v=MPstartLO, lty=2)
 lines((quota1* SIMNUMBER), col="red")
 lines(catches.wt.dsvm.tot1,  type="l", ylim=ylim)
-lines(landings.wt.dsvm.tot1, type="l", lty=2, ylim=ylim)
-legend("bottomright", inset=.05, legend=c("Catches","Landings","TAC"), pch=c(1,46,1), col=c("black","black","red"), bty='n', cex=0.8)
+legend("bottomright", inset=.05, legend=c("Catches","TAC"), pch=c(1,46,1), col=c("black","red"), bty='n', cex=0.8)
 
 plot(apply(hr1,c(1,2),mean)[1,], type="p",  xlim=c(stab.model,endy), ylim=c(0,0.2), xaxs='i', yaxs='i', xlab= "Year", ylab = "Harvest rates", xaxt = "n", panel.first=grid(NA, NULL,col = "ivory2"))
 polygon(x=c(pyrnoMP-2,pyrnoMP+2,pyrnoMP+2,pyrnoMP-2), border=NA, y=c(rep(ylim,each=2)), col="ivory4")
-polygon(x=c(pyrMP-2,pyrMP+2,pyrMP+2,pyrMP-2)        , border=NA, y=c(rep(ylim,each=2)), col="ivory3")
-polygon(x=c(pyrMPLO-2,pyrMPLO+2,pyrMPLO+2,pyrMPLO-2), border=NA, y=c(rep(ylim,each=2)), col="darkgreen")
-axis(1,  at = c(stab.model, stab.model+((MPstart-stab.model)/2), MPstart, MPstart+((MPstartLO-MPstart)/2), MPstartLO, MPstartLO+((endy-MPstartLO)/2), endy),
-     labels = c(stab.model, stab.model+((MPstart-stab.model)/2),    "MP", MPstart+((MPstartLO-MPstart)/2),     "LO" , MPstartLO+((endy-MPstartLO)/2), endy))
-axis(1, at = c(MPstart, MPstartLO), labels = c("MP",  "LO" ))
-abline(v=c(stab.model+((MPstart-stab.model)/2), MPstart+((MPstartLO-MPstart)/2), MPstartLO+((endy-MPstartLO)/2)), lty="dotted", col = "ivory2")
-abline(h=c(0.05, 0.1, 0.15), lty="dotted", col = "ivory2")
+polygon(x=c(pyrMP-2,pyrMP+2,pyrMP+2,pyrMP-2)        , border=NA, y=c(rep(ylim,each=2)), col="darkgreen")
+axis(1,  at = c(stab.model, stab.model+((MPstart-stab.model)/2), MPstart, MPstart+((endy-MPstart)/2), endy),
+     labels = c(stab.model, stab.model+((MPstart-stab.model)/2),    "MP", MPstart+((endy-MPstart)/2), endy))
+axis(1, at = c(MPstart), labels = c("MP"))
 abline(v=MPstart, lty=2)
-abline(v=MPstartLO, lty=2)
+abline(h=c(0.05, 0.1, 0.15), lty="dotted", col = "ivory2")
 points(apply(hr1,c(1,2),mean)[1,], col="black", pch=19)
 points(apply(hr1,c(1,2),mean)[2,], col="red", pch=19)
 points(apply(hr1,c(1,2),mean)[3,], col="black", pch=21)
@@ -113,34 +106,31 @@ points(mean(hr1[,pyrMP-1,]),landings.wt.dsvm.tot1[,pyrMP-1,,], col="ivory3", pch
 points(mean(hr1[,pyrMP,]),landings.wt.dsvm.tot1[,pyrMP,,], col="ivory3", pch=21, bg="white")
 points(mean(hr1[,pyrMP+1,]),landings.wt.dsvm.tot1[,pyrMP+1,,], col="ivory3", pch=21, bg="white")
 points(mean(hr1[,pyrMP+2,]),landings.wt.dsvm.tot1[,pyrMP+2,,], col="ivory3", pch=21, bg="white")
-lines(x=yc1MPLO$hr, y=yc1MPLO$landings, ylim=ylim, col="darkgreen")
-text(yc1MPLO$hr[length(yc1MPLO$hr)]-0.02, yc1MPLO$landings[length(yc1MPLO$hr)]+80, "Constrained LO (MSY)")
-abline(v=Fmsy1MPLO, col="darkgreen")
-points(mean(hr1[,pyrMPLO,]),yc1MPLO$landings[yc1MPLO$hr>mean(hr1[,pyrMPLO,])][1], col="red", pch=21, bg="white")
-points(mean(hr1[,pyrMPLO-2,]),landings.wt.dsvm.tot1[,pyrMPLO-2,,], col="darkgreen", pch=21, bg="white")
-points(mean(hr1[,pyrMPLO-1,]),landings.wt.dsvm.tot1[,pyrMPLO-1,,], col="darkgreen", pch=21, bg="white")
-points(mean(hr1[,pyrMPLO,]),landings.wt.dsvm.tot1[,pyrMPLO,,], col="darkgreen", pch=21, bg="white")
-points(mean(hr1[,pyrMPLO+1,]),landings.wt.dsvm.tot1[,pyrMPLO+1,,], col="darkgreen", pch=21, bg="white")
-points(mean(hr1[,pyrMPLO+2,]),landings.wt.dsvm.tot1[,pyrMPLO+2,,], col="darkgreen", pch=21, bg="white")
+# lines(x=yc1MPLO$hr, y=yc1MPLO$landings, ylim=ylim, col="darkgreen")
+# text(yc1MPLO$hr[length(yc1MPLO$hr)]-0.02, yc1MPLO$landings[length(yc1MPLO$hr)]+80, "Constrained LO (MSY)")
+# abline(v=Fmsy1MPLO, col="darkgreen")
+# points(mean(hr1[,pyrMPLO,]),yc1MPLO$landings[yc1MPLO$hr>mean(hr1[,pyrMPLO,])][1], col="red", pch=21, bg="white")
+# points(mean(hr1[,pyrMPLO-2,]),landings.wt.dsvm.tot1[,pyrMPLO-2,,], col="darkgreen", pch=21, bg="white")
+# points(mean(hr1[,pyrMPLO-1,]),landings.wt.dsvm.tot1[,pyrMPLO-1,,], col="darkgreen", pch=21, bg="white")
+# points(mean(hr1[,pyrMPLO,]),landings.wt.dsvm.tot1[,pyrMPLO,,], col="darkgreen", pch=21, bg="white")
+# points(mean(hr1[,pyrMPLO+1,]),landings.wt.dsvm.tot1[,pyrMPLO+1,,], col="darkgreen", pch=21, bg="white")
+# points(mean(hr1[,pyrMPLO+2,]),landings.wt.dsvm.tot1[,pyrMPLO+2,,], col="darkgreen", pch=21, bg="white")
 
 plot(rowMeans(hr1[,pyrnoMP,]), type="b", ylim=c(0,.2),  xlab="Age", ylab = "Selectivity", panel.first=grid(col = "ivory2"), xaxt="n")
 text(1,max(rowMeans(hr1[,pyrnoMP,]))+0.01, "Unconstrained", pos=4)
 lines(rowMeans(hr1[,pyrMP,]), type="b", ylim=c(0,.2), col="grey")
 text(1,max(rowMeans(hr1[,pyrMP,]))+0.01, "Constrained \n 15% TAC change", pos=4)
-lines(rowMeans(hr1[,pyrMPLO,]), type="b", ylim=c(0,.2), col="darkgreen")
-text(1,max(rowMeans(hr1[,pyrMPLO,]))+0.01, "Constrained LO (MSY)", pos=4)
+# lines(rowMeans(hr1[,pyrMPLO,]), type="b", ylim=c(0,.2), col="darkgreen")
+# text(1,max(rowMeans(hr1[,pyrMPLO,]))+0.01, "Constrained LO (MSY)", pos=4)
 axis(1, at = seq(1, 4, by = 1))
 
 plot(apply(catches.wt.dsvm1,c(2,4),sum)[,1], col="blue", type="l",  ylim=ylim,xaxs='i', yaxs='i', xlim=c(stab.model,endy),xlab = "Year", ylab = "Catches by area (weight)",xaxt = "n", panel.first=grid(NA, NULL,col = "ivory2"))
 polygon(x=c(pyrnoMP-2,pyrnoMP+2,pyrnoMP+2,pyrnoMP-2), border=NA, y=c(rep(ylim,each=2)), col="ivory4")
-polygon(x=c(pyrMP-2,pyrMP+2,pyrMP+2,pyrMP-2)        , border=NA, y=c(rep(ylim,each=2)), col="ivory3")
-polygon(x=c(pyrMPLO-2,pyrMPLO+2,pyrMPLO+2,pyrMPLO-2), border=NA, y=c(rep(ylim,each=2)), col="darkgreen")
-axis(1,  at = c(stab.model, stab.model+((MPstart-stab.model)/2), MPstart, MPstart+((MPstartLO-MPstart)/2), MPstartLO, MPstartLO+((endy-MPstartLO)/2), endy),
-     labels = c(stab.model, stab.model+((MPstart-stab.model)/2),    "MP", MPstart+((MPstartLO-MPstart)/2),     "LO" , MPstartLO+((endy-MPstartLO)/2), endy))
-axis(1, at = c(MPstart, MPstartLO), labels = c("MP",  "LO" ))
-abline(v=c(stab.model+((MPstart-stab.model)/2), MPstart+((MPstartLO-MPstart)/2), MPstartLO+((endy-MPstartLO)/2)), lty="dotted", col = "ivory2")
+polygon(x=c(pyrMP-2,pyrMP+2,pyrMP+2,pyrMP-2)        , border=NA, y=c(rep(ylim,each=2)), col="darkgreen")
+axis(1,  at = c(stab.model, stab.model+((MPstart-stab.model)/2), MPstart, MPstart+((endy-MPstart)/2), endy),
+     labels = c(stab.model, stab.model+((MPstart-stab.model)/2),    "MP", MPstart+((endy-MPstart)/2), endy))
+axis(1, at = c(MPstart), labels = c("MP"))
 abline(v=MPstart, lty=2)
-abline(v=MPstartLO, lty=2)
 lines(apply(catches.wt.dsvm1,c(2,4),sum)[,1], col="blue", type="l")
 lines(apply(catches.wt.dsvm1,c(2,4),sum)[,2], col="red")
 lines(apply(landings.wt.dsvm1,c(2,4),sum)[,1], col="blue", lty=2)
@@ -154,28 +144,22 @@ abline(v=MPstart, lty=2)
 
 plot(catches.wt.dsvm.tot2, type="l",  xlim=c(stab.model,endy), ylim=ylim, xaxs='i', yaxs='i', xlab= "Year", ylab = "Total catches (weight)", xaxt = "n", panel.first=grid(NA, NULL,col = "ivory2"))
 polygon(x=c(pyrnoMP-2,pyrnoMP+2,pyrnoMP+2,pyrnoMP-2), border=NA, y=c(rep(ylim,each=2)), col="ivory4")
-polygon(x=c(pyrMP-2,pyrMP+2,pyrMP+2,pyrMP-2)        , border=NA, y=c(rep(ylim,each=2)), col="ivory3")
-polygon(x=c(pyrMPLO-2,pyrMPLO+2,pyrMPLO+2,pyrMPLO-2), border=NA, y=c(rep(ylim,each=2)), col="darkgreen")
-axis(1,  at = c(stab.model, stab.model+((MPstart-stab.model)/2), MPstart, MPstart+((MPstartLO-MPstart)/2), MPstartLO, MPstartLO+((endy-MPstartLO)/2), endy),
-     labels = c(stab.model, stab.model+((MPstart-stab.model)/2),    "MP", MPstart+((MPstartLO-MPstart)/2),     "LO" , MPstartLO+((endy-MPstartLO)/2), endy))
-axis(1, at = c(MPstart, MPstartLO), labels = c("MP",  "LO" ))
-abline(v=c(stab.model+((MPstart-stab.model)/2), MPstart+((MPstartLO-MPstart)/2), MPstartLO+((endy-MPstartLO)/2)), lty="dotted", col = "ivory2")
+polygon(x=c(pyrMP-2,pyrMP+2,pyrMP+2,pyrMP-2)        , border=NA, y=c(rep(ylim,each=2)), col="darkgreen")
+axis(1,  at = c(stab.model, stab.model+((MPstart-stab.model)/2), MPstart, MPstart+((endy-MPstart)/2), endy),
+     labels = c(stab.model, stab.model+((MPstart-stab.model)/2),    "MP", MPstart+((endy-MPstart)/2), endy))
+axis(1, at = c(MPstart), labels = c("MP"))
 abline(v=MPstart, lty=2)
-abline(v=MPstartLO, lty=2)
 lines((quota2* SIMNUMBER), col="red")
 lines(catches.wt.dsvm.tot2,  type="l", ylim=ylim)
 lines(landings.wt.dsvm.tot2, type="l", ylim=ylim, lty= 2)
 
 plot(apply(hr2,c(1,2),mean)[1,], type="p",  xlim=c(stab.model,endy), ylim=c(0,0.2), xaxs='i', yaxs='i', xlab= "Year", ylab = "Harvest rates", xaxt = "n", panel.first=grid(NA, NULL,col = "ivory2"))
 polygon(x=c(pyrnoMP-2,pyrnoMP+2,pyrnoMP+2,pyrnoMP-2), border=NA, y=c(rep(ylim,each=2)), col="ivory4")
-polygon(x=c(pyrMP-2,pyrMP+2,pyrMP+2,pyrMP-2)        , border=NA, y=c(rep(ylim,each=2)), col="ivory3")
-polygon(x=c(pyrMPLO-2,pyrMPLO+2,pyrMPLO+2,pyrMPLO-2), border=NA, y=c(rep(ylim,each=2)), col="darkgreen")
-axis(1,  at = c(stab.model, stab.model+((MPstart-stab.model)/2), MPstart, MPstart+((MPstartLO-MPstart)/2), MPstartLO, MPstartLO+((endy-MPstartLO)/2), endy),
-     labels = c(stab.model, stab.model+((MPstart-stab.model)/2),    "MP", MPstart+((MPstartLO-MPstart)/2),     "LO" , MPstartLO+((endy-MPstartLO)/2), endy))
-axis(1, at = c(MPstart, MPstartLO), labels = c("MP",  "LO" ))
-abline(v=c(stab.model+((MPstart-stab.model)/2), MPstart+((MPstartLO-MPstart)/2), MPstartLO+((endy-MPstartLO)/2)), lty="dotted", col = "ivory2")
+polygon(x=c(pyrMP-2,pyrMP+2,pyrMP+2,pyrMP-2)        , border=NA, y=c(rep(ylim,each=2)), col="darkgreen")
+axis(1,  at = c(stab.model, stab.model+((MPstart-stab.model)/2), MPstart, MPstart+((endy-MPstart)/2), endy),
+     labels = c(stab.model, stab.model+((MPstart-stab.model)/2),    "MP", MPstart+((endy-MPstart)/2), endy))
+axis(1, at = c(MPstart), labels = c("MP"))
 abline(v=MPstart, lty=2)
-abline(v=MPstartLO, lty=2)
 points(apply(hr2,c(1,2),mean)[1,], col="black", pch=19)
 points(apply(hr2,c(1,2),mean)[2,], col="red", pch=19)
 points(apply(hr2,c(1,2),mean)[3,], col="black", pch=21)
@@ -199,35 +183,32 @@ points(mean(hr2[,pyrMP-1,]),landings.wt.dsvm.tot2[,pyrMP-1,,], col="blue", pch=2
 points(mean(hr2[,pyrMP,]),landings.wt.dsvm.tot2[,pyrMP,,], col="blue", pch=21, bg="white")
 points(mean(hr2[,pyrMP+1,]),landings.wt.dsvm.tot2[,pyrMP+1,,], col="blue", pch=21, bg="white")
 points(mean(hr2[,pyrMP+2,]),landings.wt.dsvm.tot2[,pyrMP+2,,], col="blue", pch=21, bg="white")
-lines(x=yc2MPLO$hr, y=yc2MPLO$landings, ylim=ylim, col="darkgreen")
-text(yc2MPLO$hr[length(yc2MPLO$hr)]-0.02, yc2MPLO$landings[length(yc2MPLO$hr)]+80, "Constrained LO (MSY)")
-abline(v=Fmsy2MP, col="darkgreen")
-points(mean(hr2[,pyrMPLO,]),yc2MPLO$landings[yc2MPLO$hr>mean(hr2[,pyrMPLO,])][1], col="red", pch=21, bg="white")
-points(mean(hr2[,pyrMPLO-2,]),landings.wt.dsvm.tot2[,pyrMPLO-2,,], col="darkgreen", pch=21, bg="white")
-points(mean(hr2[,pyrMPLO-1,]),landings.wt.dsvm.tot2[,pyrMPLO-1,,], col="darkgreen", pch=21, bg="white")
-points(mean(hr2[,pyrMPLO,]),landings.wt.dsvm.tot2[,pyrMPLO,,], col="darkgreen", pch=21, bg="white")
-points(mean(hr2[,pyrMPLO+1,]),landings.wt.dsvm.tot2[,pyrMPLO+1,,], col="darkgreen", pch=21, bg="white")
-points(mean(hr2[,pyrMPLO+2,]),landings.wt.dsvm.tot2[,pyrMPLO+2,,], col="darkgreen", pch=21, bg="white")
+# lines(x=yc2MPLO$hr, y=yc2MPLO$landings, ylim=ylim, col="darkgreen")
+# text(yc2MPLO$hr[length(yc2MPLO$hr)]-0.02, yc2MPLO$landings[length(yc2MPLO$hr)]+80, "Constrained LO (MSY)")
+# abline(v=Fmsy2MP, col="darkgreen")
+# points(mean(hr2[,pyrMPLO,]),yc2MPLO$landings[yc2MPLO$hr>mean(hr2[,pyrMPLO,])][1], col="red", pch=21, bg="white")
+# points(mean(hr2[,pyrMPLO-2,]),landings.wt.dsvm.tot2[,pyrMPLO-2,,], col="darkgreen", pch=21, bg="white")
+# points(mean(hr2[,pyrMPLO-1,]),landings.wt.dsvm.tot2[,pyrMPLO-1,,], col="darkgreen", pch=21, bg="white")
+# points(mean(hr2[,pyrMPLO,]),landings.wt.dsvm.tot2[,pyrMPLO,,], col="darkgreen", pch=21, bg="white")
+# points(mean(hr2[,pyrMPLO+1,]),landings.wt.dsvm.tot2[,pyrMPLO+1,,], col="darkgreen", pch=21, bg="white")
+# points(mean(hr2[,pyrMPLO+2,]),landings.wt.dsvm.tot2[,pyrMPLO+2,,], col="darkgreen", pch=21, bg="white")
 
 
 plot(rowMeans(hr2[,pyrnoMP,]), type="b", ylim=c(0,.2), xlab = "Age", ylab = "Selectivity", panel.first=grid(col = "ivory2"), xaxt="n")
 text(1,max(rowMeans(hr2[,pyrnoMP,]))+0.01, "Unconstrained", pos=4)
 lines(rowMeans(hr2[,pyrMP,]), type="b", ylim=c(0,.2), col="grey")
 text(1,max(rowMeans(hr2[,pyrMP,]))+0.01, "Constrained \n 15% TAC change", pos=4)
-lines(rowMeans(hr2[,pyrMPLO,]), type="b", ylim=c(0,.2), col="darkgreen")
-text(1,max(rowMeans(hr2[,pyrMPLO,]))+0.01, "Constrained LO (MSY)", pos=4)
+# lines(rowMeans(hr2[,pyrMPLO,]), type="b", ylim=c(0,.2), col="darkgreen")
+# text(1,max(rowMeans(hr2[,pyrMPLO,]))+0.01, "Constrained LO (MSY)", pos=4)
 axis(1, at = seq(1, 4, by = 1))
 
 plot(apply(catches.wt.dsvm2,c(2,4),sum)[,1], col="blue", type="l",  ylim=ylim,xaxs='i', yaxs='i', xlim=c(stab.model,endy),xlab = "Year", ylab = "Catches by area (weight)",xaxt = "n", panel.first=grid(NA, NULL,col = "ivory2"))
 polygon(x=c(pyrnoMP-2,pyrnoMP+2,pyrnoMP+2,pyrnoMP-2), border=NA, y=c(rep(ylim,each=2)), col="ivory4")
-polygon(x=c(pyrMP-2,pyrMP+2,pyrMP+2,pyrMP-2)        , border=NA, y=c(rep(ylim,each=2)), col="ivory3")
-polygon(x=c(pyrMPLO-2,pyrMPLO+2,pyrMPLO+2,pyrMPLO-2), border=NA, y=c(rep(ylim,each=2)), col="darkgreen")
-axis(1,  at = c(stab.model, stab.model+((MPstart-stab.model)/2), MPstart, MPstart+((MPstartLO-MPstart)/2), MPstartLO, MPstartLO+((endy-MPstartLO)/2), endy),
-     labels = c(stab.model, stab.model+((MPstart-stab.model)/2),    "MP", MPstart+((MPstartLO-MPstart)/2),     "LO" , MPstartLO+((endy-MPstartLO)/2), endy))
-axis(1, at = c(MPstart, MPstartLO), labels = c("MP",  "LO" ))
-abline(v=c(stab.model+((MPstart-stab.model)/2), MPstart+((MPstartLO-MPstart)/2), MPstartLO+((endy-MPstartLO)/2)), lty="dotted", col = "ivory2")
+polygon(x=c(pyrMP-2,pyrMP+2,pyrMP+2,pyrMP-2)        , border=NA, y=c(rep(ylim,each=2)), col="darkgreen")
+axis(1,  at = c(stab.model, stab.model+((MPstart-stab.model)/2), MPstart, MPstart+((endy-MPstart)/2), endy),
+     labels = c(stab.model, stab.model+((MPstart-stab.model)/2),    "MP", MPstart+((endy-MPstart)/2), endy))
+axis(1, at = c(MPstart), labels = c("MP"))
 abline(v=MPstart, lty=2)
-abline(v=MPstartLO, lty=2)
 lines(apply(catches.wt.dsvm2,c(2,4),sum)[,1], col="blue", type="l")
 lines(apply(catches.wt.dsvm2,c(2,4),sum)[,2], col="red")
 lines(apply(landings.wt.dsvm2,c(2,4),sum)[,1], col="blue", lty=2)
@@ -249,91 +230,75 @@ par(mfrow=c(2,5),oma = c(3,0,0,0) + 0.1, mar = c(4,4,1,1) + 0.1)
 
 mypalette <- c("#808080","#CCCCCC","#D55E00")
 names(mypalette) <- c("a", "b", "Stay in port")
+ylim <- c(0, ceiling(max(sort(netrev$value,partial=length(netrev$value)-1)[length(netrev$value)-1])/100)*100)
+
 
 barplot(trip_percentage, col= mypalette, border=NA, xlim = c(1,NUMRUNS+1), xlab = "Year", ylab = "Effort pattern (%)", xaxt = "n",space = 0)
-axis(1, at = c(0.5, (MPstart-stab.model)/2+0.5, MPstart-stab.model+0.5, MPstart+((MPstartLO-MPstart)/2)-stab.model+0.5, MPstartLO-stab.model+0.5,  MPstartLO+((endy-MPstartLO)/2)-stab.model+0.5, NUMRUNS+0.5),
-     labels = c(stab.model, stab.model+((MPstart-stab.model)/2),    "MP", MPstart+((MPstartLO-MPstart)/2),     "LO" , MPstartLO+((endy-MPstartLO)/2), endy))
+axis(1, at =c(0.5,(MPstart-stab.model)/2+0.5, MPstart-stab.model+0.5, MPstart+((endy-MPstart)/2)-stab.model+0.5, NUMRUNS+0.5),
+    labels = c(stab.model, stab.model+((MPstart-stab.model)/2),    "MP", MPstart+((endy-MPstart)/2), endy))
 legend("topright", inset=.05, legend=c("a", "b", "Stay in port"), fill=mypalette, cex=0.6)
 abline(v=MPstart-9.5, lty=2)
-abline(v=MPstartLO-9.5, lty=2)
 
-boxplot(value ~ year, netrev, cex = 0.6, col="grey",boxwex=1, xlab = "Year", ylab = "Mean net revenue", 
-        ylim=c(0,4000), xlim=c(1, NUMRUNS+1), xaxt = "n")
-axis(1, at = c(0.5, (MPstart-stab.model)/2+0.5, MPstart-stab.model+0.5, MPstart+((MPstartLO-MPstart)/2)-stab.model+0.5, MPstartLO-stab.model+0.5,  MPstartLO+((endy-MPstartLO)/2)-stab.model+0.5, NUMRUNS+0.5),
-     labels = c(stab.model, stab.model+((MPstart-stab.model)/2),    "MP", MPstart+((MPstartLO-MPstart)/2),     "LO" , MPstartLO+((endy-MPstartLO)/2), endy))
-grid(NA, NULL, col = "ivory2")
+boxplot(value ~ year, netrev, cex = 0.6, col="grey",boxwex=1, xlab = "Year", ylab = "Mean net revenue", xlim=c(1, NUMRUNS+1), ylim=ylim, xaxt = "n")
+axis(1, at =c(0.5,(MPstart-stab.model)/2+0.5, MPstart-stab.model+0.5, MPstart+((endy-MPstart)/2)-stab.model+0.5, NUMRUNS+0.5),
+     labels = c(stab.model, stab.model+((MPstart-stab.model)/2),    "MP", MPstart+((endy-MPstart)/2), endy))
 abline(v=MPstart-9.5, lty=2)
-abline(v=MPstartLO-9.5, lty=2)
-boxplot(value ~ year, netrev, cex = 0.6, col="grey",boxwex=1, xlab = "Year", ylab = "Mean net revenue", 
-        ylim=c(0,4000), xlim=c(1,  NUMRUNS+1), xaxt = "n", add=TRUE)
+boxplot(value ~ year, netrev, cex = 0.6, col="grey",boxwex=1, xlab = "Year", ylab = "Mean net revenue", xlim=c(1,  NUMRUNS+1), ylim=ylim, xaxt = "n", add=TRUE)
 
-boxplot(value ~ year, grossrev, cex = 0.6, col="grey",boxwex=1, xlab = "Year", ylab = "Mean gross revenue", 
-        ylim=c(0,4000), xlim=c(1, NUMRUNS+1), xaxt = "n")
-axis(1, at = c(0.5, (MPstart-stab.model)/2+0.5, MPstart-stab.model+0.5, MPstart+((MPstartLO-MPstart)/2)-stab.model+0.5, MPstartLO-stab.model+0.5,  MPstartLO+((endy-MPstartLO)/2)-stab.model+0.5, NUMRUNS+0.5),
-     labels = c(stab.model, stab.model+((MPstart-stab.model)/2),    "MP", MPstart+((MPstartLO-MPstart)/2),     "LO" , MPstartLO+((endy-MPstartLO)/2), endy))
-grid(NA, NULL, col = "ivory2")
+boxplot(value ~ year, grossrev, cex = 0.6, col="grey",boxwex=1, xlab = "Year", ylab = "Mean gross revenue", xlim=c(1, NUMRUNS+1), ylim=ylim, xaxt = "n")
+axis(1, at =c(0.5,(MPstart-stab.model)/2+0.5, MPstart-stab.model+0.5, MPstart+((endy-MPstart)/2)-stab.model+0.5, NUMRUNS+0.5),
+     labels = c(stab.model, stab.model+((MPstart-stab.model)/2),    "MP", MPstart+((endy-MPstart)/2), endy))
 abline(v=MPstart-9.5, lty=2)
-abline(v=MPstartLO-9.5, lty=2)
-boxplot(value ~ year, grossrev, cex = 0.6, col="grey",boxwex=1, xlab = "Year", ylab = "Mean gross revenue", 
-        ylim=c(0,4000), xlim=c(1,NUMRUNS+1), xaxt = "n", add=TRUE)
+boxplot(value ~ year, grossrev, cex = 0.6, col="grey",boxwex=1, xlab = "Year", ylab = "Mean gross revenue", xlim=c(1,NUMRUNS+1), ylim=ylim, xaxt = "n", add=TRUE)
 
+boxplot(value ~ year, fuelcosts, cex = 0.6, col="grey",boxwex=1, xlab = "Year", ylab = "Mean fuel costs",  xlim=c(1,NUMRUNS+1), ylim=ylim, xaxt = "n")
+axis(1, at =c(0.5,(MPstart-stab.model)/2+0.5, MPstart-stab.model+0.5, MPstart+((endy-MPstart)/2)-stab.model+0.5, NUMRUNS+0.5),
+     labels = c(stab.model, stab.model+((MPstart-stab.model)/2),    "MP", MPstart+((endy-MPstart)/2), endy))
+abline(v=MPstart-9.5, lty=2)
 boxplot(value ~ year, fuelcosts, cex = 0.6, col="grey",boxwex=1, xlab = "Year", ylab = "Mean fuel costs", 
-        ylim=c(0,4000), xlim=c(1,NUMRUNS+1), xaxt = "n")
-axis(1, at = c(0.5, (MPstart-stab.model)/2+0.5, MPstart-stab.model+0.5, MPstart+((MPstartLO-MPstart)/2)-stab.model+0.5, MPstartLO-stab.model+0.5,  MPstartLO+((endy-MPstartLO)/2)-stab.model+0.5, NUMRUNS+0.5),
-     labels = c(stab.model, stab.model+((MPstart-stab.model)/2),    "MP", MPstart+((MPstartLO-MPstart)/2),     "LO" , MPstartLO+((endy-MPstartLO)/2), endy))
-grid(NA, NULL, col = "ivory2")
-abline(v=MPstart-9.5, lty=2)
-abline(v=MPstartLO-9.5, lty=2)
-boxplot(value ~ year, fuelcosts, cex = 0.6, col="grey",boxwex=1, xlab = "Year", ylab = "Mean fuel costs", 
-        ylim=c(0,4000), xlim=c(1,NUMRUNS+1), xaxt = "n", add=TRUE)
+        ylim=ylim, xlim=c(1,NUMRUNS+1), xaxt = "n", add=TRUE)
 
 boxplot(value ~ year, annualfine, cex = 0.6, col="grey",boxwex=1, xlab = "Year", ylab = "Mean annual fine", 
-        ylim=c(0,4000), xlim=c(1,NUMRUNS+1),  xaxt = "n")
-axis(1, at = c(0.5, (MPstart-stab.model)/2+0.5, MPstart-stab.model+0.5, MPstart+((MPstartLO-MPstart)/2)-stab.model+0.5, MPstartLO-stab.model+0.5,  MPstartLO+((endy-MPstartLO)/2)-stab.model+0.5, NUMRUNS+0.5),
-     labels = c(stab.model, stab.model+((MPstart-stab.model)/2),    "MP", MPstart+((MPstartLO-MPstart)/2),     "LO" , MPstartLO+((endy-MPstartLO)/2), endy))
-grid(NA, NULL, col = "ivory2")
+        ylim=ylim, xlim=c(1,NUMRUNS+1),  xaxt = "n")
+axis(1, at =c(0.5,(MPstart-stab.model)/2+0.5, MPstart-stab.model+0.5, MPstart+((endy-MPstart)/2)-stab.model+0.5, NUMRUNS+0.5),
+     labels = c(stab.model, stab.model+((MPstart-stab.model)/2),    "MP", MPstart+((endy-MPstart)/2), endy))
 abline(v=MPstart-9.5, lty=2)
-abline(v=MPstartLO-9.5, lty=2)
 boxplot(value ~ year, annualfine, cex = 0.6, col="grey",boxwex=1, xlab = "Year", ylab = "Mean annual fine", 
-        ylim=c(0,4000), xlim=c(1,NUMRUNS+1), xaxt = "n", add=TRUE)
+        ylim=ylim, xlim=c(1,NUMRUNS+1), xaxt = "n", add=TRUE)
 
 barplot(as.matrix(days), col=c("#808080","#CCCCCC"),border=NA, xlim = c(1,NUMRUNS+1), xlab = "Year", ylab = "Total days at sea", xaxt = "n",space = 0)
-axis(1, at = c(0.5, (MPstart-stab.model)/2+0.5, MPstart-stab.model+0.5, MPstart+((MPstartLO-MPstart)/2)-stab.model+0.5, MPstartLO-stab.model+0.5,  MPstartLO+((endy-MPstartLO)/2)-stab.model+0.5, NUMRUNS+0.5),
-     labels = c(stab.model, stab.model+((MPstart-stab.model)/2),    "MP", MPstart+((MPstartLO-MPstart)/2),     "LO" , MPstartLO+((endy-MPstartLO)/2), endy))
+axis(1, at =c(0.5,(MPstart-stab.model)/2+0.5, MPstart-stab.model+0.5, MPstart+((endy-MPstart)/2)-stab.model+0.5, NUMRUNS+0.5),
+     labels = c(stab.model, stab.model+((MPstart-stab.model)/2),    "MP", MPstart+((endy-MPstart)/2), endy))
 abline(v=MPstart-9.5, lty=2)
-abline(v=MPstartLO-9.5, lty=2)
 
-plot(aggregate(value ~ year, FUN=sum, data=netrev)$year,aggregate(value ~ year, FUN=sum, data=netrev)$value, type="l", ylim=c(0,2091351), xlim=c(1,NUMRUNS+1), xlab = "Year", ylab = "Total net revenue", xaxt = "n", panel.first=grid(NA, NULL,col = "ivory2"))
-axis(1, at = c(0.5, (MPstart-stab.model)/2+0.5, MPstart-stab.model+0.5, MPstart+((MPstartLO-MPstart)/2)-stab.model+0.5, MPstartLO-stab.model+0.5,  MPstartLO+((endy-MPstartLO)/2)-stab.model+0.5, NUMRUNS+0.5),
-     labels = c(stab.model, stab.model+((MPstart-stab.model)/2),    "MP", MPstart+((MPstartLO-MPstart)/2),     "LO" , MPstartLO+((endy-MPstartLO)/2), endy))
-grid(NA, NULL, col = "ivory2")
-abline(v=MPstart-9.5, lty=2)
-abline(v=MPstartLO-9.5, lty=2)
-lines(aggregate(value ~ year, FUN=sum, data=netrev)$year,aggregate(value ~ year, FUN=sum, data=netrev)$value, type="l")
+ylim= c(0, ceiling(max(aggregate(value ~ year, FUN=sum, data=netrev)[-1,])/100)*100)
+plot(aggregate(value ~ year, FUN=sum, data=netrev), type="l", ylim=ylim, xlab = "Year", ylab = "Total net revenue", xaxt = "n", panel.first=grid(NA, NULL,col = "ivory2"))
+axis(1,  at = c(stab.model, stab.model+((MPstart-stab.model)/2), MPstart, MPstart+((endy-MPstart)/2), endy),
+     labels = c(stab.model, stab.model+((MPstart-stab.model)/2),    "MP", MPstart+((endy-MPstart)/2), endy))
+axis(1, at = c(MPstart), labels = c("MP"))
+abline(v=MPstart, lty=2)
+lines(aggregate(value ~ year, FUN=sum, data=netrev), type="l")
 
-plot(aggregate(value ~ year, FUN=sum, data=grossrev)$year, aggregate(value ~ year, FUN=sum, data=grossrev)$value, type="l", ylim=c(0,2091351), xlim=c(1,NUMRUNS+1), xlab = "Year", ylab = "Total gross revenue", xaxt = "n", panel.first=grid(NA, NULL,col = "ivory2"))
-axis(1, at = c(0.5, (MPstart-stab.model)/2+0.5, MPstart-stab.model+0.5, MPstart+((MPstartLO-MPstart)/2)-stab.model+0.5, MPstartLO-stab.model+0.5,  MPstartLO+((endy-MPstartLO)/2)-stab.model+0.5, NUMRUNS+0.5),
-     labels = c(stab.model, stab.model+((MPstart-stab.model)/2),    "MP", MPstart+((MPstartLO-MPstart)/2),     "LO" , MPstartLO+((endy-MPstartLO)/2), endy))
-grid(NA, NULL, col = "ivory2")
-abline(v=MPstart-9.5, lty=2)
-abline(v=MPstartLO-9.5, lty=2)
-lines(aggregate(value ~ year, FUN=sum, data=grossrev)$year, aggregate(value ~ year, FUN=sum, data=grossrev)$value, type="l")
+plot(aggregate(value ~ year, FUN=sum, data=grossrev), type="l", ylim=ylim, xlab = "Year", ylab = "Total gross revenue", xaxt = "n", panel.first=grid(NA, NULL,col = "ivory2"))
+axis(1,  at = c(stab.model, stab.model+((MPstart-stab.model)/2), MPstart, MPstart+((endy-MPstart)/2), endy),
+     labels = c(stab.model, stab.model+((MPstart-stab.model)/2),    "MP", MPstart+((endy-MPstart)/2), endy))
+axis(1, at = c(MPstart), labels = c("MP"))
+abline(v=MPstart, lty=2)
+lines(aggregate(value ~ year, FUN=sum, data=grossrev), type="l")
 
-plot(aggregate(value ~ year, FUN=sum, data=fuelcosts)$year, aggregate(value ~ year, FUN=sum, data=fuelcosts)$value, type="l", ylim=c(0,2091351), xlim=c(1,NUMRUNS+1), xlab = "Year", ylab = "Total fuel costs", xaxt = "n", panel.first=grid(NA, NULL,col = "ivory2"))
-axis(1, at = c(0.5, (MPstart-stab.model)/2+0.5, MPstart-stab.model+0.5, MPstart+((MPstartLO-MPstart)/2)-stab.model+0.5, MPstartLO-stab.model+0.5,  MPstartLO+((endy-MPstartLO)/2)-stab.model+0.5, NUMRUNS+0.5),
-     labels = c(stab.model, stab.model+((MPstart-stab.model)/2),    "MP", MPstart+((MPstartLO-MPstart)/2),     "LO" , MPstartLO+((endy-MPstartLO)/2), endy))
-grid(NA, NULL, col = "ivory2")
-abline(v=MPstart-9.5, lty=2)
-abline(v=MPstartLO-9.5, lty=2)
-lines(aggregate(value ~ year, FUN=sum, data=fuelcosts)$year, aggregate(value ~ year, FUN=sum, data=fuelcosts)$value, type="l")
+plot(aggregate(value ~ year, FUN=sum, data=fuelcosts), type="l", ylim=ylim, xlab = "Year", ylab = "Total fuel costs", xaxt = "n", panel.first=grid(NA, NULL,col = "ivory2"))
+axis(1,  at = c(stab.model, stab.model+((MPstart-stab.model)/2), MPstart, MPstart+((endy-MPstart)/2), endy),
+     labels = c(stab.model, stab.model+((MPstart-stab.model)/2),    "MP", MPstart+((endy-MPstart)/2), endy))
+axis(1, at = c(MPstart), labels = c("MP"))
+abline(v=MPstart, lty=2)
+lines(aggregate(value ~ year, FUN=sum, data=fuelcosts), type="l")
 
-plot(aggregate(value ~ year, FUN=sum, data=annualfine)$year, aggregate(value ~ year, FUN=sum, data=annualfine)$value, type="l", ylim=c(0,209130), xlim=c(1,NUMRUNS+1),xlab = "Year", ylab = "Total annual fine", xaxt = "n", panel.first=grid(NA, NULL,col = "ivory2"))
-axis(1, at = c(0.5, (MPstart-stab.model)/2+0.5, MPstart-stab.model+0.5, MPstart+((MPstartLO-MPstart)/2)-stab.model+0.5, MPstartLO-stab.model+0.5,  MPstartLO+((endy-MPstartLO)/2)-stab.model+0.5, NUMRUNS+0.5),
-     labels = c(stab.model, stab.model+((MPstart-stab.model)/2),    "MP", MPstart+((MPstartLO-MPstart)/2),     "LO" , MPstartLO+((endy-MPstartLO)/2), endy))
-grid(NA, NULL, col = "ivory2")
-abline(v=MPstart-9.5, lty=2)
-abline(v=MPstartLO-9.5, lty=2)
-lines(aggregate(value ~ year, FUN=sum, data=annualfine)$year, aggregate(value ~ year, FUN=sum, data=annualfine)$value, type="l")
+plot(aggregate(value ~ year, FUN=sum, data=annualfine),type="l", ylim=ylim, xlab = "Year", ylab = "Total annual fine", xaxt = "n", panel.first=grid(NA, NULL,col = "ivory2"))
+axis(1,  at = c(stab.model, stab.model+((MPstart-stab.model)/2), MPstart, MPstart+((endy-MPstart)/2), endy),
+     labels = c(stab.model, stab.model+((MPstart-stab.model)/2),    "MP", MPstart+((endy-MPstart)/2), endy))
+axis(1, at = c(MPstart), labels = c("MP"))
+abline(v=MPstart, lty=2)
+lines(aggregate(value ~ year, FUN=sum, data=annualfine), type="l")
 
 add_legend("bottomright", legend=paste0("SIGMA ", SIGMA, "; SIMNUMBER ",SIMNUMBER, "; DISCARDSTEPS ",SPP1DSCSTEPS, "; MIGRATION ",migconstant, "; REC1 ",paste(recs1, collapse = " "), "; REC2 ",paste(recs2, collapse = " "), "; SP1PRICE ",paste0(round(sp1Price[,1]), sep = ', ', collapse = ''),";SP2PRICE ",paste0(round(sp2Price[,1]), sep = ', ', collapse = ''), "; FUELPRICE ",control@fuelPrice), col="black", horiz=TRUE, bty='n', cex=1)
 
