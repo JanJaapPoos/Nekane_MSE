@@ -5,7 +5,7 @@ library(reshape2)
 library(plyr)
 library(scales)
 
-setwd("~/Dropbox/BoB/MSE/Git/Nekane/complex model/")
+setwd("~/Nekane_MSE/complex model/")
 source("functions.R")
 
 
@@ -121,12 +121,12 @@ ages          <- 1:4
 season        <- 1:6
 areas         <- c("a", "b")
 stab.model    <- 10
-NUMRUNS       <- 30
-MPstart       <- 26
+NUMRUNS       <- 50
+MPstart       <- 36
 #MPstartLO     <- 26
 
-SIMNUMBER     <- 700 #pos
-SIGMA         <- 40 #sig 
+SIMNUMBER     <- 1000 #pos
+SIGMA         <- 50 #sig 
 SPP1DSCSTEPS  <- 0
 SPP2DSCSTEPS  <- 0
 endy          <- stab.model + NUMRUNS
@@ -148,13 +148,13 @@ sp1price      <- sp2price      <- 1500
 slope1price <- 1000
 slope2price <- 1000 # 0.50*150
 
-FuelPrice   <- 150
+FuelPrice   <- 100
 
 # scenario I: discarding is not allowed, YPR based in C (C=L)
 # scenario II: discarding is allowed, YPR based in L, hr wanted based in catches
 # scenario III: discarding ocurred but not perceived, YPR based in L, hr wanted based in landings
 
-recs1          <- c(100,0) 
+recs1          <- c(200,0) 
 mig1     <- array(0, dim=c(length(ages),1,length(season),length(areas), length(areas)), dimnames=list(cat=ages,year="all",season=as.character(season), from =areas, to=areas)) 
 mig1[,,,"a","a"] <- -migconstant
 mig1[,,,"b","b"] <- -migconstant
@@ -162,7 +162,7 @@ mig1[,,,"a","b"] <- migconstant
 mig1[,,,"b","a"] <- migconstant
 aperm( mig1,c(1,3,2,4,5))
 
-recs2          <- c(0,100) 
+recs2          <- c(0,200) 
 mig2     <- array(0, dim=c(length(ages),1,length(season),length(areas), length(areas)), dimnames=list(cat=ages,year="all",season=as.character(season), from =areas, to=areas)) 
 mig2[,,,"a","a"] <- -migconstant
 mig2[,,,"b","b"] <- -migconstant
@@ -173,6 +173,7 @@ aperm( mig2,c(1,3,2,4,5))
 effort <- array(c(1), dim=c(length(areas), length(season)), dimnames=list(option =areas,season=as.character(season)))
 
 
+
 pop1  <- pop2         <-array(0, dim=c(length(ages),endy+1,length(season),length(areas)), dimnames=list(cat=ages,   year=as.character(1:(endy+1)), season=as.character(season), option =areas))
 catches.n.dsvm1       <- catches.n.dsvm2       <- array(0, dim=c(length(ages),endy,length(season),length(areas)), dimnames=list(cat=ages,   year=as.character(1:endy), season=as.character(season), option =areas))
 landings.n.dsvm1      <- landings.n.dsvm2      <- array(0, dim=c(length(ages),endy,length(season),length(areas)), dimnames=list(cat=ages,   year=as.character(1:endy), season=as.character(season), option =areas))
@@ -180,9 +181,11 @@ catches.wt.dsvm1      <- catches.wt.dsvm2      <- array(0, dim=c(length(ages),en
 landings.wt.dsvm1     <- landings.wt.dsvm2     <- array(0, dim=c(length(ages),endy,length(season),length(areas)), dimnames=list(cat=ages,   year=as.character(1:endy), season=as.character(season), option =areas))
 catches.wt.dsvm.tot1  <- catches.wt.dsvm.tot2  <- array(0, dim=c(1           ,endy,              1,            1), dimnames=list(cat="all", year=as.character(1:endy), season="all",                option ="all"))
 landings.wt.dsvm.tot1 <- landings.wt.dsvm.tot2 <- array(0, dim=c(1           ,endy,              1,            1), dimnames=list(cat="all", year=as.character(1:endy), season="all",                option ="all"))
-quota1                <- quota2                <- array(10, dim=c(1           ,endy,              1,            1), dimnames=list(cat="all", year=as.character(1:endy), season="all",                option ="all"))
+quota1                <- quota2                <- array(8, dim=c(1           ,endy,              1,            1), dimnames=list(cat="all", year=as.character(1:endy), season="all",                option ="all"))
 
 pos_catches1 <- pos_catches2 <- pop1
+
+hr1wanted <- hr2wanted <- array(NA, dim=c(1           ,endy,              1,            1), dimnames=list(cat="all", year=as.character(1:endy), season="all",                option ="all"))
 
 #run population for 15 year
 pop1 <- population_dynamics(pop=pop1, startyear=2, endyear=stab.model, season=season, natmortality=natmortality, catches=catches.n.dsvm1[,1,,, drop=F], recruitment=recs1, migration=mig1)
@@ -307,27 +310,27 @@ for(yy in (stab.model):(stab.model+NUMRUNS)){
   yc1 <- yield_curve(hr=hr1[,yy,], landings.ratio1[,yy,], wts, natmortality, R=recs1, verbose=F)
   yc2 <- yield_curve(hr=hr2[,yy,], landings.ratio2[,yy,], wts, natmortality, R=recs2, verbose=F)
       
-  hr1wanted <- yc1[yc1$landings==max(yc1$landings),]$hr
-  hr2wanted <- yc2[yc2$landings==max(yc2$landings),]$hr
+  hr1wanted[,yy,,] <- (yc1[yc1$landings==max(yc1$landings),]$hr)[1]
+  hr2wanted[,yy,,] <- (yc2[yc2$landings==max(yc2$landings),]$hr)[1]
   
   #We take the first value of hr1wanted vector to guarantee that we always get a single value in case landingratio is 0
   if (yy > (MPstart-1) & yy < endy){ #if (yy > (MPstart-1))
-    prel.quota1 <- sum((hr1wanted[1]/mean(hr1[,yy,]))* hr1[,yy,]*landings.ratio1[,yy,]*apply(pop1[,yy+1,,],c(1,2), sum)*wts[,1,,1])/SIMNUMBER 
+    prel.quota1 <- sum((hr1wanted[,yy,,]/mean(hr1[,yy,]))* hr1[,yy,]*landings.ratio1[,yy,]*apply(pop1[,yy+1,,],c(1,2), sum)*wts[,1,,1])/SIMNUMBER 
       #sum(sweep((hr1wanted[1]/mean(hr1[,yy,]))* hr1[,yy,]*landings.ratio1[,yy,]*apply(pop1[,yy+1,,],c(1,2), sum) ,1,wts[,1,,1],"*"))/SIMNUMBER
-    prel.quota2 <- sum((hr2wanted[1]/mean(hr2[,yy,]))* hr2[,yy,]*landings.ratio2[,yy,]*apply(pop2[,yy+1,,],c(1,2), sum)*wts[,1,,1])/SIMNUMBER
+    prel.quota2 <- sum((hr2wanted[,yy,,]/mean(hr2[,yy,]))* hr2[,yy,]*landings.ratio2[,yy,]*apply(pop2[,yy+1,,],c(1,2), sum)*wts[,1,,1])/SIMNUMBER
       #sum(sweep((hr2wanted[1]/mean(hr2[,yy,]))* hr2[,yy,]*landings.ratio2[,yy,]*apply(pop2[,yy+1,,],c(1,2), sum) ,1,wts,"*"))/SIMNUMBER
     
     # We constrained +- 15% TAC change, until the LO implementation, where we allow the HR wanted just for the transition
     # In the transition we assume landing ratio equal 1
-    if (yy == MPstart){ #MPstartLO){ # landing.ratio are equal to 1 for all years before estimating them
+    #   if (yy == MPstart){ #MPstartLO){ # landing.ratio are equal to 1 for all years before estimating them
       quota1[,yy+1,,] <- prel.quota1
       quota2[,yy+1,,] <- prel.quota2
-    }else{
-      tac.constrained1 <- c(quota1[,yy,,]*0.85, quota1[,yy,,]*1.15)
-      tac.constrained2 <- c(quota2[,yy,,]*0.85, quota2[,yy,,]*1.15)
-      quota1[,yy+1,,] <- max(min(prel.quota1, tac.constrained1[2]), tac.constrained1[1]) 
-      quota2[,yy+1,,] <- max(min(prel.quota2, tac.constrained2[2]), tac.constrained2[1]) 
-    }
+    #}else{
+    #  tac.constrained1 <- c(quota1[,yy,,]*0.85, quota1[,yy,,]*1.15)
+    #  tac.constrained2 <- c(quota2[,yy,,]*0.85, quota2[,yy,,]*1.15)
+    #  quota1[,yy+1,,] <- max(min(prel.quota1, tac.constrained1[2]), tac.constrained1[1]) 
+    #  quota2[,yy+1,,] <- max(min(prel.quota2, tac.constrained2[2]), tac.constrained2[1]) 
+    #}
   }
 }
 

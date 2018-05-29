@@ -52,8 +52,6 @@ lty=c(1,2), pch=c(NA, NA), col=c("black", "black"))
 dev.off()
 
 
-ylim <- c(0, ceiling(max(sort(catches.wt.dsvm.tot1,partial=length(catches.wt.dsvm.tot1)-1)[length(catches.wt.dsvm.tot1)-1])/100)*100)
-xlimYPR <- c(0,0.2)
 
 setEPS()
 postscript(file=paste("MIXEDMP2_CATCH_", paste0("SIGMA ", SIGMA, "; INCREMENTS ",control@increments, "; SIMNUMBER ",SIMNUMBER, "; DISCARDSTEPS ",SPP1DSCSTEPS, "; MIGRATION ",migconstant, "; REC1 ",paste(recs1, collapse = " "), "; REC2 ",paste(recs2, collapse = " "), "; SP1PRICE ",paste0(round(sp1Price[,1]), sep = ', ', collapse = ''),";SP2PRICE ",paste0(round(sp2Price[,1]), sep = ', ', collapse = ''), "; FUELPRICE ",control@fuelPrice,".eps"), sep=""),width=20, height=8, units="cm", res=500, pointsize=6.5)
@@ -61,6 +59,9 @@ postscript(file=paste("MIXEDMP2_CATCH_", paste0("SIGMA ", SIGMA, "; INCREMENTS "
 
 par(mfrow=c(2,5),oma = c(3,0,0,0) + 0.1, mar = c(4,4,1,1) + 0.1)
 #,oma = c(4,3,1,1) + 0.1, mar = c(4,4,1,1) + 0.1)
+
+ylim <- c(0, ceiling(max(sort(catches.wt.dsvm.tot1,partial=length(catches.wt.dsvm.tot1)-1)[length(catches.wt.dsvm.tot1)-1])/100)*100)
+xlimYPR <- c(0,0.2)
 
 plot(catches.wt.dsvm.tot1, type="l",  xlim=c(stab.model,endy), ylim=ylim, xaxs='i', yaxs='i', xlab= "Year", ylab = "Total catches (weight)", xaxt = "n", panel.first=grid(NA, NULL,col = "ivory2"))
 polygon(x=c(pyrnoMP-2,pyrnoMP+2,pyrnoMP+2,pyrnoMP-2), border=NA, y=c(rep(ylim,each=2)), col="ivory4")
