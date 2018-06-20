@@ -33,11 +33,11 @@ population_dynamics <- function(pop, startyear, endyear, season, natmortality, c
       }
       # natural mortality  ---------------------                                                             
       pop[,as.character(y),as.character(ss),] <- pop[,as.character(y),as.character(ss),]*(1-natmortality)
-      pop[pop < 1e-20 ] <- 1e-20
+      pop[pop < 1e-1 ] <- 1e-1
       
       # remove catches (dims of catches here is ages,season, area, just like in main )
       pop[,as.character(y),as.character(ss),] <- pop[,as.character(y),as.character(ss),] - catches[,,as.character(ss),]
-      pop[pop < 1e-20 ] <- 1e-20 
+      pop[pop < 1e-1 ] <- 1e-1 
       
       #migration
       for (age in (1:dim(pop)[1])){
@@ -121,12 +121,12 @@ ages          <- 1:6
 season        <- 1:6
 areas         <- c("a", "b")
 stab.model    <- 10
-NUMRUNS       <- 40
+NUMRUNS       <- 25
 MPstart       <- 30
 #MPstartLO     <- 26
 
-SIMNUMBER     <- 500 #pos
-SIGMA         <- 500 #sig 
+SIMNUMBER     <- 700 #pos
+SIGMA         <- 10000 #sig 
 SPP1DSCSTEPS  <- 0
 SPP2DSCSTEPS  <- 0
 endy          <- stab.model + NUMRUNS
@@ -148,7 +148,7 @@ sp1price      <- sp2price      <- 1500
 slope1price <- 1000
 slope2price <- 1000 # 0.50*150
 
-FuelPrice   <- 60
+FuelPrice   <- 0
 
 # scenario I: discarding is not allowed, YPR based in C (C=L)
 # scenario II: discarding is allowed, YPR based in L, hr wanted based in catches
@@ -181,7 +181,7 @@ catches.wt.dsvm1      <- catches.wt.dsvm2      <- array(0, dim=c(length(ages),en
 landings.wt.dsvm1     <- landings.wt.dsvm2     <- array(0, dim=c(length(ages),endy,length(season),length(areas)), dimnames=list(cat=ages,   year=as.character(1:endy), season=as.character(season), option =areas))
 catches.wt.dsvm.tot1  <- catches.wt.dsvm.tot2  <- array(0, dim=c(1           ,endy,              1,            1), dimnames=list(cat="all", year=as.character(1:endy), season="all",                option ="all"))
 landings.wt.dsvm.tot1 <- landings.wt.dsvm.tot2 <- array(0, dim=c(1           ,endy,              1,            1), dimnames=list(cat="all", year=as.character(1:endy), season="all",                option ="all"))
-quota1                <- quota2                <- array(8, dim=c(1           ,endy,              1,            1), dimnames=list(cat="all", year=as.character(1:endy), season="all",                option ="all"))
+quota1                <- quota2                <- array(20, dim=c(1           ,endy,              1,            1), dimnames=list(cat="all", year=as.character(1:endy), season="all",                option ="all"))
 
 pos_catches1 <- pos_catches2 <- pop1
 
@@ -219,7 +219,10 @@ for(yy in (stab.model):(stab.model+NUMRUNS)){
 
   catchMean(sp1)  <- array(apply(pos_catches1[,(yy-2):yy,,,drop=F],c(1,3,4),mean), dim=c(length(ages), length(season),length(areas)),  dimnames=list("cat"=ages,"season"= season,"option"=areas))
   catchMean(sp2)  <- array(apply(pos_catches2[,(yy-2):yy,,,drop=F],c(1,3,4),mean), dim=c(length(ages), length(season),length(areas)),  dimnames=list("cat"=ages,"season"= season,"option"=areas))
+  #catchMean(sp1)  <- array(apply(pos_catches1[,yy,,,drop=F],c(1,3,4),mean), dim=c(length(ages), length(season),length(areas)),  dimnames=list("cat"=ages,"season"= season,"option"=areas))
+  #catchMean(sp2)  <- array(apply(pos_catches2[,yy,,,drop=F],c(1,3,4),mean), dim=c(length(ages), length(season),length(areas)),  dimnames=list("cat"=ages,"season"= season,"option"=areas))
   
+    
   # ---No way of estimating sigma, therefore we assume that is 8% of the CPUE (note slight repetion in code for dims and dimnames of 0 catch arrays for spec 3,4,5)                                                                  
   catchSigma(sp1) <- catchMean(sp1) *0.08
   catchSigma(sp2) <- catchMean(sp2) *0.08
