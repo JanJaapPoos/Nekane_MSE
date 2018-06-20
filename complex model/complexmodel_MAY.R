@@ -121,12 +121,12 @@ ages          <- 1:4
 season        <- 1:6
 areas         <- c("a", "b")
 stab.model    <- 10
-NUMRUNS       <- 50
-MPstart       <- 36
+NUMRUNS       <- 80
+MPstart       <- 50
 #MPstartLO     <- 26
 
-SIMNUMBER     <- 1000 #pos
-SIGMA         <- 50 #sig 
+SIMNUMBER     <- 800 #pos
+SIGMA         <- 100 #sig 
 SPP1DSCSTEPS  <- 0
 SPP2DSCSTEPS  <- 0
 endy          <- stab.model + NUMRUNS
@@ -143,7 +143,7 @@ wts           <- aperm(wts, c(3,2,1,4))
 q             <- 0.0005
 natmortality  <- 0.0001
 
-migconstant   <- 0.2
+migconstant   <- 0.1
 sp1price      <- sp2price      <- 1500
 slope1price <- 1000
 slope2price <- 1000 # 0.50*150
