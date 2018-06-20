@@ -64,7 +64,7 @@ population_dynamics <- function(pop, startyear, endyear, season, natmortality, c
 # YIELD CURVE
 ##############################################################################
 
-yield_curve <- function(hr,lratio, wts, natmortality, R=1, sequence = seq(0.001,2,0.001), verbose=F ){
+yield_curve <- function(hr,lratio, wts, natmortality, R=1, sequence = seq(0.001,5,0.005), verbose=F ){
   
   # note that definition of hr is not completely correct (should be sum over seasons, and mean over ages), but as long as consistently incorect in code it should not matter
   res <- data.frame("hr"=mean(hr) *sequence,"catch"=NA, "landings"=NA) 
@@ -117,16 +117,16 @@ yield_curve <- function(hr,lratio, wts, natmortality, R=1, sequence = seq(0.001,
 #for (pos in NVESSELS){
 #  for (sig in SIGMAS){
 
-ages          <- 1:4
+ages          <- 1:6
 season        <- 1:6
 areas         <- c("a", "b")
 stab.model    <- 10
-NUMRUNS       <- 80
-MPstart       <- 50
+NUMRUNS       <- 40
+MPstart       <- 30
 #MPstartLO     <- 26
 
-SIMNUMBER     <- 800 #pos
-SIGMA         <- 100 #sig 
+SIMNUMBER     <- 500 #pos
+SIGMA         <- 500 #sig 
 SPP1DSCSTEPS  <- 0
 SPP2DSCSTEPS  <- 0
 endy          <- stab.model + NUMRUNS
@@ -143,12 +143,12 @@ wts           <- aperm(wts, c(3,2,1,4))
 q             <- 0.0005
 natmortality  <- 0.0001
 
-migconstant   <- 0.1
+migconstant   <- 0.05
 sp1price      <- sp2price      <- 1500
 slope1price <- 1000
 slope2price <- 1000 # 0.50*150
 
-FuelPrice   <- 100
+FuelPrice   <- 60
 
 # scenario I: discarding is not allowed, YPR based in C (C=L)
 # scenario II: discarding is allowed, YPR based in L, hr wanted based in catches
@@ -295,9 +295,12 @@ for(yy in (stab.model):(stab.model+NUMRUNS)){
   #MANAGEMENT PROCEDURE
   #------------------------------------------
   
+ 
+  #calculate the observed harvest ratios (per age) 
   hr1 <- (apply(catches.n.dsvm1,1:3,sum)+1e-20)/    ((apply(catches.n.dsvm1,1:3,sum)+1e-20) +  apply(pop1[,1:endy,,],1:3,sum))
   hr2 <- (apply(catches.n.dsvm2,1:3,sum)+1e-20)/    (apply(catches.n.dsvm2,1:3,sum) +  apply(pop2[,1:endy,,],1:3,sum))
   
+  #calculate landing ratios
   landings.ratio1 <- (apply(landings.n.dsvm1,1:3,sum)+1e-20)/ (apply(catches.n.dsvm1,1:3,sum)+1e-20)
   landings.ratio2 <- (apply(landings.n.dsvm2,1:3,sum)+1e-20)/ (apply(catches.n.dsvm2,1:3,sum)+1e-20)
 
@@ -307,13 +310,19 @@ for(yy in (stab.model):(stab.model+NUMRUNS)){
   #   landings.ratio2[,yy,]<- 1
   # }
   
-  yc1 <- yield_curve(hr=hr1[,yy,], landings.ratio1[,yy,], wts, natmortality, R=recs1, verbose=F)
-  yc2 <- yield_curve(hr=hr2[,yy,], landings.ratio2[,yy,], wts, natmortality, R=recs2, verbose=F)
-      
+  #what sequence to use in YPR curve so that we span at least hr= 0.001 to 0.5?
+  maxseq1 <- 0.5/mean(hr1[,yy,])
+  maxseq2 <- 0.5/mean(hr2[,yy,])
+  
+  # get yield curve results given observed harvest ratios
+  yc1 <- yield_curve(hr=hr1[,yy,], landings.ratio1[,yy,], wts, natmortality, R=recs1, verbose=F, sequence = seq(0.001, maxseq1, length.out=2000))
+  yc2 <- yield_curve(hr=hr2[,yy,], landings.ratio2[,yy,], wts, natmortality, R=recs2, verbose=F, sequence = seq(0.001, maxseq2, length.out=2000))
+  
+  #store perceived HRmax    
   hr1wanted[,yy,,] <- (yc1[yc1$landings==max(yc1$landings),]$hr)[1]
   hr2wanted[,yy,,] <- (yc2[yc2$landings==max(yc2$landings),]$hr)[1]
   
-  #We take the first value of hr1wanted vector to guarantee that we always get a single value in case landingratio is 0
+  #calculate individual quota from pop, hr and hrmax 
   if (yy > (MPstart-1) & yy < endy){ #if (yy > (MPstart-1))
     prel.quota1 <- sum((hr1wanted[,yy,,]/mean(hr1[,yy,]))* hr1[,yy,]*landings.ratio1[,yy,]*apply(pop1[,yy+1,,],c(1,2), sum)*wts[,1,,1])/SIMNUMBER 
       #sum(sweep((hr1wanted[1]/mean(hr1[,yy,]))* hr1[,yy,]*landings.ratio1[,yy,]*apply(pop1[,yy+1,,],c(1,2), sum) ,1,wts[,1,,1],"*"))/SIMNUMBER
@@ -350,14 +359,14 @@ hr2 <- (apply(catches.n.dsvm2,1:3,sum)+1e-20)/    ((apply(catches.n.dsvm2,1:3,su
 landings.ratio1 <- (apply(landings.n.dsvm1,1:3,sum)+1e-20)/ (apply(catches.n.dsvm1,1:3,sum)+1e-20)
 landings.ratio2 <- (apply(landings.n.dsvm2,1:3,sum)+1e-20)/ (apply(catches.n.dsvm2,1:3,sum)+1e-20)
 
-yc1noMP <- yield_curve(hr=hr1[,pyrnoMP,], landings.ratio1[,pyrnoMP,], wts, natmortality, R=recs1, verbose=F)
-yc2noMP <- yield_curve(hr=hr2[,pyrnoMP,], landings.ratio2[,pyrnoMP,], wts, natmortality, R=recs2, verbose=F)
+yc1noMP <- yield_curve(hr=hr1[,pyrnoMP,], landings.ratio1[,pyrnoMP,], wts, natmortality, R=recs1, verbose=F, sequence=seq(0.0001,0.5/mean(hr1[,pyrnoMP,]),0.01 ))
+yc2noMP <- yield_curve(hr=hr2[,pyrnoMP,], landings.ratio2[,pyrnoMP,], wts, natmortality, R=recs2, verbose=F, sequence=seq(0.0001,0.5/mean(hr2[,pyrnoMP,]),0.01 ))
 #what happens in our yield curve for this hr?
 #yield_curve(hr=hr1[,pyrnoMP,], landings.ratio1[,pyrnoMP,], wts, natmortality, R=recs1, sequence = 1, verbose=T)
 #yield_curve(hr=hr2[,pyrnoMP,], landings.ratio2[,pyrnoMP,], wts, natmortality, R=recs2, sequence = 1, verbose=T)
 
-yc1MP <- yield_curve(hr=hr1[,pyrMP,], landings.ratio1[,pyrMP,], wts, natmortality, R=recs1, verbose=F)
-yc2MP <- yield_curve(hr=hr2[,pyrMP,], landings.ratio2[,pyrMP,], wts, natmortality, R=recs2, verbose=F)
+yc1MP <- yield_curve(hr=hr1[,pyrMP,], landings.ratio1[,pyrMP,], wts, natmortality, R=recs1, verbose=F, sequence=seq(0.0001,0.5/mean(hr1[,pyrMP,]),0.01 ))
+yc2MP <- yield_curve(hr=hr2[,pyrMP,], landings.ratio2[,pyrMP,], wts, natmortality, R=recs2, verbose=F, sequence=seq(0.0001,0.5/mean(hr2[,pyrMP,]),0.01 ))
 
 # yc1MPLO <- yield_curve(hr=hr1[,pyrMPLO,], landings.ratio1[,pyrMPLO,], wts, natmortality, R=recs1, verbose=F)
 # yc2MPLO <- yield_curve(hr=hr2[,pyrMPLO,], landings.ratio2[,pyrMPLO,], wts, natmortality, R=recs2, verbose=F)

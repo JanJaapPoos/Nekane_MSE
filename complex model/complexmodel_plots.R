@@ -59,7 +59,7 @@ par(mfrow=c(2,5),oma = c(3,0,0,0) + 0.1, mar = c(4,4,1,1) + 0.1)
 #,oma = c(4,3,1,1) + 0.1, mar = c(4,4,1,1) + 0.1)
 
 ylim <- c(0, ceiling(max(sort(catches.wt.dsvm.tot1,partial=length(catches.wt.dsvm.tot1)-1)[length(catches.wt.dsvm.tot1)-1])/100)*100)
-xlimYPR <- c(0,0.2)
+xlimYPR <- c(0,0.3)
 
 plot(catches.wt.dsvm.tot1, type="l",  xlim=c(stab.model,endy), ylim=ylim, xaxs='i', yaxs='i', xlab= "Year", ylab = "Total catches (weight)", xaxt = "n", panel.first=grid(NA, NULL,col = "ivory2"))
 polygon(x=c(pyrnoMP-2,pyrnoMP+2,pyrnoMP+2,pyrnoMP-2), border=NA, y=c(rep(ylim,each=2)), col="ivory4")
@@ -72,7 +72,8 @@ lines((quota1* SIMNUMBER), col="red")
 lines(catches.wt.dsvm.tot1,  type="l", ylim=ylim)
 legend("bottomright", inset=.05, legend=c("Catches","TAC"), pch=c(1,46,1), col=c("black","red"), bty='n', cex=0.8)
 
-plot(apply(hr1,c(1,2),mean)[1,], type="p",  xlim=c(stab.model,endy), ylim=c(0,0.2), xaxs='i', yaxs='i', xlab= "Year", ylab = "Harvest rates", xaxt = "n", panel.first=grid(NA, NULL,col = "ivory2"))
+#harvest rate plots
+plot(apply(hr1,c(1,2),mean)[1,], type="p",  xlim=c(stab.model,endy), ylim=xlimYPR, xaxs='i', yaxs='i', xlab= "Year", ylab = "Harvest rates", xaxt = "n", panel.first=grid(NA, NULL,col = "ivory2"))
 polygon(x=c(pyrnoMP-2,pyrnoMP+2,pyrnoMP+2,pyrnoMP-2), border=NA, y=c(rep(ylim,each=2)), col="ivory4")
 polygon(x=c(pyrMP-2,pyrMP+2,pyrMP+2,pyrMP-2)        , border=NA, y=c(rep(ylim,each=2)), col="darkgreen")
 axis(1,  at = c(stab.model, stab.model+((MPstart-stab.model)/2), MPstart, MPstart+((endy-MPstart)/2), endy),
@@ -84,13 +85,16 @@ points(apply(hr1,c(1,2),mean)[1,], col="black", pch=19)
 points(apply(hr1,c(1,2),mean)[2,], col="red", pch=19)
 points(apply(hr1,c(1,2),mean)[3,], col="black", pch=21)
 points(apply(hr1,c(1,2),mean)[4,], col="red", pch=21)
+lines(hr1wanted[1,,1,1], col="red")    #wanted hr
+lines(apply(hr1,c(2),mean), col="black") #observed hr
+
 legend("topright", inset=.05, legend=c("Age 1","Age 2","Age 3","Age 4"), pch=c(19,19,21,21), col=c("black","red", "black","red"), bty='n', cex=0.8)
 
 #YPR plots
 plot(x=yc1noMP$hr, y=yc1noMP$landings, type="l", xlim=xlimYPR, ylim=ylim,xaxs='i', yaxs='i',  xlab="Harvest rate", ylab = "Yield per recruit", panel.first=grid(col = "ivory2"))
 abline(v=Fmsy1noMP, col="ivory4")
 #text(xlimYPR[2]*0.8, ylim[2]*0.9, paste0("SIMNUMBER ",SIMNUMBER))
-points(mean(hr1[,pyrnoMP,]),yc1noMP$landings[yc1noMP$hr>mean(hr1[,pyrnoMP,])][1], col="red", pch=19)
+points(mean(hr1[,pyrnoMP,]),yc1noMP$landings[yc1noMP$hr>mean(hr1[,pyrnoMP,])][1], col="red", pch=19) # current hr on yield curve 
 points(mean(hr1[,pyrnoMP-2,]),landings.wt.dsvm.tot1[,pyrnoMP-2,,],col="ivory4", pch=19)
 points(mean(hr1[,pyrnoMP-1,]),landings.wt.dsvm.tot1[,pyrnoMP-1,,], col="ivory4", pch=19)
 points(mean(hr1[,pyrnoMP,]),landings.wt.dsvm.tot1[,pyrnoMP,,], col="ivory4", pch=19)
@@ -153,13 +157,14 @@ lines((quota2* SIMNUMBER), col="red")
 lines(catches.wt.dsvm.tot2,  type="l", ylim=ylim)
 lines(landings.wt.dsvm.tot2, type="l", ylim=ylim, lty= 2)
 
-plot(apply(hr2,c(1,2),mean)[1,], type="p",  xlim=c(stab.model,endy), ylim=c(0,0.2), xaxs='i', yaxs='i', xlab= "Year", ylab = "Harvest rates", xaxt = "n", panel.first=grid(NA, NULL,col = "ivory2"))
+plot(apply(hr2,c(1,2),mean)[1,], type="p",  xlim=c(stab.model,endy), ylim=xlimYPR, xaxs='i', yaxs='i', xlab= "Year", ylab = "Harvest rates", xaxt = "n", panel.first=grid(NA, NULL,col = "ivory2"))
 polygon(x=c(pyrnoMP-2,pyrnoMP+2,pyrnoMP+2,pyrnoMP-2), border=NA, y=c(rep(ylim,each=2)), col="ivory4")
 polygon(x=c(pyrMP-2,pyrMP+2,pyrMP+2,pyrMP-2)        , border=NA, y=c(rep(ylim,each=2)), col="darkgreen")
 axis(1,  at = c(stab.model, stab.model+((MPstart-stab.model)/2), MPstart, MPstart+((endy-MPstart)/2), endy),
      labels = c(stab.model, stab.model+((MPstart-stab.model)/2),    "MP", MPstart+((endy-MPstart)/2), endy))
 axis(1, at = c(MPstart), labels = c("MP"))
 abline(v=MPstart, lty=2)
+lines(hr2wanted[1,,1,1], col="red")    #wanted hr
 points(apply(hr2,c(1,2),mean)[1,], col="black", pch=19)
 points(apply(hr2,c(1,2),mean)[2,], col="red", pch=19)
 points(apply(hr2,c(1,2),mean)[3,], col="black", pch=21)

@@ -753,7 +753,7 @@ Rprintf("Start of DynStateF\n");
     for ( i = 0; i < kNPatch; i++){     
       theShortTermGains[i] = shortTermGains(t, noInc, theLndParms, i, thePriceParms);
       theShortTermCosts[i] = shortTermCosts(t, i, kPriceEffort, theEffortArray);     //*, noInc, theLndParms, thePriceParms);
-      theShortTermCrewShare[i] = theShortTermGains[i]*0.35;     //*, noInc, theLndParms, thePriceParms);
+      theShortTermCrewShare[i] = theShortTermGains[i]*0.0;     //*, noInc, theLndParms, thePriceParms);
       theShortTermEcon[i]  =  theShortTermGains[i] - theShortTermCosts[i] - theShortTermCrewShare[i];
     }
 
