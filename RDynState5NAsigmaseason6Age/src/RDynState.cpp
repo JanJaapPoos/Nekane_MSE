@@ -561,13 +561,16 @@ Rprintf("Start of DynStateF\n");
       }
     }
   }
+
+  /* turned around inc0 and patch in loo pfor more parallel speedup */
 #pragma omp parallel private(i,t,s,inc0,inc1,inc2,inc3,inc4,inc5)
 {
 #pragma omp for schedule(static)    
-  for ( i = 0; i < kNPatch; i++){
+  for ( inc0 = 0; inc0 < noInc; inc0++){
+    for ( i = 0; i < kNPatch; i++){
     for (t = 0; t < kHorizon; t++){
       for (s = 0; s < NOSPEC; s++){
-	for ( inc0 = 0; inc0 < noInc; inc0++){
+	
 	  for (inc1 = 0; inc1 < noInc; inc1++){
 	    for (inc2 = 0; inc2 < noInc; inc2++){
 	      for (inc3 = 0; inc3 < noInc; inc3++){
