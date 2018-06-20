@@ -488,6 +488,7 @@ Rprintf("Start of DynStateF\n");
   Rprintf("kPriceEffort ");     Rprintf("%f \n",kPriceEffort); 
 
   int verbose = 0; 
+  int Lndspp1, Lndspp2,i,t,s,inc0,inc1,inc2,inc3,inc4,inc5; /*for loops */
 
   /********************************************************************************************************************/
   /* Check if sigma is zero (because this leads to div by zero in prob calcs). If so set to very small num and warn   */
@@ -551,9 +552,9 @@ Rprintf("Start of DynStateF\n");
   /*************************************************************************************************************************************/
   /* PUT theLndParms & theDisParms into aggregate arrays DOES NOT SCALE AUTOMATICALLY WITH NOSIZES BUT IT SHOULD IF THOSE ARE ALTERED  */
   /*************************************************************************************************************************************/  
-  for (int i = 0; i < kNPatch; i++){
-    for (int t = 0; t < kHorizon; t++){
-      for (int s = 0; s < NOSPEC; s++){
+  for (i = 0; i < kNPatch; i++){
+    for (t = 0; t < kHorizon; t++){
+      for (s = 0; s < NOSPEC; s++){
 	for (int inc = 0; inc < ((NOSIZES * noInc)-1); inc++){
 	  theLndParmsAgg[i][t][s][inc] =  0; 
 	}
@@ -563,15 +564,15 @@ Rprintf("Start of DynStateF\n");
 #pragma omp parallel private(i,t,s,inc0,inc1,inc2,inc3,inc4,inc5)
 {
 #pragma omp for schedule(static)    
-  for (int i = 0; i < kNPatch; i++){
-    for (int t = 0; t < kHorizon; t++){
-      for (int s = 0; s < NOSPEC; s++){
-	for (int inc0 = 0; inc0 < noInc; inc0++){
-	  for (int inc1 = 0; inc1 < noInc; inc1++){
-	    for (int inc2 = 0; inc2 < noInc; inc2++){
-	      for (int inc3 = 0; inc3 < noInc; inc3++){
-	        for (int inc4 = 0; inc4 < noInc; inc4++){
-	          for (int inc5 = 0; inc5 < noInc; inc5++){
+  for ( i = 0; i < kNPatch; i++){
+    for (t = 0; t < kHorizon; t++){
+      for (s = 0; s < NOSPEC; s++){
+	for ( inc0 = 0; inc0 < noInc; inc0++){
+	  for (inc1 = 0; inc1 < noInc; inc1++){
+	    for (inc2 = 0; inc2 < noInc; inc2++){
+	      for (inc3 = 0; inc3 < noInc; inc3++){
+	        for (inc4 = 0; inc4 < noInc; inc4++){
+	          for (inc5 = 0; inc5 < noInc; inc5++){
 	            
 		theLndParmsAgg[i][t][s][inc0 + inc1 + inc2 + inc3 + inc4 + inc5] +=  theLndParms[i][t][s][0][inc0] * theLndParms[i][t][s][1][inc1] *  theLndParms[i][t][s][2][inc2]  * theLndParms[i][t][s][3][inc3] * theLndParms[i][t][s][4][inc4] *theLndParms[i][t][s][5][inc5] ;
 	      }
@@ -593,7 +594,7 @@ Rprintf("Start of DynStateF\n");
   int whatRangeLT[MAXHORIZON] = {(NOSIZES * noInc) -1};
 
   nonZeroRanges(kHorizon,(NOSIZES * noInc)-1,kNPatch, theLndParmsAgg, whatRangeLT);
-  for (int t = 0; t < kHorizon; t++){
+  for ( t = 0; t < kHorizon; t++){
     Rprintf("%d \n", whatRangeLT[t]);
   }
   Rprintf("Defined ranges for distribution functions per timestep\n"); R_FlushConsole();
@@ -632,8 +633,8 @@ Rprintf("Start of DynStateF\n");
   /*************************************************************************************************************************************/
   /* PUT pricedata from pParms in epriceParms array                                                                                    */
   /*************************************************************************************************************************************/  
-  for (int t = 0; t < kHorizon; t++){
-    for (int s = 0; s < NOSPEC; s++){
+  for ( t = 0; t < kHorizon; t++){
+    for ( s = 0; s < NOSPEC; s++){
       for (int si = 0; si < NOSIZES; si++){
           thePriceParms[t][s][si] = REAL(pParms)[ si  + t*NOSIZES + s*kHorizon*NOSIZES] * sizeSppInc[s]; //check how r part is structured
       }
@@ -654,8 +655,8 @@ Rprintf("Start of DynStateF\n");
   /*INITIALISE THE EFFORTCOST FOR THE DIFFERENT PATCHES                                                                                */
   /*************************************************************************************************************************************/
   Rprintf("Effort array initialised\n");
-  for (int i = 0; i < kNPatch; i++){ 
-    for (int t = 0; t < kHorizon; t++){
+  for ( i = 0; i < kNPatch; i++){ 
+    for ( t = 0; t < kHorizon; t++){
       theEffortArray[i][t] = REAL(eParms)[i + t* kNPatch];
     }
   }
@@ -670,11 +671,9 @@ Rprintf("Start of DynStateF\n");
   Rprintf("Capacity ");       Rprintf("%d\n", kSpp1Capacity);
   Rprintf("sizeSpp1Inc   ");                  Rprintf("%f\n", sizeSpp1Inc);
 
-  for (int s = 0; s < NOSPEC; s++){ 
+  for ( s = 0; s < NOSPEC; s++){ 
     Rprintf("spp");  Rprintf("%d", s+1); Rprintf(" Increment size "); Rprintf("%f\n",  sizeSppInc[s]);
   }
-
-  int Lndspp1, Lndspp2;
 
   /*************************************************************************************************************************************/
   /* INITIALISE F0 AND F1 ARRAY TO 0 IF IN OPENMP ENVIRONMENT                                                                          */
@@ -745,10 +744,10 @@ Rprintf("Start of DynStateF\n");
   vector < vector<UFINT> > val(MAXHORIZON, vector<UFINT> (1,0));                     // for RLE
   vector < vector<unsigned short> > rep(MAXHORIZON, vector<unsigned short> (1,1));   // for RLE
   
-  for (int t = kHorizon - 1; t >= 0; t--) {                                          // start the backward calculation
+  for ( t = kHorizon - 1; t >= 0; t--) {                                          // start the backward calculation
 
     Rprintf("Timestep %d Calc short term economics ", t+1);  R_FlushConsole();       // for each choice calc mean short term economic gains and costs  
-    for (int i = 0; i < kNPatch; i++){     
+    for ( i = 0; i < kNPatch; i++){     
       theShortTermGains[i] = shortTermGains(t, noInc, theLndParms, i, thePriceParms);
       theShortTermCosts[i] = shortTermCosts(t, i, kPriceEffort, theEffortArray);     //*, noInc, theLndParms, thePriceParms);
       theShortTermCrewShare[i] = theShortTermGains[i]*0.35;     //*, noInc, theLndParms, thePriceParms);
