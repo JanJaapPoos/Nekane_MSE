@@ -560,7 +560,9 @@ Rprintf("Start of DynStateF\n");
       }
     }
   }
-  
+#pragma omp parallel private(i,t,s,inc0,inc1,inc2,inc3,inc4,inc5)
+{
+#pragma omp for schedule(static)    
   for (int i = 0; i < kNPatch; i++){
     for (int t = 0; t < kHorizon; t++){
       for (int s = 0; s < NOSPEC; s++){
@@ -580,6 +582,7 @@ Rprintf("Start of DynStateF\n");
     }
   }
     }
+  }
   }
   Rprintf("Generated aggregated distribution functions \n"); R_FlushConsole();
 
