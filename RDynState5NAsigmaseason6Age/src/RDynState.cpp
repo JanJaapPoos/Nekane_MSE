@@ -18,10 +18,10 @@ bool            outofbounds_bool;
 double          outofbounds_double;
 
 // 160 by 98  works fine
-#define SPP1CAPACITY      600    // max number of first choke sp (larger than MAXNOINC * MAXHORIZON *NOSIZES= 25 * 6* 4 = 600) 
-#define SPP2CAPACITY      600    // max number of second choke sp 
+#define SPP1CAPACITY      900    // max number of first choke sp (larger than MAXNOINC * MAXHORIZON *NOSIZES= 25 * 6* 6 = 900) 
+#define SPP2CAPACITY      900    // max number of second choke sp 
 #define NOSPEC              5    // number of species used in the analysis
-#define NOSIZES             4    // number of size classes used in the analysis
+#define NOSIZES             6    // number of size classes used in the analysis
 #define MAXNOINC           25    // max number of increments
 #define MAXHORIZON          6    // number of seasons to fish (= time)
 
@@ -568,12 +568,17 @@ Rprintf("Start of DynStateF\n");
 	  for (int inc1 = 0; inc1 < noInc; inc1++){
 	    for (int inc2 = 0; inc2 < noInc; inc2++){
 	      for (int inc3 = 0; inc3 < noInc; inc3++){
-		theLndParmsAgg[i][t][s][inc0 + inc1 + inc2 + inc3] +=  theLndParms[i][t][s][0][inc0] * theLndParms[i][t][s][1][inc1] *  theLndParms[i][t][s][2][inc2]  * theLndParms[i][t][s][3][inc3] ;
+	        for (int inc4 = 0; inc4 < noInc; inc4++){
+	          for (int inc5 = 0; inc5 < noInc; inc5++){
+	            
+		theLndParmsAgg[i][t][s][inc0 + inc1 + inc2 + inc3 + inc4 + inc5] +=  theLndParms[i][t][s][0][inc0] * theLndParms[i][t][s][1][inc1] *  theLndParms[i][t][s][2][inc2]  * theLndParms[i][t][s][3][inc3] * theLndParms[i][t][s][4][inc4] *theLndParms[i][t][s][5][inc5] ;
 	      }
 	    }
 	  }
 	}
       }
+    }
+  }
     }
   }
   Rprintf("Generated aggregated distribution functions \n"); R_FlushConsole();
