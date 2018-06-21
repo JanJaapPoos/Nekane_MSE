@@ -72,7 +72,7 @@ float shortTermCosts (int aTime, int aPatch, float aPriceEffort, int anEffortArr
  //aPrice Effort is (fuel use* fuel price) + gear maintenance
 }
 
-float FFF (int aLndSpp1,int aLndSpp2, int aNoInc, ATYPE aLndParmsAgg, int aTime, int aNPatch, double aShortTermEcon[], FCTYPE anFF0, FTYPE anFF0Star, FTYPE anFF1, ITYPE aProbChoice)
+float FFF (int aLndSpp1,int aLndSpp2, int aNoInc, ATYPE aLndParmsAgg, int aTime, int aNPatch, double aShortTermEcon[], FCTYPE anFF0, FTYPE anFF0Star, FTYPE anFF1, ITYPE aProbChoice, int verbose)
 {      
   if ((aLndSpp1 + aNoInc) >  SPP1CAPACITY) Rprintf("running out of FF1 capacity in backward calcs");
   
@@ -779,7 +779,7 @@ Rprintf("Start of DynStateF\n");
     #pragma omp for schedule(static)    
       for (Lndspp1 = 0; Lndspp1 < maxspp[t]; Lndspp1++) {
 	for (Lndspp2 = 0; Lndspp2 < maxspp[t]; Lndspp2++) {
-	  FFF(Lndspp1, Lndspp2, whatRangeLT[t],theLndParmsAgg, t, kNPatch,  theShortTermEcon, theFF0, theFF0Star, theFF1, theProbChoice);
+	  FFF(Lndspp1, Lndspp2, whatRangeLT[t],theLndParmsAgg, t, kNPatch,  theShortTermEcon, theFF0, theFF0Star, theFF1, theProbChoice, verbose);
 	  //FFF(Lndspp1, Lndspp2, (NOSIZES*noInc)-1,theLndParmsAgg, t, kNPatch,  theShortTermEcon, theFF0, theFF0Star, theFF1, theProbChoice);
 	}
       }
