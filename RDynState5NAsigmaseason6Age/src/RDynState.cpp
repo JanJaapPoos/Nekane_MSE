@@ -488,7 +488,6 @@ Rprintf("Start of DynStateF\n");
 
   Rprintf("kPriceEffort ");     Rprintf("%f \n",kPriceEffort); 
 
-  int verbose = 0; 
   int Lndspp1, Lndspp2,i,t,s,inc0,inc1,inc2,inc3,inc4,inc5; /*for loops */
 
   /********************************************************************************************************************/
