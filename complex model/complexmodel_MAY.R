@@ -191,16 +191,11 @@ hr1wanted <- hr2wanted <- array(NA, dim=c(1           ,endy,              1,    
 pop1 <- population_dynamics(pop=pop1, startyear=2, endyear=stab.model, season=season, natmortality=natmortality, catches=catches.n.dsvm1[,1,,, drop=F], recruitment=recs1, migration=mig1)
 pop2 <- population_dynamics(pop=pop2, startyear=2, endyear=stab.model, season=season, natmortality=natmortality, catches=catches.n.dsvm1[,1,,, drop=F], recruitment=recs2, migration=mig2)
 
-#calculated catches can then be used for input to DSVM (has same dims as pop (1: endyr), endyr=stabmodel+numruns)
-for (ii in 1:endy){
-  for(jj in areas){
-    pos_catches1[,as.character(ii),,as.character(jj)] <- pop1[,as.character(ii),,as.character(jj)] *q*wts[,1,,1]
-    pos_catches2[,as.character(ii),,as.character(jj)] <- pop2[,as.character(ii),,as.character(jj)] *q*wts[,1,,1]
-  }
-}
 
 #set up dsvm
 sp1<- sp2 <- sp3 <- sp4 <- sp5 <-    new("DynStateInput")
+catchMean(sp1)  <- catchMean(sp2) <- array(NA, dim=c(length(ages), length(season),length(areas)),  dimnames=list("cat"=ages,"season"= season,"option"=areas))
+
 catchMean(sp3)  <- catchMean(sp4) <- catchMean(sp5) <- array(0.01,dim=c(length(ages),length(season),length(areas)),dimnames=list(cat=ages,season=as.character(season),option =areas))
 catchSigma(sp3) <- catchSigma(sp4)<- catchSigma(sp5)<- array(0.0000001,dim=c(length(ages),length(season),length(areas)),dimnames=list(cat=ages,season=as.character(season),option =areas))
 
@@ -209,7 +204,8 @@ sp1Price <- array(c(sp1price + slope1price*(((wts-mean(wts))/mean(wts)))), dim=c
 sp2Price <- array(c(sp2price + slope2price*(((wts-mean(wts))/mean(wts)))), dim=c(length(ages),length(season)), dimnames=list(cat=ages,season=as.character(season)))
 sp3Price <- sp4Price <- sp5Price <- array(c(0), dim=c(length(ages),length(season)), dimnames=list(cat=ages,season=as.character(season)))
 #---effort and prices used (note that now c is removed (but that if other runs, then make sure to fix/remove code that removes "c" option)                                                                                         
-control     <- DynState.control(spp1LndQuota= quota1[,1,,],  spp2LndQuota=quota2[,1,,], spp1LndQuotaFine= 3e6, spp2LndQuotaFine= 3e6, fuelUse = 1, fuelPrice = FuelPrice, landingCosts= 0,gearMaintenance= 0, addNoFishing= TRUE, increments= 25, spp1DiscardSteps= SPP1DSCSTEPS, spp2DiscardSteps= SPP2DSCSTEPS, sigma= SIGMA, simNumber= SIMNUMBER, numThreads= 68)
+control     <- DynState.control(spp1LndQuota= quota1[,1,,],  spp2LndQuota=quota2[,1,,], spp1LndQuotaFine= 3e6, spp2LndQuotaFine= 3e6, fuelUse = 1, fuelPrice = FuelPrice, landingCosts= 0,gearMaintenance= 0, 
+                                addNoFishing= TRUE, increments= 25, spp1DiscardSteps= SPP1DSCSTEPS, spp2DiscardSteps= SPP2DSCSTEPS, sigma= SIGMA, simNumber= SIMNUMBER, numThreads= 68, verbose=1)
 
 #this is where our loop starts, after we set up stable population
 for(yy in (stab.model):(stab.model+NUMRUNS)){
@@ -217,10 +213,22 @@ for(yy in (stab.model):(stab.model+NUMRUNS)){
   print("====== year yy ========")
   print(yy)
 
-  catchMean(sp1)  <- array(apply(pos_catches1[,(yy-2):yy,,,drop=F],c(1,3,4),mean), dim=c(length(ages), length(season),length(areas)),  dimnames=list("cat"=ages,"season"= season,"option"=areas))
-  catchMean(sp2)  <- array(apply(pos_catches2[,(yy-2):yy,,,drop=F],c(1,3,4),mean), dim=c(length(ages), length(season),length(areas)),  dimnames=list("cat"=ages,"season"= season,"option"=areas))
-  #catchMean(sp1)  <- array(apply(pos_catches1[,yy,,,drop=F],c(1,3,4),mean), dim=c(length(ages), length(season),length(areas)),  dimnames=list("cat"=ages,"season"= season,"option"=areas))
-  #catchMean(sp2)  <- array(apply(pos_catches2[,yy,,,drop=F],c(1,3,4),mean), dim=c(length(ages), length(season),length(areas)),  dimnames=list("cat"=ages,"season"= season,"option"=areas))
+  #Calculate catch inputs for DSVM
+  #for age 1, assume that catchmean over seasons and areas will be equal to the year before
+  catchMean(sp1)[1,,] <- pop1[1,as.character(yy-1),,] *q*wts[1,1,,1]
+  #for older ages we start from cohort i nthe previous year
+  #we need to guess how much population will decline while moving into this year, and over seasons, for this wee need to look at end of two years ago and compare to last year 
+  #this comes from a sweep with pop1[1:(max(ages)-1),as.character(yy-2),max(season),] and pop1[-1,as.character(yy-1),,] 
+  cfracs <- sweep( pop1[-1,as.character(yy-1),,] ,c(1,3),  pop1[1:(max(ages)-1),as.character(yy-2),max(season),] , FUN="/")
+  #once we have the decline as a functrion of time (in cfracs) we will mulitply by cohorts in last season, and multiply by q and wts for appropriate ages. Those go in catchmean for older ages
+  #it is a two step approach because we need two sweeps
+  catchMean(sp1)[-1,,] <- sweep(cfracs,c(1,3),pop1[1:(max(ages)-1),as.character(yy-1),max(season),] ,FUN="*") *q
+  catchMean(sp1)[-1,,] <- sweep(catchMean(sp1)[-1,,],c(1,2), wts[-1,1,,1],FUN="*")
+  
+  catchMean(sp2)[1,,] <- pop2[1,as.character(yy-1),,] *q*wts[1,1,,1]
+  cfracs <- sweep( pop2[-1,as.character(yy-1),,] ,c(1,3),  pop2[1:(max(ages)-1),as.character(yy-2),max(season),] , FUN="/")
+  catchMean(sp2)[-1,,] <- sweep(cfracs,c(1,3),pop2[1:(max(ages)-1),as.character(yy-1),max(season),] ,FUN="*") *q
+  catchMean(sp2)[-1,,] <- sweep(catchMean(sp2)[-1,,],c(1,2), wts[-1,1,,1],FUN="*")
   
     
   # ---No way of estimating sigma, therefore we assume that is 8% of the CPUE (note slight repetion in code for dims and dimnames of 0 catch arrays for spec 3,4,5)                                                                  
@@ -288,12 +296,6 @@ for(yy in (stab.model):(stab.model+NUMRUNS)){
   pop1 <- population_dynamics(pop=pop1, startyear=yy, endyear=yy+1, season=season, natmortality=natmortality, catches=catches.n.dsvm1[,yy,,,drop=F], recruitment=recs1, migration=mig1)
   pop2 <- population_dynamics(pop=pop2, startyear=yy, endyear=yy+1, season=season, natmortality=natmortality, catches=catches.n.dsvm2[,yy,,,drop=F], recruitment=recs2, migration=mig2)
   
-  #calculate the catches that can be input into DSVM based on updated pop
-  for(jj in areas){
-      pos_catches1[,as.character(yy),,as.character(jj)] <- pop1[,as.character(yy),,as.character(jj)] *q*wts[,1,,1]
-      pos_catches2[,as.character(yy),,as.character(jj)] <- pop2[,as.character(yy),,as.character(jj)] *q*wts[,1,,1]
-    }
-
   #------------------------------------------
   #MANAGEMENT PROCEDURE
   #------------------------------------------
