@@ -627,7 +627,7 @@ Rprintf("Start of DynStateF\n");
   
   for ( i = 0; i < kNPatch; i++){
     for (t = 0; t < kHorizon; t++){
-      Rprintf("\n %d ",kHorizon);
+      Rprintf("\n %d ",t);
       for (s = 0; s < NOSPEC; s++){
         double tmp = 0;
         for (int inc = 0; inc <  ((NOSIZES * noInc)-1); inc){
