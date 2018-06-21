@@ -630,10 +630,10 @@ Rprintf("Start of DynStateF\n");
       for (s = 0; s < NOSPEC; s++){
         double tmp = 0;
         for (int inc = 0; inc <  ((NOSIZES * noInc)-1); inc){
-          tmp +=  theLndParmsAgg[i][t][s][0][inc];
+          tmp +=  theLndParmsAgg[i][t][s][inc];
         }
         for (int inc = 0; inc <  ((NOSIZES * noInc)-1); inc){
-          theLndParmsAgg[i][t][s][0][inc] = (1./tmp) * theLndParmsAgg[i][t][s][0][inc]; 
+          theLndParmsAgg[i][t][s][inc] = (1./tmp) * theLndParmsAgg[i][t][s][inc]; 
         }
       }
     }
