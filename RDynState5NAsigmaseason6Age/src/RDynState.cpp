@@ -199,7 +199,7 @@ SEXP SimulateF ( int aSimNumber, int aHorizon, ITYPE aProbChoice, int aNPatch, i
 	Cprobl = Cprobup;
       }
 
-      if (verbose==1){
+      if (verbose==1 && s < 20 ){
 	Rprintf (" time %d ", t); 
 	Rprintf ("spp1,2  %d,", totSpp1Hold); 	
 	Rprintf ("%d ", totSpp2Hold); 	
@@ -478,6 +478,7 @@ Rprintf("Start of DynStateF\n");
   double sizeSpp3Inc       =            REAL(GET_SLOT(xControl,install("spp3Incs"     )))[0];
   double sizeSpp4Inc       =            REAL(GET_SLOT(xControl,install("spp4Incs"     )))[0];
   double sizeSpp5Inc       =            REAL(GET_SLOT(xControl,install("spp5Incs"     )))[0];
+  int    verbose           =    (short) INTEGER(GET_SLOT(xControl,install("verbose"   )))[0];
   int    numthreads        =    (short) INTEGER(GET_SLOT(xControl,install("numThreads")))[0];
   
   double   kSpp1LndQuota      = vSpp1LndQuota/sizeSpp1Inc;
