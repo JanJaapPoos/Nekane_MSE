@@ -447,9 +447,9 @@ void nonZeroRanges ( int aHorizon, int aNoInc, int aNPatch, ATYPE aLndParmsAgg, 
     }
     int inc = aNoInc;
     while ( whatRangeL[inc]<0.00000000001){ inc--; };
-    whatRangeLT[t]= inc ;
+    whatRangeLT[t]= std::min(inc + 30, aNoInc ) ;
   }
-  whatRangeLT[t]= std::min( whatRangeLT[t] + 30, aNoInc ) ;
+   
 }
 
 
