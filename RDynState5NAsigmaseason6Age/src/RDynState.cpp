@@ -594,7 +594,7 @@ Rprintf("Start of DynStateF\n");
   
   if (verbose == 1){
     Rprintf(" landings probs for size 1-6, choice1, time 0, spec 0\n");
-    for (int inc = 0; inc < ((NOSIZES * noInc)-1); inc++){
+    for (int inc = 0; inc < noInc; inc++){
       Rprintf("%12.12f ",	theLndParms[0][0][0][0][inc]);
       Rprintf("%12.12f ",	theLndParms[0][0][0][1][inc]);
       Rprintf("%12.12f ",	theLndParms[0][0][0][2][inc]);
