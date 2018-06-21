@@ -595,7 +595,7 @@ Rprintf("Start of DynStateF\n");
   if (verbose == 1){
     
   for (int inc = 0; inc < ((NOSIZES * noInc)-1); inc++){
-  Rprintf("%4.4f"	theLndParmsAgg[0][0][0][inc]);
+  Rprintf("%4.4f",	theLndParmsAgg[0][0][0][inc]);
   }
   }
   /*************************************************************************************************************************************/
