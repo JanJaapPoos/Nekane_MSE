@@ -761,9 +761,9 @@ Rprintf("Start of DynStateF\n");
     if (verbose == 1){
       Rprintf("\n"); R_FlushConsole();        
       for ( i = 0; i < kNPatch; i++){     
-        Rprintf("%d ",theShortTermGains[i]);
-        Rprintf("%d ",theShortTermCosts[i]);
-        Rprintf("%d ",theShortTermEcon[i]);
+        Rprintf("%2.2f ",theShortTermGains[i]);
+        Rprintf("%2.2f ",theShortTermCosts[i]);
+        Rprintf("%2.2f ",theShortTermEcon[i]);
         Rprintf("\n "); R_FlushConsole();
       }
     }
