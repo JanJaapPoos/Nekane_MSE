@@ -81,7 +81,6 @@ float FFF (int aLndSpp1,int aLndSpp2, int aNoInc, ATYPE aLndParmsAgg, int aTime,
   int theLndSpp1Val, theDisSpp1Val,theLndSpp2Val,theDisSpp2Val;
   
   for (int i = 0; i < aNPatch; i++){
-    Rprintf ("%d \n", i);
     rhs = 0;
     int incL1, incL2;
     float xL1,  xL2; /* L for landings  */
@@ -93,7 +92,6 @@ float FFF (int aLndSpp1,int aLndSpp2, int aNoInc, ATYPE aLndParmsAgg, int aTime,
 	       xL2= aLndParmsAgg[i][aTime][1][incL2];
 	       theLndSpp2Val = aLndSpp2 + incL2;
 	       rhs += xL1 * xL2 * anFF1[theLndSpp1Val][theLndSpp2Val];  
-	       if (verbose==1 && aTime==0) {Rprintf ("%d ", i); Rprintf ("%2.2f ", xL1);Rprintf ("%5.5f ", xL2);Rprintf ("%5.5f ",anFF1[theLndSpp1Val][theLndSpp2Val]); Rprintf ("%2.2f \n", rhs); } 
       }                                  
     }                            
     
@@ -449,7 +447,7 @@ void nonZeroRanges ( int aHorizon, int aNoInc, int aNPatch, ATYPE aLndParmsAgg, 
     }
     int inc = aNoInc;
     while ( whatRangeL[inc]<0.00000000001){ inc--; };
-    whatRangeLT[t]= std::min(inc + 30, aNoInc ) ;
+    whatRangeLT[t]= std::min(inc + 20, aNoInc ) ;
   }
    
 }
@@ -591,8 +589,15 @@ Rprintf("Start of DynStateF\n");
     }
   }
   }
+  
   Rprintf("Generated aggregated distribution functions \n"); R_FlushConsole();
-
+  
+  if (verbose == 1){
+    
+  for (int inc = 0; inc < ((NOSIZES * noInc)-1); inc++){
+  Rprintf("%4.4f"	theLndParmsAgg[0][0][0][inc]);
+  }
+  }
   /*************************************************************************************************************************************/
   /*  estimate ranges for which we have nonzeros
   /*************************************************************************************************************************************/  
