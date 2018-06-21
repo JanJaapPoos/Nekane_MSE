@@ -92,7 +92,7 @@ float FFF (int aLndSpp1,int aLndSpp2, int aNoInc, ATYPE aLndParmsAgg, int aTime,
 	       xL2= aLndParmsAgg[i][aTime][1][incL2];
 	       theLndSpp2Val = aLndSpp2 + incL2;
 	       rhs += xL1 * xL2 *anFF1[theLndSpp1Val][theLndSpp2Val];  
-	       if (verbose==1 && aTime=0) {Rprintf ("%2.2f ", XL1);Rprintf ("%2.2f ", XL2);Rprintf ("%2.2f ",anFF1[theLndSpp1Val][theLndSpp2Val]); Rprintf ("%2.2f \n" rhs); }
+	       if (verbose==1 && aTime=0) {Rprintf ("%2.2f ", xL1);Rprintf ("%2.2f ", xL2);Rprintf ("%2.2f ",anFF1[theLndSpp1Val][theLndSpp2Val]); Rprintf ("%2.2f \n" rhs); }
       }                                  
     }                            
     
