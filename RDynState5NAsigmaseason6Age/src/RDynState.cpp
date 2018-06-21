@@ -154,7 +154,7 @@ SEXP SimulateF ( int aSimNumber, int aHorizon, ITYPE aProbChoice, int aNPatch, i
   
   for (int s= 0; s < aSimNumber; s++)	 { /* go through the x simulations */   
      
-    if (verbose==1) Rprintf ("ves %d ", s); R_FlushConsole();
+    if (verbose==1 && s < 20) Rprintf ("ves %d ", s); R_FlushConsole();
 
     float Q;
     vector <int> aSpp1LndHold  (NOSIZES,0);
@@ -729,9 +729,9 @@ Rprintf("Start of DynStateF\n");
   }
   if (verbose == 1){
      Rprintf("\n",Lndspp1);
-    for (Lndspp1 = 0; Lndspp1 < kSpp1Capacity; Lndspp1 +=10) {
+    for (Lndspp1 = 0; Lndspp1 < kSpp1Capacity; Lndspp1 +=15) {
       Rprintf("%d ",Lndspp1);
-      for (Lndspp2 = 0; Lndspp2 < kSpp2Capacity; Lndspp2 +=30) {
+      for (Lndspp2 = 0; Lndspp2 < kSpp2Capacity; Lndspp2 +=50) {
 	Rprintf("%4.f ",theFF1[Lndspp1][Lndspp2]);
       }
       Rprintf("\n"); R_FlushConsole();      
@@ -775,9 +775,9 @@ Rprintf("Start of DynStateF\n");
   
     if (verbose == 1){
       Rprintf("\n"); R_FlushConsole();        
-      for (Lndspp1 = 0; Lndspp1 < kSpp1Capacity; Lndspp1 +=10) {
+      for (Lndspp1 = 0; Lndspp1 < kSpp1Capacity; Lndspp1 +=15) {
 	Rprintf("%d ",Lndspp1); 
-	for (Lndspp2 = 0; Lndspp2 < kSpp2Capacity; Lndspp2 +=30) {
+	for (Lndspp2 = 0; Lndspp2 < kSpp2Capacity; Lndspp2 +=50) {
 	  for (int ppp = 0; ppp < kNPatch; ppp++) {
 	    Rprintf("%2.2f,", theFF0[Lndspp1][Lndspp2][ppp]);
 	  }
@@ -803,9 +803,9 @@ Rprintf("Start of DynStateF\n");
     //  Rprintf(" Finished numerator "); R_FlushConsole();
     if (verbose == 1){
       Rprintf("\n"); R_FlushConsole();        
-      for (Lndspp1 = 0; Lndspp1 < maxspp[t]; Lndspp1 += 10) {
+      for (Lndspp1 = 0; Lndspp1 < maxspp[t]; Lndspp1 += 15) {
 	Rprintf("%d ",Lndspp1); 
-	for (Lndspp2 = 0; Lndspp2 < maxspp[t]; Lndspp2 +=30) {
+	for (Lndspp2 = 0; Lndspp2 < maxspp[t]; Lndspp2 +=50) {
 	  Rprintf("%2.2f ",theFF0Star[Lndspp1][Lndspp2]); 
 	}
 	Rprintf("\n "); R_FlushConsole();
@@ -837,9 +837,9 @@ Rprintf("Start of DynStateF\n");
 
     if (verbose == 1){
       Rprintf("\n probabilities \n"); R_FlushConsole();    
-      for (Lndspp1 = 0; Lndspp1 < maxspp[t]; Lndspp1 += 10) {
+      for (Lndspp1 = 0; Lndspp1 < maxspp[t]; Lndspp1 += 15) {
 	Rprintf("%d ",Lndspp1); 
-	for (Lndspp2 = 0; Lndspp2 < maxspp[t]; Lndspp2 +=30) {
+	for (Lndspp2 = 0; Lndspp2 < maxspp[t]; Lndspp2 +=50) {
 	  for (int ppp = 0; ppp < kNPatch; ppp++) {
 	    Rprintf("%.2f,",theProbChoice[t][Lndspp1][Lndspp2][ppp]); 
 	  }
