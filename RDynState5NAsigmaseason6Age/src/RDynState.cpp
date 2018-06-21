@@ -757,7 +757,17 @@ Rprintf("Start of DynStateF\n");
       theShortTermCrewShare[i] = theShortTermGains[i]*0.0;     //*, noInc, theLndParms, thePriceParms);
       theShortTermEcon[i]  =  theShortTermGains[i] - theShortTermCosts[i] - theShortTermCrewShare[i];
     }
-
+    
+    if (verbose == 1){
+      Rprintf("\n"); R_FlushConsole();        
+      for ( i = 0; i < kNPatch; i++){     
+        Rprintf("%d ",theShortTermGains[i]);
+        Rprintf("%d ",theShortTermCosts[i]);
+        Rprintf("%d ",theShortTermEcon[i]);
+        Rprintf("\n "); R_FlushConsole();
+      }
+    }
+    
     maxspp[t]  = accumulate(whatRangeLT,whatRangeLT+t,0) + 2;                         // calc max number of increments to loop over for this timest
     //maxspp[t]  = (t +1 )* noInc *NOSIZES;                         // calc max number of increments to loop over for this timest 
     Rprintf(" maxspp %d ", maxspp[t]);  R_FlushConsole();
