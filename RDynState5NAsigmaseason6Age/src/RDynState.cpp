@@ -785,10 +785,10 @@ Rprintf("Start of DynStateF\n");
     }
   
     if (verbose == 1){
-      Rprintf("\n"); R_FlushConsole();        
-      for (Lndspp1 = 0; Lndspp1 < kSpp1Capacity; Lndspp1 +=15) {
+      Rprintf("\n FF0 \n"); R_FlushConsole();          
+      for (Lndspp1 = 0; Lndspp1 < maxspp[t]; Lndspp1 +=15) {
 	Rprintf("%d ",Lndspp1); 
-	for (Lndspp2 = 0; Lndspp2 < kSpp2Capacity; Lndspp2 +=50) {
+	for (Lndspp2 = 0; Lndspp2 < maxspp[t]; Lndspp2 +=50) {
 	  for (int ppp = 0; ppp < kNPatch; ppp++) {
 	    Rprintf("%2.2f,", theFF0[Lndspp1][Lndspp2][ppp]);
 	  }
@@ -813,7 +813,7 @@ Rprintf("Start of DynStateF\n");
 
     //  Rprintf(" Finished numerator "); R_FlushConsole();
     if (verbose == 1){
-      Rprintf("\n"); R_FlushConsole();        
+      Rprintf("\n FF0star \n"); R_FlushConsole();   
       for (Lndspp1 = 0; Lndspp1 < maxspp[t]; Lndspp1 += 15) {
 	Rprintf("%d ",Lndspp1); 
 	for (Lndspp2 = 0; Lndspp2 < maxspp[t]; Lndspp2 +=50) {
