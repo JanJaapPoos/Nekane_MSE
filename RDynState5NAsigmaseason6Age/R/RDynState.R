@@ -527,7 +527,7 @@ annualFine <- function(dynstate){
 netRev<- function (dynstate){
         res <- grossRev(dynstate) - 
                 apply(effort(sim(dynstate)) * control(dynstate)@fuelUse * control(dynstate)@fuelPrice, 2, sum)- #Fuel cost
-                (grossRev(dynstate) * 0.35) -                                                                   #Crew cost
+                (grossRev(dynstate) * 0)    -                                                                   #Crew cost
                 apply(effort(sim(dynstate)) * control(dynstate)@gearMaintenance, 2, sum)-                       #Gear mantainance cost
                 annualFine(dynstate)
       return(res)
