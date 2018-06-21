@@ -89,9 +89,10 @@ float FFF (int aLndSpp1,int aLndSpp2, int aNoInc, ATYPE aLndParmsAgg, int aTime,
       xL1= aLndParmsAgg[i][aTime][0][incL1];
       theLndSpp1Val = aLndSpp1 + incL1;
       for ( incL2 = 0; incL2 <  aNoInc; incL2++) {
-	xL2= aLndParmsAgg[i][aTime][1][incL2];
-	theLndSpp2Val = aLndSpp2 + incL2;
-	rhs += xL1 * xL2 *anFF1[theLndSpp1Val][theLndSpp2Val];                                               
+	       xL2= aLndParmsAgg[i][aTime][1][incL2];
+	       theLndSpp2Val = aLndSpp2 + incL2;
+	       rhs += xL1 * xL2 *anFF1[theLndSpp1Val][theLndSpp2Val];  
+	       if (verbose==1 && aTime=0) {Rprintf ("%2.2f ", XL1);Rprintf ("%2.2f ", XL2);Rprintf ("%2.2f ",anFF1[theLndSpp1Val][theLndSpp2Val]); Rprintf ("%2.2f \n" rhs); }
       }                                  
     }                            
     
