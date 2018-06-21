@@ -593,10 +593,22 @@ Rprintf("Start of DynStateF\n");
   Rprintf("Generated aggregated distribution functions \n"); R_FlushConsole();
   
   if (verbose == 1){
-    
-  for (int inc = 0; inc < ((NOSIZES * noInc)-1); inc++){
-  Rprintf("%8.8f ",	theLndParmsAgg[0][0][0][inc]);
-  }
+    Rprintf(" landings probs for size 1-6, choice1, time 0, spec 0\n");
+    for (int inc = 0; inc < ((NOSIZES * noInc)-1); inc++){
+      Rprintf("%12.12f ",	theLndParms[0][0][0][0][inc]);
+      Rprintf("%12.12f ",	theLndParms[0][0][0][1][inc]);
+      Rprintf("%12.12f ",	theLndParms[0][0][0][2][inc]);
+      Rprintf("%12.12f ",	theLndParms[0][0][0][3][inc]);
+      Rprintf("%12.12f ",	theLndParms[0][0][0][4][inc]);
+      Rprintf("%12.12f ",	theLndParms[0][0][0][5][inc]);
+      Rprintf("\n");
+    }
+    Rprintf("aggregated landings probs for choice1, choice2, choice3, time 0, spec 0\n");
+    for (int inc = 0; inc < ((NOSIZES * noInc)-1); inc++){
+      Rprintf("%12.12f ",	theLndParmsAgg[0][0][0][inc]);
+      Rprintf("%12.12f ",	theLndParmsAgg[1][0][0][inc]);
+      Rprintf("%12.12f ",	theLndParmsAgg[2][0][0][inc]);Rprintf("\n");
+    }
   }
   /*************************************************************************************************************************************/
   /*  estimate ranges for which we have nonzeros
