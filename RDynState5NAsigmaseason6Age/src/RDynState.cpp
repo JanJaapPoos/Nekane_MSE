@@ -449,6 +449,7 @@ void nonZeroRanges ( int aHorizon, int aNoInc, int aNPatch, ATYPE aLndParmsAgg, 
     while ( whatRangeL[inc]<0.00000000001){ inc--; };
     whatRangeLT[t]= inc ;
   }
+  whatRangeLT[t]= std::min( whatRangeLT[t] + 30, aNoInc ) ;
 }
 
 
@@ -757,7 +758,7 @@ Rprintf("Start of DynStateF\n");
       theShortTermEcon[i]  =  theShortTermGains[i] - theShortTermCosts[i] - theShortTermCrewShare[i];
     }
 
-    maxspp[t]  = accumulate(whatRangeLT,whatRangeLT+t,0) +2;                         // calc max number of increments to loop over for this timest
+    maxspp[t]  = accumulate(whatRangeLT,whatRangeLT+t,0) + 2;                         // calc max number of increments to loop over for this timest
     //maxspp[t]  = (t +1 )* noInc *NOSIZES;                         // calc max number of increments to loop over for this timest 
     Rprintf(" maxspp %d ", maxspp[t]);  R_FlushConsole();
     
