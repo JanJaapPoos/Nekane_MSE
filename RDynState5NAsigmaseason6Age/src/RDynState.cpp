@@ -627,13 +627,12 @@ Rprintf("Start of DynStateF\n");
   
   for ( i = 0; i < kNPatch; i++){
     for (t = 0; t < kHorizon; t++){
-      Rprintf("\n %d ",t);
       for (s = 0; s < NOSPEC; s++){
         double tmp = 0;
-        for (int inc = 0; inc <  ((NOSIZES * noInc)-1); inc){
+        for (int inc = 0; inc <  ((NOSIZES * noInc)-1); inc++){
           tmp +=  theLndParmsAgg[i][t][s][inc];
         }
-        for (int inc = 0; inc <  ((NOSIZES * noInc)-1); inc){
+        for (int inc = 0; inc <  ((NOSIZES * noInc)-1); inc++){
           theLndParmsAgg[i][t][s][inc] = (1./tmp) * theLndParmsAgg[i][t][s][inc]; 
         }
       }
