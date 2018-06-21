@@ -620,6 +620,36 @@ Rprintf("Start of DynStateF\n");
       Rprintf("%32.32f ",	theLndParmsAgg[2][0][0][inc]);Rprintf("\n");
     }
   }
+  
+  /*************************************************************************************************************************************/
+  /*  make sure that the aggregated landing probs sum to zero (they sometimes do not because they are result of multiple products)
+  /*************************************************************************************************************************************/  
+  
+  for ( i = 0; i < kNPatch; i++){
+    for (t = 0; t < kHorizon; t++){
+      for (s = 0; s < NOSPEC; s++){
+        double tmp = 0;
+        for (int inc = 0; inc <  ((NOSIZES * noInc)-1); inc){
+          tmp +=  theLndParmsAgg[i][t][s][0][inc];
+        }
+        for (int inc = 0; inc <  ((NOSIZES * noInc)-1); inc){
+          theLndParmsAgg[i][t][s][0][inc] = (1./tmp) * theLndParmsAgg[i][t][s][0][inc]; 
+        }
+      }
+    }
+  }
+  
+    
+  Rprintf("Corrected aggregated distribution functions \n"); R_FlushConsole();
+  if (verbose == 1){
+    Rprintf("corrected aggregated landings probs for choice1, choice2, choice3, time 0, spec 0\n");
+    for (int inc = 0; inc < ((NOSIZES * noInc)-1); inc++){
+      Rprintf("%32.32f ",	theLndParmsAgg[0][0][0][inc]);
+      Rprintf("%32.32f ",	theLndParmsAgg[1][0][0][inc]);
+      Rprintf("%32.32f ",	theLndParmsAgg[2][0][0][inc]);Rprintf("\n");
+    }
+  }
+  
   /*************************************************************************************************************************************/
   /*  estimate ranges for which we have nonzeros
   /*************************************************************************************************************************************/  
