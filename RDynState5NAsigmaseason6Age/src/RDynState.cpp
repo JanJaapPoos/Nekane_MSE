@@ -593,21 +593,31 @@ Rprintf("Start of DynStateF\n");
   Rprintf("Generated aggregated distribution functions \n"); R_FlushConsole();
   
   if (verbose == 1){
-    Rprintf(" landings probs for size 1-6, choice1, time 0, spec 0\n");
+    Rprintf(" landings probs for size 1-6, choice1 (0), time 0, spec 0\n");
     for (int inc = 0; inc < noInc; inc++){
-      Rprintf("%18.18f ",	theLndParms[0][0][0][0][inc]);
-      Rprintf("%18.18f ",	theLndParms[0][0][0][1][inc]);
-      Rprintf("%18.18f ",	theLndParms[0][0][0][2][inc]);
-      Rprintf("%18.18f ",	theLndParms[0][0][0][3][inc]);
-      Rprintf("%18.18f ",	theLndParms[0][0][0][4][inc]);
-      Rprintf("%18.18f ",	theLndParms[0][0][0][5][inc]);
+      Rprintf("%22.22f ",	theLndParms[0][0][0][0][inc]);
+      Rprintf("%22.22f ",	theLndParms[0][0][0][1][inc]);
+      Rprintf("%22.22f ",	theLndParms[0][0][0][2][inc]);
+      Rprintf("%22.22f ",	theLndParms[0][0][0][3][inc]);
+      Rprintf("%22.22f ",	theLndParms[0][0][0][4][inc]);
+      Rprintf("%22.22f ",	theLndParms[0][0][0][5][inc]);
+      Rprintf("\n");
+    }
+    Rprintf(" landings probs for size 1-6, choice2 (1), time 0, spec 0\n");
+    for (int inc = 0; inc < noInc; inc++){
+      Rprintf("%22.22f ",	theLndParms[1][0][0][0][inc]);
+      Rprintf("%22.22f ",	theLndParms[1][0][0][1][inc]);
+      Rprintf("%22.22f ",	theLndParms[1][0][0][2][inc]);
+      Rprintf("%22.22f ",	theLndParms[1][0][0][3][inc]);
+      Rprintf("%22.22f ",	theLndParms[1][0][0][4][inc]);
+      Rprintf("%22.22f ",	theLndParms[1][0][0][5][inc]);
       Rprintf("\n");
     }
     Rprintf("aggregated landings probs for choice1, choice2, choice3, time 0, spec 0\n");
     for (int inc = 0; inc < ((NOSIZES * noInc)-1); inc++){
-      Rprintf("%18.18f ",	theLndParmsAgg[0][0][0][inc]);
-      Rprintf("%18.18f ",	theLndParmsAgg[1][0][0][inc]);
-      Rprintf("%18.18f ",	theLndParmsAgg[2][0][0][inc]);Rprintf("\n");
+      Rprintf("%32.32f ",	theLndParmsAgg[0][0][0][inc]);
+      Rprintf("%32.32f ",	theLndParmsAgg[1][0][0][inc]);
+      Rprintf("%32.32f ",	theLndParmsAgg[2][0][0][inc]);Rprintf("\n");
     }
   }
   /*************************************************************************************************************************************/
