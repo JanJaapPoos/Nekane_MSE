@@ -1,4 +1,4 @@
-options(width=200)
+options(width=240)
 library(RDynState5NAsigmaseason6Age)
 library(ggplot2)
 library(reshape2)
@@ -125,8 +125,8 @@ NUMRUNS       <- 25
 MPstart       <- 30
 #MPstartLO     <- 26
 
-SIMNUMBER     <- 700 #pos
-SIGMA         <- 10000 #sig 
+SIMNUMBER     <- 400 #pos
+SIGMA         <- 5000 #sig 
 SPP1DSCSTEPS  <- 0
 SPP2DSCSTEPS  <- 0
 endy          <- stab.model + NUMRUNS
@@ -140,7 +140,7 @@ lens          <- Linf*(1-exp(-K*(sages)))
 wts           <- alpha * lens ^ beta
 wts           <- aperm(wts, c(3,2,1,4))
 
-q             <- 0.0005
+q             <- 0.001
 natmortality  <- 0.0001
 
 migconstant   <- 0.05
