@@ -122,11 +122,11 @@ season        <- 1:6
 areas         <- c("a", "b")
 stab.model    <- 10
 NUMRUNS       <- 25
-MPstart       <- 30
+MPstart       <- 20
 #MPstartLO     <- 26
 
-SIMNUMBER     <- 400 #pos
-SIGMA         <- 5000 #sig 
+SIMNUMBER     <- 8000 #pos 5000 WORKS
+SIGMA         <- 6500 #sig 
 SPP1DSCSTEPS  <- 0
 SPP2DSCSTEPS  <- 0
 endy          <- stab.model + NUMRUNS
@@ -140,11 +140,11 @@ lens          <- Linf*(1-exp(-K*(sages)))
 wts           <- alpha * lens ^ beta
 wts           <- aperm(wts, c(3,2,1,4))
 
-q             <- 0.001
+q             <- 0.00005
 natmortality  <- 0.0001
 
 migconstant   <- 0.05
-sp1price      <- sp2price      <- 1500
+sp1price      <- sp2price      <- 30000
 slope1price <- 1000
 slope2price <- 1000 # 0.50*150
 
@@ -154,7 +154,7 @@ FuelPrice   <- 0
 # scenario II: discarding is allowed, YPR based in L, hr wanted based in catches
 # scenario III: discarding ocurred but not perceived, YPR based in L, hr wanted based in landings
 
-recs1          <- c(200,0) 
+recs1          <- c(500,0) 
 mig1     <- array(0, dim=c(length(ages),1,length(season),length(areas), length(areas)), dimnames=list(cat=ages,year="all",season=as.character(season), from =areas, to=areas)) 
 mig1[,,,"a","a"] <- -migconstant
 mig1[,,,"b","b"] <- -migconstant
@@ -162,7 +162,7 @@ mig1[,,,"a","b"] <- migconstant
 mig1[,,,"b","a"] <- migconstant
 aperm( mig1,c(1,3,2,4,5))
 
-recs2          <- c(0,200) 
+recs2          <- c(0,500) 
 mig2     <- array(0, dim=c(length(ages),1,length(season),length(areas), length(areas)), dimnames=list(cat=ages,year="all",season=as.character(season), from =areas, to=areas)) 
 mig2[,,,"a","a"] <- -migconstant
 mig2[,,,"b","b"] <- -migconstant
@@ -181,7 +181,7 @@ catches.wt.dsvm1      <- catches.wt.dsvm2      <- array(0, dim=c(length(ages),en
 landings.wt.dsvm1     <- landings.wt.dsvm2     <- array(0, dim=c(length(ages),endy,length(season),length(areas)), dimnames=list(cat=ages,   year=as.character(1:endy), season=as.character(season), option =areas))
 catches.wt.dsvm.tot1  <- catches.wt.dsvm.tot2  <- array(0, dim=c(1           ,endy,              1,            1), dimnames=list(cat="all", year=as.character(1:endy), season="all",                option ="all"))
 landings.wt.dsvm.tot1 <- landings.wt.dsvm.tot2 <- array(0, dim=c(1           ,endy,              1,            1), dimnames=list(cat="all", year=as.character(1:endy), season="all",                option ="all"))
-quota1                <- quota2                <- array(20, dim=c(1           ,endy,              1,            1), dimnames=list(cat="all", year=as.character(1:endy), season="all",                option ="all"))
+quota1                <- quota2                <- array(1000, dim=c(1           ,endy,              1,            1), dimnames=list(cat="all", year=as.character(1:endy), season="all",                option ="all"))
 
 pos_catches1 <- pos_catches2 <- pop1
 
@@ -219,14 +219,18 @@ for(yy in (stab.model):(stab.model+NUMRUNS)){
   #for older ages we start from cohort i nthe previous year
   #we need to guess how much population will decline while moving into this year, and over seasons, for this wee need to look at end of two years ago and compare to last year 
   #this comes from a sweep with pop1[1:(max(ages)-1),as.character(yy-2),max(season),] and pop1[-1,as.character(yy-1),,] 
-  cfracs <- sweep( pop1[-1,as.character(yy-1),,] ,c(1,3),  pop1[1:(max(ages)-1),as.character(yy-2),max(season),] , FUN="/")
+  cfracs1 <- sweep( pop1[-1,as.character(yy-1),,] ,c(1,3),  pop1[1:(max(ages)-1),as.character(yy-2),max(season),] , FUN="/")
+  cfracs2 <- sweep( pop1[-1,as.character(yy-2),,] ,c(1,3),  pop1[1:(max(ages)-1),as.character(yy-3),max(season),] , FUN="/")
+  cfracs <- (cfracs1 + cfracs2)/2
   #once we have the decline as a functrion of time (in cfracs) we will mulitply by cohorts in last season, and multiply by q and wts for appropriate ages. Those go in catchmean for older ages
   #it is a two step approach because we need two sweeps
   catchMean(sp1)[-1,,] <- sweep(cfracs,c(1,3),pop1[1:(max(ages)-1),as.character(yy-1),max(season),] ,FUN="*") *q
   catchMean(sp1)[-1,,] <- sweep(catchMean(sp1)[-1,,],c(1,2), wts[-1,1,,1],FUN="*")
   
   catchMean(sp2)[1,,] <- pop2[1,as.character(yy-1),,] *q*wts[1,1,,1]
-  cfracs <- sweep( pop2[-1,as.character(yy-1),,] ,c(1,3),  pop2[1:(max(ages)-1),as.character(yy-2),max(season),] , FUN="/")
+  cfracs1 <- sweep( pop2[-1,as.character(yy-1),,] ,c(1,3),  pop2[1:(max(ages)-1),as.character(yy-2),max(season),] , FUN="/")
+  cfracs2 <- sweep( pop2[-1,as.character(yy-2),,] ,c(1,3),  pop2[1:(max(ages)-1),as.character(yy-3),max(season),] , FUN="/")
+  cfracs <- (cfracs1 + cfracs2)/2
   catchMean(sp2)[-1,,] <- sweep(cfracs,c(1,3),pop2[1:(max(ages)-1),as.character(yy-1),max(season),] ,FUN="*") *q
   catchMean(sp2)[-1,,] <- sweep(catchMean(sp2)[-1,,],c(1,2), wts[-1,1,,1],FUN="*")
   
@@ -352,8 +356,8 @@ for(yy in (stab.model):(stab.model+NUMRUNS)){
 #what are the weights?
 wts
 
-pyrnoMP   <- MPstart- 4
-pyrMP     <- endy   - 4
+pyrnoMP   <- MPstart- 3
+pyrMP     <- endy   - 3
 # pyrMP     <- MPstartLO - 4
 # pyrMPLO   <- endy   - 4
 
