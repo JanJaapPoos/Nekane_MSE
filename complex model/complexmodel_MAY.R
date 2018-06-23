@@ -245,10 +245,11 @@ for(yy in (stab.model):(stab.model+NUMRUNS)){
     control@spp2LndQuota <-  quota2[,yy,,]
   }
   
-  # because we wanted gradual introduction of vessels, we only put all vessels after stabmodel
-  if (yy > stab.model){
-    control@simNumber <-  as.integer(SIMNUMBER)
-  }
+  # because we wanted gradual introduction of vessels, we only put all vessels after stabmodel. First line is not strictly necessary becuase already defined when constructing control 
+  if (yy == (stab.model)  ) control@simNumber <-  as.integer(SIMNUMBER*0.5)
+  if (yy == (stab.model+1)) control@simNumber <-  as.integer(SIMNUMBER*0.75)
+  if (yy >  (stab.model+1)) control@simNumber <-  as.integer(SIMNUMBER)
+          
   
   # if we are in MPLO period, then set discardsteps =0 
   #if (yy > MPstartLO){
