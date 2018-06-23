@@ -205,7 +205,7 @@ sp2Price <- array(c(sp2price + slope2price*(((wts-mean(wts))/mean(wts)))), dim=c
 sp3Price <- sp4Price <- sp5Price <- array(c(0), dim=c(length(ages),length(season)), dimnames=list(cat=ages,season=as.character(season)))
 #---effort and prices used (note that now c is removed (but that if other runs, then make sure to fix/remove code that removes "c" option)                                                                                         
 control     <- DynState.control(spp1LndQuota= quota1[,1,,],  spp2LndQuota=quota2[,1,,], spp1LndQuotaFine= 3e6, spp2LndQuotaFine= 3e6, fuelUse = 1, fuelPrice = FuelPrice, landingCosts= 0,gearMaintenance= 0, 
-                                addNoFishing= TRUE, increments= 25, spp1DiscardSteps= SPP1DSCSTEPS, spp2DiscardSteps= SPP2DSCSTEPS, sigma= SIGMA, simNumber= SIMNUMBER, numThreads= 68, verbose=1)
+                                addNoFishing= TRUE, increments= 25, spp1DiscardSteps= SPP1DSCSTEPS, spp2DiscardSteps= SPP2DSCSTEPS, sigma= SIGMA, simNumber= SIMNUMBER * 0.5 , numThreads= 68, verbose=1)
 
 #this is where our loop starts, after we set up stable population
 for(yy in (stab.model):(stab.model+NUMRUNS)){
@@ -244,7 +244,12 @@ for(yy in (stab.model):(stab.model+NUMRUNS)){
     control@spp1LndQuota <-  quota1[,yy,,]
     control@spp2LndQuota <-  quota2[,yy,,]
   }
-
+  
+  # because we wanted gradual introduction of vessels, we only put all vessels after stabmodel
+  if (yy > stab.model){
+    control@simNumber <-  as.integer(SIMNUMBER)
+  }
+  
   # if we are in MPLO period, then set discardsteps =0 
   #if (yy > MPstartLO){
    # control@spp1DiscardSteps <-  0
