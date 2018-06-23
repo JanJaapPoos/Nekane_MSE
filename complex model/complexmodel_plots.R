@@ -133,7 +133,7 @@ points(apply(hr1,c(1,2),mean)[6,], col="red", pch=23)
 lines(hr1wanted[1,,1,1], col="red")    #wanted hr
 lines(apply(hr1,c(2),mean), col="black") #observed hr
 
-legend("topright", inset=.05, legend=c("Age 1","Age 2","Age 3","Age 4",,"Age 5","Age 6"), pch=c(19,19,21,21,23,23), col=c("black","red", "black","red", "black","red"), bty='n', cex=0.8)
+legend("topright", inset=.05, legend=c("Age 1","Age 2","Age 3","Age 4","Age 5","Age 6"), pch=c(19,19,21,21,23,23), col=c("black","red", "black","red", "black","red"), bty='n', cex=0.8)
 
 #YPR plots
 plot(x=yc1noMP$hr, y=yc1noMP$landings, type="l", xlim=xlimYPR, ylim=ylim,xaxs='i', yaxs='i',  xlab="Harvest rate", ylab = "Yield per recruit", panel.first=grid(col = "ivory2"))
