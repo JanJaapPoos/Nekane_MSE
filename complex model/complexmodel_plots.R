@@ -102,7 +102,7 @@ postscript(file=paste("MIXEDMP2_CATCH_", paste0("SIGMA ", SIGMA, "; INCREMENTS "
 par(mfrow=c(2,5),oma = c(3,0,0,0) + 0.1, mar = c(4,4,1,1) + 0.1)
 
 ylim <- c(0, ceiling(max(sort(catches.wt.dsvm.tot1,partial=length(catches.wt.dsvm.tot1)-1)[length(catches.wt.dsvm.tot1)-1])/100)*100)
-xlimYPR <- c(0,0.3)
+xlimYPR <- c(0,0.15)
 
 plot(catches.wt.dsvm.tot1, type="l",  xlim=c(stab.model,endy), ylim=ylim, xaxs='i', yaxs='i', xlab= "Year", ylab = "Total catches (weight)", xaxt = "n", panel.first=grid(NA, NULL,col = "ivory2"))
 polygon(x=c(pyrnoMP-2,pyrnoMP+2,pyrnoMP+2,pyrnoMP-2), border=NA, y=c(rep(ylim,each=2)), col="ivory4")

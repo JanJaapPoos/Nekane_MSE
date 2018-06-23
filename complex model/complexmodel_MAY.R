@@ -121,12 +121,12 @@ ages          <- 1:6
 season        <- 1:12
 areas         <- c("a", "b")
 stab.model    <- 10
-NUMRUNS       <- 25
-MPstart       <- 20
+NUMRUNS       <- 30
+MPstart       <- 25
 #MPstartLO     <- 26
 
-SIMNUMBER     <- 8000 #pos 5000 WORKS
-SIGMA         <- 6500 #sig 
+SIMNUMBER     <- 8000 #pos 8000 WORKS
+SIGMA         <- 5000 #sig 6500 WORKS
 SPP1DSCSTEPS  <- 0
 SPP2DSCSTEPS  <- 0
 endy          <- stab.model + NUMRUNS
