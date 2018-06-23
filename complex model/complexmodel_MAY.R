@@ -1,5 +1,5 @@
 options(width=240)
-library(RDynState5NAsigmaseason6Age)
+library(RDynState5NAsigmaseason12Age)
 library(ggplot2)
 library(reshape2)
 library(plyr)
@@ -118,7 +118,7 @@ yield_curve <- function(hr,lratio, wts, natmortality, R=1, sequence = seq(0.001,
 #  for (sig in SIGMAS){
 
 ages          <- 1:6
-season        <- 1:6
+season        <- 1:12
 areas         <- c("a", "b")
 stab.model    <- 10
 NUMRUNS       <- 25
@@ -140,7 +140,7 @@ lens          <- Linf*(1-exp(-K*(sages)))
 wts           <- alpha * lens ^ beta
 wts           <- aperm(wts, c(3,2,1,4))
 
-q             <- 0.00005
+q             <- 0.000025
 natmortality  <- 0.0001
 
 migconstant   <- 0.05
