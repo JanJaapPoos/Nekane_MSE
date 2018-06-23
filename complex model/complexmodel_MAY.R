@@ -295,11 +295,11 @@ for(yy in (stab.model):(stab.model+NUMRUNS)){
   
   #calculate numbers caught from weight caught 
   for(jj in areas){
-    catches.n.dsvm1 [,yy,,as.character(jj)]  <- catches.wt.dsvm1[,yy,,as.character(jj)]%/%wts[,1,,1]
-    catches.n.dsvm2 [,yy,,as.character(jj)]  <- catches.wt.dsvm2[,yy,,as.character(jj)]%/%wts[,1,,1]
+    catches.n.dsvm1 [,yy,,as.character(jj)]  <- catches.wt.dsvm1[,yy,,as.character(jj)] / wts[,1,,1]
+    catches.n.dsvm2 [,yy,,as.character(jj)]  <- catches.wt.dsvm2[,yy,,as.character(jj)] / wts[,1,,1]
     
-    landings.n.dsvm1 [,yy,,as.character(jj)] <- landings.wt.dsvm1[,yy,,as.character(jj)]%/%wts[,1,,1]
-    landings.n.dsvm2 [,yy,,as.character(jj)] <- landings.wt.dsvm2[,yy,,as.character(jj)]%/%wts[,1,,1]
+    landings.n.dsvm1 [,yy,,as.character(jj)] <- landings.wt.dsvm1[,yy,,as.character(jj)] / wts[,1,,1]
+    landings.n.dsvm2 [,yy,,as.character(jj)] <- landings.wt.dsvm2[,yy,,as.character(jj)] / wts[,1,,1]
   }
 
   # calculatae what happens to population based on catches
