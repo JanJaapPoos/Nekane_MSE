@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex 2017.9.14)  25 JUN 2018 23:16
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex 2017.9.14)  26 JUN 2018 10:35
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -551,10 +551,10 @@ File: ulasy.fd 1998/08/17 v2.2e LaTeX symbol font definitions
 rted-to.pdf>] [7]
 [8] [9] [10]
 Package epstopdf Info: Source file: <Figures/Prices.eps>
-(epstopdf)                    date: 2018-06-25 20:36:57
+(epstopdf)                    date: 2018-06-26 10:04:28
 (epstopdf)                    size: 7172 bytes
 (epstopdf)             Output file: <Figures/Prices-eps-converted-to.pdf>
-(epstopdf)                    date: 2018-06-25 20:37:25
+(epstopdf)                    date: 2018-06-26 10:04:47
 (epstopdf)                    size: 11039 bytes
 (epstopdf)             Command: <repstopdf --outfile=Figures/Prices-eps-convert
 ed-to.pdf Figures/Prices.eps>
@@ -570,11 +570,11 @@ Package pdftex.def Info: Figures/Prices-eps-converted-to.pdf used on input line
 (pdftex.def)             Requested size: 312.54895pt x 312.56923pt.
  [11 <./Figures/Prices-eps-converted-to.pdf>] [12]
 Package epstopdf Info: Source file: <Figures/Distributions.eps>
-(epstopdf)                    date: 2018-06-25 20:36:57
+(epstopdf)                    date: 2018-06-26 10:04:28
 (epstopdf)                    size: 29880 bytes
 (epstopdf)             Output file: <Figures/Distributions-eps-converted-to.pdf
 >
-(epstopdf)                    date: 2018-06-25 20:37:26
+(epstopdf)                    date: 2018-06-26 10:04:48
 (epstopdf)                    size: 13680 bytes
 (epstopdf)             Command: <repstopdf --outfile=Figures/Distributions-eps-
 converted-to.pdf Figures/Distributions.eps>
@@ -590,10 +590,10 @@ ut line 243.
 (pdftex.def)             Requested size: 312.54895pt x 265.66956pt.
  [13] [14 <./Figures/Distributions-eps-converted-to.pdf>]
 Package epstopdf Info: Source file: <Figures/Catches.eps>
-(epstopdf)                    date: 2018-06-25 20:36:57
+(epstopdf)                    date: 2018-06-26 10:04:28
 (epstopdf)                    size: 15886 bytes
 (epstopdf)             Output file: <Figures/Catches-eps-converted-to.pdf>
-(epstopdf)                    date: 2018-06-25 20:37:26
+(epstopdf)                    date: 2018-06-26 10:04:48
 (epstopdf)                    size: 12924 bytes
 (epstopdf)             Command: <repstopdf --outfile=Figures/Catches-eps-conver
 ted-to.pdf Figures/Catches.eps>
@@ -608,11 +608,11 @@ Package pdftex.def Info: Figures/Catches-eps-converted-to.pdf used on input lin
 e 341.
 (pdftex.def)             Requested size: 452.9679pt x 379.22359pt.
 Package epstopdf Info: Source file: <Figures/Yields.eps>
-(epstopdf)                    date: 2018-06-25 20:36:58
-(epstopdf)                    size: 63076 bytes
+(epstopdf)                    date: 2018-06-26 10:04:29
+(epstopdf)                    size: 63096 bytes
 (epstopdf)             Output file: <Figures/Yields-eps-converted-to.pdf>
-(epstopdf)                    date: 2018-06-25 20:37:26
-(epstopdf)                    size: 39005 bytes
+(epstopdf)                    date: 2018-06-26 10:04:48
+(epstopdf)                    size: 39175 bytes
 (epstopdf)             Command: <repstopdf --outfile=Figures/Yields-eps-convert
 ed-to.pdf Figures/Yields.eps>
 (epstopdf)             \includegraphics on input line 347.
@@ -626,10 +626,10 @@ Package pdftex.def Info: Figures/Yields-eps-converted-to.pdf used on input line
  347.
 (pdftex.def)             Requested size: 452.9679pt x 379.22359pt.
 Package epstopdf Info: Source file: <Figures/Selectivity.eps>
-(epstopdf)                    date: 2018-06-25 20:36:58
+(epstopdf)                    date: 2018-06-26 10:04:29
 (epstopdf)                    size: 14255 bytes
 (epstopdf)             Output file: <Figures/Selectivity-eps-converted-to.pdf>
-(epstopdf)                    date: 2018-06-25 20:37:27
+(epstopdf)                    date: 2018-06-26 10:04:49
 (epstopdf)                    size: 16601 bytes
 (epstopdf)             Command: <repstopdf --outfile=Figures/Selectivity-eps-co
 nverted-to.pdf Figures/Selectivity.eps>
@@ -644,20 +644,15 @@ Package pdftex.def Info: Figures/Selectivity-eps-converted-to.pdf used on input
  line 353.
 (pdftex.def)             Requested size: 452.9679pt x 379.22359pt.
 Package epstopdf Info: Source file: <Figures/Effort.eps>
-(epstopdf)                    date: 2018-06-25 23:15:51
-(epstopdf)                    size: 31788 bytes
+(epstopdf)                    date: 2018-06-26 10:04:30
+(epstopdf)                    size: 31242 bytes
 (epstopdf)             Output file: <Figures/Effort-eps-converted-to.pdf>
-(epstopdf)                    date: 2018-06-25 20:37:27
-(epstopdf)                    size: 16738 bytes
+(epstopdf)                    date: 2018-06-26 10:04:49
+(epstopdf)                    size: 16984 bytes
 (epstopdf)             Command: <repstopdf --outfile=Figures/Effort-eps-convert
 ed-to.pdf Figures/Effort.eps>
 (epstopdf)             \includegraphics on input line 359.
-runsystem(repstopdf --outfile=Figures/Effort-eps-converted-to.pdf Figures/Effor
-t.eps)...executed safely (allowed).
-
-Package epstopdf Info: Result file: <Figures/Effort-eps-converted-to.pdf>
-(epstopdf)                    date: 2018-06-25 23:16:59
-(epstopdf)                    size: 15899 bytes.
+Package epstopdf Info: Output file is already uptodate.
 
 <Figures/Effort-eps-converted-to.pdf, id=88, 561.09625pt x 469.755pt>
 File: Figures/Effort-eps-converted-to.pdf Graphic file (type pdf)
@@ -667,22 +662,16 @@ Package pdftex.def Info: Figures/Effort-eps-converted-to.pdf used on input line
  359.
 (pdftex.def)             Requested size: 452.9679pt x 379.22359pt.
 Package epstopdf Info: Source file: <Figures/Catchesbyarea.eps>
-(epstopdf)                    date: 2018-06-25 23:12:49
+(epstopdf)                    date: 2018-06-26 10:04:30
 (epstopdf)                    size: 22376 bytes
 (epstopdf)             Output file: <Figures/Catchesbyarea-eps-converted-to.pdf
 >
-(epstopdf)                    date: 2018-06-25 20:37:27
+(epstopdf)                    date: 2018-06-26 10:04:50
 (epstopdf)                    size: 15157 bytes
 (epstopdf)             Command: <repstopdf --outfile=Figures/Catchesbyarea-eps-
 converted-to.pdf Figures/Catchesbyarea.eps>
 (epstopdf)             \includegraphics on input line 365.
-runsystem(repstopdf --outfile=Figures/Catchesbyarea-eps-converted-to.pdf Figure
-s/Catchesbyarea.eps)...executed safely (allowed).
-
-Package epstopdf Info: Result file: <Figures/Catchesbyarea-eps-converted-to.pdf
->
-(epstopdf)                    date: 2018-06-25 23:16:59
-(epstopdf)                    size: 15157 bytes.
+Package epstopdf Info: Output file is already uptodate.
 
 <Figures/Catchesbyarea-eps-converted-to.pdf, id=89, 561.09625pt x 469.755pt>
 File: Figures/Catchesbyarea-eps-converted-to.pdf Graphic file (type pdf)
@@ -692,10 +681,10 @@ Package pdftex.def Info: Figures/Catchesbyarea-eps-converted-to.pdf used on inp
 ut line 365.
 (pdftex.def)             Requested size: 452.9679pt x 379.22359pt.
 Package epstopdf Info: Source file: <Figures/Economics.eps>
-(epstopdf)                    date: 2018-06-25 20:37:05
+(epstopdf)                    date: 2018-06-26 10:04:37
 (epstopdf)                    size: 1294284 bytes
 (epstopdf)             Output file: <Figures/Economics-eps-converted-to.pdf>
-(epstopdf)                    date: 2018-06-25 20:37:29
+(epstopdf)                    date: 2018-06-26 10:04:51
 (epstopdf)                    size: 1584769 bytes
 (epstopdf)             Command: <repstopdf --outfile=Figures/Economics-eps-conv
 erted-to.pdf Figures/Economics.eps>
@@ -709,16 +698,18 @@ File: Figures/Economics-eps-converted-to.pdf Graphic file (type pdf)
 Package pdftex.def Info: Figures/Economics-eps-converted-to.pdf used on input l
 ine 371.
 (pdftex.def)             Requested size: 452.9679pt x 379.22359pt.
- [15]
+ [15] [16 <./Figures/Catches-eps-converted-to.pdf>] [17 <./Figures/Yields-eps-c
+onverted-to.pdf>] [18 <./Figures/Selectivity-eps-converted-to.pdf>] [19 <./Figu
+res/Effort-eps-converted-to.pdf>]
+[20 <./Figures/Catchesbyarea-eps-converted-to.pdf>] [21 <./Figures/Economics-ep
+s-converted-to.pdf>]
 Missing character: There is no â in font cmr12!
 Missing character: There is no € in font cmr12!
 Missing character: There is no ™ in font cmr12!
- [16 <./Figures/Catches-eps-converted-to.pdf>] [17 <./Figures/Yields-eps-conver
-ted-to.pdf>] [18 <./Figures/Selectivity-eps-converted-to.pdf>] [19 <./Figures/E
-ffort-eps-converted-to.pdf>]
-[20 <./Figures/Catchesbyarea-eps-converted-to.pdf>] (./MSE_MAR_18.bbl [21 <./Fi
-gures/Economics-eps-converted-to.pdf>] [22] [23] [24]) [25] (./MSE_MAR_18.aux) 
-) 
+ [22
+
+] [23] (./MSE_MAR_18.bbl [24] [25] [26]) [27]
+(./MSE_MAR_18.aux) ) 
 Here is how much of TeX's memory you used:
  5040 strings out of 493029
  71077 string characters out of 6136234
@@ -727,22 +718,23 @@ Here is how much of TeX's memory you used:
  11375 words of font info for 44 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  38i,13n,35p,1811b,283s stack positions out of 5000i,500n,10000p,200000b,80000s
-</usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr
-/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/share
-/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/share/texli
-ve/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb></usr/share/texlive/tex
-mf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb></usr/share/texlive/texmf-dist
-/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/share/texlive/texmf-dist/fonts/
-type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/fonts/type1/p
-ublic/amsfonts/cm/cmr12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/a
-msfonts/cm/cmr17.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts
-/cm/cmr8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy
-10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb>
-</usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmti12.pfb>
-Output written on MSE_MAR_18.pdf (25 pages, 2301835 bytes).
+</usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/
+cm/cmbx10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmb
+x12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pf
+b></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb></us
+r/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb></usr/share
+/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/share/texliv
+e/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf
+-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/share/texlive/texmf-dist/f
+onts/type1/public/amsfonts/cm/cmr17.pfb></usr/share/texlive/texmf-dist/fonts/ty
+pe1/public/amsfonts/cm/cmr8.pfb></usr/share/texlive/texmf-dist/fonts/type1/publ
+ic/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/ams
+fonts/cm/cmsy8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/c
+m/cmti12.pfb>
+Output written on MSE_MAR_18.pdf (27 pages, 2305134 bytes).
 PDF statistics:
- 230 PDF objects out of 1000 (max. 8388607)
- 154 compressed objects within 2 object streams
+ 236 PDF objects out of 1000 (max. 8388607)
+ 158 compressed objects within 2 object streams
  0 named destinations out of 1000 (max. 500000)
  51 words of extra memory for PDF output out of 10000 (max. 10000000)
 
