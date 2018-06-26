@@ -70,7 +70,7 @@ The OM captured the key processes in the dynamics of the fish populations, the f
 
 \begin{figure}[!h]
 \centering
-\includegraphics[width=0.55\textwidth]{Figures/Areadynamics.eps} 
+\includegraphics[width=0.4\textwidth]{Figures/Areadynamics.eps} 
 \caption{The Operating Model (OM) including the key processes in the dynamics of the fish populations and how it was mapped.}
 \label{fig:stockdyn}
 \end{figure}
@@ -167,7 +167,7 @@ Once the backward calculations were finished, the forward part is a Monte Carlo 
 \textbf{Population dynamics}                                    &                \\ \hline
 &  \\%& & \\
 
-maximum age                                                            & $A$                    & 4               \\
+maximum age                                                            & $A$                    & 6               \\
 number of areas                                                       &                            & 2               \\
 number of seasons                                                   & $S$                     & 6               \\
 natural mortality                                                       & $M_i$                 & 0.0001     \\
@@ -175,6 +175,7 @@ Asymptotic length                                                    &  $L_{\inf
 Growth rate                                                              & $K_i$                 &  0.4          \\
 Length-weight conversion factor                             & $ \alpha_i$        &  0.00005   \\
 Length-weight isomorphy factor                              & $\beta_i $         &   3              \\
+Migration                                                   & $D_i $         &   5\%              \\
 &               \\
 \textbf{Fleet dynamics}                                           &               \\ \hline   
 &  \\%& & \\
@@ -213,7 +214,7 @@ where $p_i (a,s) $ is the price of species $i$ at age $a$ and season $s$. The pr
 \begin{figure}[!ht]
 \centering
 \label{f:prices}
-\includegraphics[width=.69\textwidth]{Figures/prices.eps} 
+\includegraphics[width=.69\textwidth]{Figures/Prices.eps} 
 \caption{Lengths and prices of the species}
 \end{figure}
 
@@ -239,41 +240,41 @@ The two management strategies we considered differ by the formulae used to deter
 \begin{figure}[!ht]
 \centering
 \label{f:distributions}
-\includegraphics[width=.69\textwidth]{Figures/distributions.eps} 
+\includegraphics[width=.69\textwidth]{Figures/Distributions.eps} 
 \caption{Distribution of the two species over the areas as a function of age when stocks are in virgin stock status }
 \end{figure}
 
 
-\begin{table}[!h]
-\centering
-\caption{}
-\label{scenarios}
-\resizebox{0.8\textwidth}{!}{%
-\begin{tabular}{l c c}
-\hline
-                                & \textbf{MP}            & \textbf{LO}                  \\ 
-                                & \textit{(landings selectivity)}& \textit{(fulll avoidance of discards)}\\ \hline
-& &   \\
-Discarding                      & Allowed                        & Not allowed                 \\
-Manager catch perception        & $C = L + D$                    &        $C = L$ ($D = 0$)    \\
-Selectivity ($l_{ratio}$)       &  $ \neq 1$                     & $=1$                      \\
-Yield per recruitment model     & based in $F_L$                 &       based in $F_C$          \\
+%\begin{table}[!h]
+%\centering
+%\caption{}
+%\label{scenarios}
+%\resizebox{0.8\textwidth}{!}{%
+%\begin{tabular}{l c c}
+%\hline
+%                                & \textbf{MP}            & \textbf{LO}                  \\ 
+%                                & \textit{(landings selectivity)}& \textit{(fulll avoidance of discards)}\\ \hline
+%& &   \\
+%Discarding                      & Allowed                        & Not allowed                 \\
+%Manager catch perception        & $C = L + D$                    &        $C = L$ ($D = 0$)    \\
+%Selectivity ($l_{ratio}$)       &  $ \neq 1$                     & $=1$                      \\
+%Yield per recruitment model     & based in $F_L$                 &       based in $F_C$          \\
 
-&  &   \\\hline
-\end{tabular}
-}
-\end{table}
- 
-\begin{enumerate}
+%&  &   \\\hline
+%\end{tabular}
+%}
+%\end{table}
+% 
+%\begin{enumerate}
 
-\item
-\textbf{MP Scenario: Landings selectivity},  under this scenario the fishery is under landings selectivity, only landings contribute to yield. Fishing mortality accounts for all catches, regardless wether these catches are landed or discarded.
+%\item
+%\textbf{MP Scenario: Landings selectivity},  under this scenario the fishery is under landings selectivity, only landings contribute to yield. Fishing mortality accounts for all catches, regardless wether these catches are landed or discarded.
 
-\item
-\textbf{LO Scenario: Fulll avoidance of discards}, this scenario contemplates the LO with landings selectivity only and fulll avoidance of discards.
+%\item
+%\textbf{LO Scenario: Fulll avoidance of discards}, this scenario contemplates the LO with landings selectivity only and fulll avoidance of discards.
 
 
-\end{enumerate}
+%\end{enumerate}
 
  
 \begin{equation}
@@ -337,25 +338,37 @@ The implementation of LO caused an increase in TACs and revenues were higher tha
 
 \begin{figure}[!ht]
 \centering
-\includegraphics[width=.69\textwidth]{Figures/figurecatches.eps} 
-\caption{Caches and harvest rates- Prices of the two species are equal (a truly mixed fishery)}
+\includegraphics[width=\textwidth]{Figures/Catches.eps} 
+\caption{Caches- Prices of the two species are equal (a truly mixed fishery)}
 \end{figure}
 
 \begin{figure}[!ht]
 \centering
-\includegraphics[width=.69\textwidth]{Figures/figurecatches2.eps} 
-\caption{Change in selectivity- Prices of the two species are equal (a truly mixed fishery)}
+\includegraphics[width=\textwidth]{Figures/Yields.eps} 
+\caption{Yields- Prices of the two species are equal (a truly mixed fishery)}
 \end{figure}
 
 \begin{figure}[!ht]
 \centering
-\includegraphics[width=.82\textwidth]{Figures/figureffort.eps} 
+\includegraphics[width=\textwidth]{Figures/Selectivity.eps} 
+\caption{Changes in selectivity- Prices of the two species are equal (a truly mixed fishery)}
+\end{figure}
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=\textwidth]{Figures/Effort.eps} 
 \caption{Effort- Prices of the two species are equal (a truly mixed fishery)}
 \end{figure}
 
 \begin{figure}[!ht]
 \centering
-\includegraphics[width=\textwidth]{Figures/figurerevenue.eps} 
+\includegraphics[width=\textwidth]{Figures/Catchesbyarea.eps} 
+\caption{Caches by area- Prices of the two species are equal (a truly mixed fishery)}
+\end{figure}
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=\textwidth]{Figures/Economics.eps} 
 \caption{Revenues- Prices of the two species are equal (a truly mixed fishery)}
 \end{figure}
 %---
