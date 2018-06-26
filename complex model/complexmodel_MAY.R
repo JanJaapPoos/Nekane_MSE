@@ -5,7 +5,7 @@ library(reshape2)
 library(plyr)
 library(scales)
 
-setwd("~/Nekane_MSE/complex model/")
+#setwd("~/Nekane_MSE/complex model/")
 source("functions.R")
 
 
@@ -143,7 +143,7 @@ wts           <- aperm(wts, c(3,2,1,4))
 q             <- 0.000025
 natmortality  <- 0.0001
 
-migconstant   <- 0.05
+migconstant   <- 0.025 # 
 sp1price      <- sp2price      <- 30000
 slope1price <- 1000
 slope2price <- 1000 # 0.50*150
@@ -348,7 +348,8 @@ for(yy in (stab.model):(stab.model+NUMRUNS)){
     # In the transition we assume landing ratio equal 1
     #   if (yy == MPstart){ #MPstartLO){ # landing.ratio are equal to 1 for all years before estimating them
       quota1[,yy+1,,] <- prel.quota1
-      quota2[,yy+1,,] <- prel.quota2
+      #quota2[,yy+1,,] <- prel.quota2
+      
     #}else{
     #  tac.constrained1 <- c(quota1[,yy,,]*0.85, quota1[,yy,,]*1.15)
     #  tac.constrained2 <- c(quota2[,yy,,]*0.85, quota2[,yy,,]*1.15)
@@ -428,11 +429,34 @@ days[is.na(days)]<- 0
 rownames(days)  <- days$option
 days            <- days[,-1]
 
+# Estimate mean effort days by season in the two study periods. Three year mean before the MP and after the MP
+daysmen        <- subset(dsvm_res_allyrs,(spp %in% "sp1"))
+daysmen        <- subset(daysmen ,(cat %in% 1))
+daysmen $year   <- factor(daysmen $year, levels= 1:endy)
+daysmen $season <- factor(daysmen $season, levels= 1:max(season))
+daysmen         <- aggregate(effort~ spp+cat+option+year+season, FUN=sum, data=daysmen )
+daysmen         <- with(daysmen ,data.frame(year, effort, option, season))
+daysmen <- daysmen [!daysmen $option=="Stay in port",]
+#days      <- dcast(days ,option~year, value.var="effort")
+daysmen[is.na(daysmen)]<- 0
+
+nompdays <- aggregate(effort~ option+season, FUN=mean, data=subset(daysmen,(year %in% c((MPstart-3):MPstart))))
+mpdays <- aggregate(effort~ option+season, FUN=mean, data=subset(daysmen,(year %in% c((yy-3):yy))))
+
+# First two rows are the NOMP area north and south. And 2 last rows, MP area north and south
+daysmen<- dcast(nompdays ,option~season, value.var="effort")
+daysmen<- rbind(daysmen, dcast(mpdays ,option~season, value.var="effort"))
+rownames(daysmen)  <- daysmen$option
+daysmen            <- daysmen[,-1]
+
 #economics
 netrev      <-  melt(economics_res_allyrs, id.vars = "year", measure.vars = c("NetRev"))
 grossrev    <-  melt(economics_res_allyrs, id.vars = "year", measure.vars = c("Grossrev"))
 annualfine  <-  melt(economics_res_allyrs, id.vars = "year", measure.vars = c("Annualfine"))
 fuelcosts   <-  melt(economics_res_allyrs, id.vars = "year", measure.vars = c("Fuelcosts"))
+
+save.image("1quota12seasons.RData")
+#save.image("2quotas12seasons.RData")
 
 # rm(dsvm_res,dsvm_res_allyrs)
 # rm(economics_res,economics_res_allyrs)

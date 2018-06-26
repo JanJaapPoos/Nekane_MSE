@@ -8,7 +8,7 @@ setwd("~/Nekane_MSE/doc/Figures")
 
 #DISTRIBUTIONS
 ##############################################################################
-postscript("distributions.eps")
+postscript("distributions.eps", horiz=TRUE,onefile=FALSE,width=8.5,height=11,paper=letter)
 par(oma=c(0,0,0,0), mar=c(4.1, 4.1, 3.1, 1.1))
 split.screen( rbind(c(0, .8,0,1), c(.8,1,0,1)))
 split.screen(c(2,1), screen=1)-> ind
