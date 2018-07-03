@@ -39,6 +39,7 @@ We contrast three types of management plans to achieve maximum sustainable yield
 
 
 We have to make sure we are clear on the ages of the species: do we start at 0 or at 1?
+Final run: introduce fuel costs, prices with steeper slope, maybe reduce sigma, remove 15\% TAC change in MSE diagram ...what else?
 
 Management strategy evaluation (MSE; \cite{Bunnefeld2011, Sainsbury2000, Smith1994}) seeks to study the implications of management strategies using simulation\cite{Punt2016}. Such simulation should include all important processes of a fishery, which is inherently a socio-ecological system, with coupled dynamics of the fishing fleets, the exploited stocks, and their governance\cite{Punt2016,Rasemeyer2007}. Given the complexity of such a socio-ecological system the uncertainy about the dynamics and feedbacks are consideable. As a result, any forecasted success in achieving goals in a management strategy may thus be inperceivably small compared to the stochasticity in results generated in the system, or worse, be counteracted by unintended consequences of the management strategy. The robustness of management strategies to the uncertainy in the processes that govern fisheries systems thus need to be accounted for \cite{Andersen2010, Kell2007, Prellezo2016, Punt2016}. 
 
@@ -58,7 +59,7 @@ Using a MSE, the main objective of this work is not to reproduce the entire comp
 
 The Managament Strategy Evaluation framework was used to forecast the dynamics of a hypothetical mixed fishery on two species. The framework consists of an Operating Model (OM) and a Management Procedure (MP). In the fishery, there are three essential elements: (i) a collection of size strucured fish stocks, whose dynamics are governed by annual reproduction, growth, migration, and mortality. (ii) A management body that evaluates the fishing pressure and aims to set annual quotas in accordance with fishing mortalities dictated by FMSY reference points. (iii) a fleet of individual fishers who aim to make the best use of their annual quota. Within this mixed fishery, individual vessels make adaptive choices on fishing location and discarding that depend on the distribution of the resources, and the quota that they are allocated. Each of these elements is discussed in more detail below. The essential elements of the framework are summarized in Figure \ref{fig:MSE}.
 
-The OM captured the key processes in the dynamics of the fish populations, the fisheries and the management body, and can be thought of as a minimum realistic model \cite{Punt1995}.  The operating model thus includes  individual harvester decision-making (including error) and the consequent biomass of fish stocks, including the essential elements for calculating the individual harvester economic performance. The  management body used the MP to make its decision on how to respond to the state of the resource  (Figure \ref{fig:stockdyn}). This management procedure thus includes the data collection from the fishery, how these are interpreted, and the Harvest Control Rule that dictates the limits that are set to the fishery. 
+The OM captured the key processes in the dynamics of the fish populations, the fisheries and the management body, and can be thought of as a minimum realistic model \cite{Punt1995}.  The operating model thus includes  individual harvester decision-making (including error) and the consequent biomass of fish stocks, including the essential elements for calculating the individual harvester economic performance. The  management body used the MP to make its decision on how to respond to the state of the resource (Figure \ref{fig:stockdyn}). This management procedure thus includes the data collection from the fishery, how these are interpreted, and the Harvest Control Rule that dictates the limits that are set to the fishery. 
 
  
 \begin{figure}[!h]
@@ -101,7 +102,7 @@ Migration for each species was defined by an array $D_i (a, s, em, im)$ that def
 Individual body growth was modelled by a von Bertalanffy growth equation to convert numbers to lengths, and an allometric equation to convert length to weight. The weights for individuals in the stock and in the catches are thus calculated as
 
 \begin{equation}
-w_i(a,s) =  \alpha * ( L_{\infty_i} * (1-\exp^{(-K * (a+(s/S))}))^{\beta}.
+w_i(a,s) =  \alpha * ( L_{\infty_i} * (1-\exp^{(-K * (a+(s/S)))}))^{\beta}.
 \end{equation}
 
 The realized catches are the sum of all individual catches resulting from the Dynamic State Variable Model. The Dynamic State Variable model inputs consist of the expected individual catch rates, which are random variables. These random variables were normally distributed, with means $\hat c_i (a, y, s, p)$ being a function of population size, age dependent catchability $q_i (a)$ in any year, season, and area,  
@@ -113,43 +114,43 @@ The standard deviations $\Sigma_i (a, y, s, p)$ of the catch distributions were 
 
 \subsection{Fleet dynamics}
 
-To simulate a fleet of individual fishing vessels,we used a Dynamic State Variable Model \cite{Alzorriz2018, Batsleer2015, ClarkandMangel2000, Dowling2011, Houston1999, Poos2010}. The model was used to model location choice, extending the model structure in \cite{Batsleer2015}. Each individual vessels had a set of choices, which include the choice to go fishing in a season,  location choice within that season, and the choice to discard one or more species and size classes during a season. The model had annual fines for exceeding landings quota as in \cite{Alzorriz2018}). In order to calculate state dependent choices during the year, we started by defining the annual fines for exceeding landings quotas at the end of the year:
+To simulate a fleet of individual fishing vessels,we used a Dynamic State Variable Model \cite{Alzorriz2018, Batsleer2015, ClarkandMangel2000, Dowling2011, Houston1999, Poos2010}. The model was used to model location choice, same model structure as in \cite{Alzorriz2018}, but without the choice to discard one or more species and size classes while fishing. Each individual vessels had a set of choices, which include the choice to go fishing in a season, location choice within that season. The model had annual fines for exceeding landings quota as in \cite{Alzorriz2018}. In order to calculate state dependent choices during the year, we started by defining the annual fines for exceeding landings quotas at the end of the year:
 \begin{equation}
-\Phi (L_i, Q_i, F_i)= -\sum_i (\textrm{max}( 0, (L_i - Q_i))* F_i),
+\Phi (C_i, Q_i, F_i)= -\sum_i (\textrm{max}( 0, (C_i - Q_i))* F_i),
 \end{equation}
 
-where $L_i$ was the cumulative annual landings for species $i$ for an individual vessel. These cumulative landings defined the state of the individual. $Q_i$ was the annual individual quota for landings for the different species. Individual quotas were not transferable. $F_i$ was the fine per unit weight for exceeding individual landings quota.
+where $C_i$ was the cumulative annual catches for species $i$ for an individual vessel. These cumulative catches defined the state of the individual. $Q_i$ was the annual individual quota for catches for the different species. Individual quotas were not transferable. $F_i$ was the fine per unit weight for exceeding individual catches quota.
 
-The maximum expected utility between current season $s$ and the end of the year was $V (L_i, Q_i, F_i, s)$, and the model started by setting $V (C_i, Q_i, F_i, S)= \Phi (C_i, Q_i, F_i)$. For preceding seasons, the expected utility depended on individual choices, and each time step individuals chose to visit fishing area $p$, or to stay in port. While fishing, any combination of the age classes caught of the quota species can be landed, or discarded. This discarding was defined by a matrix $d$. The size of that matrix was defined by the number of species under quota constraints and the number of age classes. Each element could take the value 0 (discard) or 1 (keep on board and land). The expected utility for each state and each time step $s$ was calculated backward using stochastic dynamic programming \cite{ClarkandMangel2000}:
+The maximum expected utility between current season $s$ and the end of the year was $V (C_i, Q_i, F_i, s)$, and the model started by setting $V (C_i, Q_i, F_i, S)= \Phi (C_i, Q_i, F_i)$. For preceding seasons, the expected utility depended on individual choices, and each time step individuals chose to visit fishing area $p$, or to stay in port. While fishing, any combination of the age classes caught of the quota species had to be landed. The expected utility for each state and each time step $s$ was calculated backward using stochastic dynamic programming \cite{ClarkandMangel2000}:
 \begin{equation}
-V (C_i, Q_i, F_i, s) = max_{p,d}( R(p, d, s)- G(p) - C(p) + E_{p, d}[V (C_i^\prime, Q_i, F_i, s+1])),
+V (C_i, Q_i, F_i, s) = max_{p}( R(p, s)- G(p) - C(p) + E_{p}[V (C_i^\prime, Q_i, F_i, s+1)]),
 \end{equation}
 
-where $R(p, d, s)$ was the expected immediate contribution of the gross revenue from the sales of fish in a season resulting from choices $p$, and $d$ (gross revenues resulted from multiplying catches different age classes of species 1, species 2 and prices). Prices of fish were assumed to be dependent over fish age (subsection X). $G(p)$ represented the incurred fuel costs per season from the choice of fishing area $p$, while  $ C(p)$ represented the variable operating costs (crew share, gear maintenance and landing costs, Table~\ref{t:fishery}), which in turn depended on the change in cumulative landings and fish prices. The term $E_{p, d}[V (C_i^\prime, Q_i, F_i, s+1]$ denoted the expected future utility taken over all possible states resulting from choices $p$, and $d$. The transition of these states were based on normal distributions of catch rates, using the means and variances for the species, as explained in the model conditioning section, following \cite{Poos2010}.
+where $R(p, s)$ was the expected immediate contribution of the gross revenue from the sales of fish in a season resulting from choices $p$ (gross revenues resulted from multiplying catches different age classes of species 1, species 2 and prices). Prices of fish were assumed to be dependent over fish age (subsection size dependent pricing). $G(p)$ represented the incurred fuel costs per season from the choice of fishing area $p$, while  $ C(p)$ represented the variable operating costs (crew share, gear maintenance and landing costs, Table~\ref{t:fishery}), which in turn depended on the change in cumulative catches and fish prices. The term $E_{p}[V (C_i^\prime, Q_i, F_i, s+1]$ denoted the expected future utility taken over all possible states resulting from choices $p$. The transition of these states were based on normal distributions of catch rates, using the means and variances for the species, as explained in the model conditioning section, following \cite{Poos2010}.
 
 Rather than assuming that each individual always made the optimal choice, we assigned a probability to each choice proportional to its expected utility, following \cite{Dowling2011}. The expected utility for any choice was
 \begin{equation}
-U (C_i, Q_i, F_i, s) = R(p, d, s)- G(p) - C(p) + E_{plaa, d}[V (C_i^\prime, Q_i, F_i, s+1]).
+U (C_i, Q_i, F_i, s) = R(p, s)- G(p) - C(p) + E_{p}[V (C_i^\prime, Q_i, F_i, s+1)].
 \end{equation}
 
 If $U^*$ was the expected utility at the optimal choice for a given t, we set
 
 \begin{equation}
-\Delta_{p, d}(C_i, Q_i, F_i, s) =  U^* (C_i, Q_i, F_i, s) - U (C_i, Q_i, F_i, s),
+\Delta_{p}(C_i, Q_i, F_i, s) =  U^* (C_i, Q_i, F_i, s) - U (C_i, Q_i, F_i, s),
 \end{equation}
 
 and then defined the probability of a choice for a given area and discarding as	
 
 \begin{equation} \label{eq:solve}
-P_{p, d}(C_i, Q_i, F_i, s) = \frac
+P_{p}(C_i, Q_i, F_i, s) = \frac
                 % Nominator
-                {e^{ -\Delta_{p, d}(C_i, Q_i, F_i, s)/\sigma}}
+                {e^{ -\Delta_{p}(C_i, Q_i, F_i, s)/\sigma}}
                 % Denominator
-                {\sum_p \sum_d e^{ -\Delta_{p, d}(C_i, Q_i, F_i, s)/\sigma}},
+                {\sum_p e^{ -\Delta_{p}(C_i, Q_i, F_i, s)/\sigma}},
 \end{equation}
-where $\sigma$ was a tuning parameter that measured how important it was to be near the optimal choice. A large $\sigma$ resulted in uniform probabilities of choices, with vessels being distributed uniformly across the different fishing areas. In contrast, a small $\sigma$ forces vessels to concentrate in the optimal location (but note that $\sigma$ should be $> 0$). For computations, we used $\sigma = 40$ (noting that $\Delta$ ranged from 0 to $\sim 2 x 10^{3}$, but was generally of the order of $1 x 10^2$ in magnitude).
+where $\sigma$ was a tuning parameter that measured how important it was to be near the optimal choice. A large $\sigma$ resulted in uniform probabilities of choices, with vessels being distributed uniformly across the different fishing areas. In contrast, a small $\sigma$ forces vessels to concentrate in the optimal location (but note that $\sigma$ should be $> 0$). For computations, we used $\sigma = 5000$. %(noting that $\Delta$ ranged from 0 to $\sim 2 x 10^{3}$, but was generally of the order of $1 x 10^2$ in magnitude).
 
-The dynamic state variable model was solved by iterating backwards in time, while finding the probability distribution choice in terms of location and discarding behaviour for all possible states, combining the net revenue obtained from the sale of fish and costs of a fishing trip and the effect of the annual fines when exceeding annual quota. Further details for this procedure can be found in \cite{Alzorriz2018, Batsleer2016} and \cite{Dowling2011}.
+The dynamic state variable model was solved by iterating backwards in time, while finding the probability distribution choice in terms of location for all possible states, combining the net revenue obtained from the sale of fish and costs of a fishing trip and the effect of the annual fines when exceeding annual quota. Further details for this procedure can be found in \cite{Alzorriz2018, Batsleer2016} and \cite{Dowling2011}.
 
 Once the backward calculations were finished, the forward part is a Monte Carlo simulation where the probabilities of choices were sampled randomly using the probabilities in~\ref{eq:solve}. For each year, these forward Monte Carlo Simulations determine the fishing effort in each season and area $E(y,s,p)$, and the catches $C_i (a, y, s, p)$ for each age in each season and area. The effort allocation component of the operating model provides the link between the management decisions and the biological component of the operating model.
 
@@ -194,7 +195,7 @@ Intial quota                                                &                   
 catchability                                                & $q_i (a)$             & 0.000025        \\ 
 effort (p,s)                                                &                       & 1                 \\ 
 Price of species at mean weight                             & $\bar{p}_i$           & 30000             \\
-Slope of species price                                      & $\gamma_i$            &  1000            \\
+Slope of species price                                      & $\gamma_i$            & 1000            \\
 Fine for overshooting quota                                 &  $F_i$                & 3e6              \\
 Ratio of standard deviations to catch means                 & $\eta$                & 0.08           \\ 
 &                 \\  \hline%& & \\\hline
@@ -206,19 +207,19 @@ Ratio of standard deviations to catch means                 & $\eta$            
 
 Prices of fish were assumed to be fixed over time but influenced by the body weight of the individuals in the catch, as is commonly observed \cite{Zimmermann2011, Zimmermann2013}. Following \cite{Zimmermann2011}, therelationship between fish price and body weight was modelled as:  
 \begin{equation}
- p_i (a,s) = \bar{ p}_i + \gamma_i \times \frac{w_i (a,s) -\bar{w_i}}{\bar{w_i}},
+ p_i (a,s) = \bar{p}_i + \gamma_i \times \frac{w_i (a,s) -\bar{w_i}}{\bar{w_i}},
 \end{equation}
 where $p_i (a,s) $ is the price of species $i$ at age $a$ and season $s$. The price was a linear function of the weight of individuals of species $i$ at age $a$ and season $s$. $\bar{p}_i$ is the price of the species at the mean weight over the age range. The mean weight over the age range is $\bar{w_i}$. $\gamma_i$ gave the price increase when individual mass was increased by $\bar{w_i}$. 
 
 \subsection{Case study parameterization}
 
-To mimic spatially heterogeneous fish populations in a mixed fishery where fishers make sequential choices on fishing areas and discarding patterns, the model was divided into a 'north' and 'south' area, and twelve fishing seasons per year (Table \ref{t:fishery}). There were two fish species in the model, both of which are caught by the fishery. The annual number of newborns was equal for the two species, and arbitrarily set to 500 per year. The species differed with respect to their nursery grounds: all individuals of species 1 were born in the northern area, while all individuals of species 2 were born in the southern area (Figure \ref{f:distributions}). The maximum age that any individual can reach was 6 years old. During their life, individuals grew in length towards the asymptotic length, which was 50 cm for both species (Figure \ref{f:prices}). Conversion from length to weight was also equal for the two species (Table \ref{t:fishery}). Migration was parameterized so that a gradual diffusion occurred between the two areas, equal to 2.5 percent of the difference in abundance. For the unfished situation this led to a clear segregation of the younger ages over the two areas, while the older ages were equally distributed over the two areas (Figure \ref{f:distributions}). Mortality from natural causes such as predation, diseases, and senescence was assumed to be negligible, and $M_i$ set to 0.0001. Although such absence of natural mortality impossible in reality, one could argue that the model thus mimicked long-lived species.
+To mimic spatially heterogeneous fish populations in a mixed fishery where fishers make sequential choices on fishing areas and discarding patterns, the model was divided into a 'north' and 'south' area, and twelve fishing seasons per year (Table \ref{t:fishery}). There were two fish species in the model, both of which are caught by the fishery. The annual number of newborns was equal for the two species, and arbitrarily set to 500 per year. The species differed with respect to their nursery grounds: all individuals of species 1 were born in the northern area, while all individuals of species 2 were born in the southern area (Figure \ref{f:distribution}). The maximum age that any individual can reach was 6 years old. During their life, individuals grew in length towards the asymptotic length, which was 50 cm for both species (Figure \ref{f:prices}). Conversion from length to weight was also equal for the two species (Table \ref{t:fishery}). Migration was parameterized so that a gradual diffusion occurred between the two areas, equal to 2.5 percent of the difference in abundance. For the unfished situation this led to a clear segregation of the younger ages over the two areas, while the older ages were equally distributed over the two areas (Figure \ref{f:distribution}). Mortality from natural causes such as predation, diseases, and senescence was assumed to be negligible, and $M_i$ set to 0.0001. Although such absence of natural mortality impossible in reality, one could argue that the model thus mimicked long-lived species.
 
 \begin{figure}[!ht]
 \centering
-\label{f:distributions}
-\includegraphics[width=.69\textwidth]{Figures/Distributions.eps} 
-\caption{Distribution of the two species over the areas as a function of age when stocks are in virgin stock status }
+\includegraphics[width=\textwidth]{Figures/Distributions.eps} 
+\caption{Distribution of the two species over the areas as a function of age when stocks are in virgin stock status.}
+\label{f:distribution}
 \end{figure}
   
 Age-dependent catchability linked the population biomasses to the catches in the fishery, and was thus one of the crucial parameters determining the interaction between the two. In the case study, this age-dependent catchability $q_i (a)$ was assumed independent of age $a$, and equal for the two species.
@@ -227,108 +228,35 @@ The mean prices for the two species were set to 30 thousand euro per ton, rangin
 
 \begin{figure}[!ht]
 \centering
+\includegraphics[width=.5\textwidth]{Figures/Prices.eps} 
+\caption{Lengths and prices of the species.}
 \label{f:prices}
-\includegraphics[width=.69\textwidth]{Figures/Prices.eps} 
-\caption{Lengths and prices of the species}
 \end{figure}
 
 \subsection{Management procedure}
 
-The input to the fisheries model consisted of the the expected catch rates and the individual quota that were set for each individual in the fleet. These individual quota were set in a management procedure, which mimicked the decisions of a management body. This management body made observations on the state of the resources, and the exploitation characteristics of the fishery. In the model, the management body was assumed to collect annual observations of the biomass of the stocks, including the distribution of the biomass over the different ages. These observations stem from fisheries independent observations, such as surveys with known catchabilities. In addition, the management body made annual observations of the catches, including their age distribution. The observed biomass and catches allowed for estimation of the annual harvest rates, and the estimation of a yield per recruit curve, that was dependent on fish growth and mortality. The yield curve was dome shaped, with a maximum that is called $H_{max}$. Fishing at a harvest rate that is equal to $H_{max}$  should lead to maximum sustainable yields. The yield per recruit curve omited the potential effect of the feedback between adult biomass and recruitment, which anyway was absent in the population dynamics, that assumed a constant recruitment. The Harvest Control Rule used by the management body resuslted in annual quotas such that the harvest rate in a year corresponded to $H_{max}$. These quotas were then divided equally over the individual vessels in the simulations.  
+The management model encompassed the harvest control rules (HCR). The HCR referenced to biological reference points (Fmsy) to produce management actions in the form of a harvest or effort level: changes in selectivity or spatial and temporal reallocations or restrictions of fishing effort. The input to the fisheries model consisted of the expected catch rates and the individual quota that were set for each individual in the fleet. These individual quota were set in a management procedure, which mimicked the decisions of a management body. This management body made observations on the state of the resources, and the exploitation characteristics of the fishery. In the model, the management body was assumed to collect annual observations of the biomass of the stocks, including the distribution of the biomass over the different ages. These observations stem from fisheries independent observations, such as surveys with known catchabilities. In addition, the management body made annual observations of the catches, including their age distribution. 
 
-
-
-
-The management model encompassed the harvest control rules (HCR). The HCR referenced to biological reference points (Fmsy) to produce management actions in the form of a harvest or effort level: changes in selectivity or spatial and temporal reallocations or restrictions of fishing effort. Costs and benefits, both economic and in terms of risks to both stock and livelihoods, could be computed and compared across different scenarios and management procedures.
-
-% Management actions are rarely implemented without error. This error can come from two main sourrces: (i) resource users do not comply with the regulations, and (ii) the individual dynamics of resource users (e.g. when and where harvest is taken) are not accounted for in the HCR. By evaluating a range of HCRs against a set of plausible operating models using multiple performance metrics (section \ref{sec2.3}), MSE enables to study the different trade-offs involved with each management procedure.  
+The observed biomass and catches allowed for estimation of the annual harvest rates ($H_i$), and the estimation of a yield per recruit curve, that was dependent on fish growth and mortality. The yield curve was dome shaped, with a maximum that is called $H_{i,max}$. Fishing at a harvest rate that is equal to $H_{i,max}$  should lead to maximum sustainable yields. The yield per recruit curve omited the potential effect of the feedback between adult biomass and recruitment, which anyway was absent in the population dynamics, that assumed a constant recruitment. The Harvest Control Rule used by the management body resuslted in annual quotas such that the harvest rate in a year corresponded to $H_{i,max}$. These quotas were then divided equally over the individual vessels in the simulations.  
 
 \begin{equation}
- l_{ratio} (a, y, s) = \frac
+ Q_{i,y+1} = \frac
                 % Nominator
-                {L_{i (numbers)}(a, y, s, p)}
+                {\sum( [\frac{H_{i,max}(a,y,s)}{\bar{H_i(a,s)}} \times H_i(a,s) \times sum( N_i (a, y, s, p))] \times w_i(a,s)) }
                 % Denominator
-                {C_{i (numbers)}(a, y, s, p)},
+                {number\  of\  vessels}.
 \end{equation}
-
-Through a yield per recruitment model, knowing growth, harvest rates and recruitment we can estimate how much to reduce the quota for achieving the MSY. 
-
-\begin{equation}
- Q_{MSY} = \frac
-                % Nominator
-                {\sum( [\frac{H_{MSY}}{\bar{H}} \times H (a, s) \times l_{ratio} (a, s) \times B_{(numbers)}(a, s)] \times wts) }
-                % Denominator
-                {number\  of\  vessels}, 
-\end{equation}
-\begin{equation}
- Q (y+1) = \max( \min(Q_{MSY}, Q(y) \times 1.15), Q(y) \times 0.85), 
-\end{equation}
-
-
-%Given the landing parameters associated
-
-%hr<- catches.n/ (catches.n+ pop)
-%landings.ratio <- landings.n/ cathces.n
-%OY <- 
-%hr_MSY <- OY[OY_landings==max(OY_landingslandings),]_hr
-
-%prel.quota <-  sum(sweep((hr1wanted[1]/mean(hr1[,yy,]))* hr1[,yy,]*landings.ratio1[,yy,]*apply(pop1[,yy+1,,],c(1,2), sum) ,1,wts,"*"))/SIMNUMBER
-%        tac.constrained <- c(quota1[,yy,,]*0.85, quota1[,yy,,]*1.15)
-%        quota1[,yy+1,,] <- max(min(prel.quota, tac.constrained[2]), tac.constrained[1])
-        
-        
-%From an economic perspective, a linear increase towards maximum TAC is the optimal strategy under plausible assumptions on market demand for fish and harvesting cost, as shown in Froese et al., 2010. The economic rationale is that, beyond Blim, the stock is within safe biological limits, and as it becomes more and more productive, it is able to supply the market to an increasing extent. 
-
-%A linear reduction in fishing mortality has been implemented in Australia (DAFF 2007) a nd is common in the USA. The differences between a linear decline in fishing mortality and a linear decline in TAC are small, see Figure A2 in Appendix S4.     
-
-%estimating the hr Fisheries are managed by a total allowable catch (TAC). A maximum TAC is set for each stock so that the respective target biomass is maintained
-%on average. This maximum TAC may be taken as long as biomass fluctuations remain above Bmsy. 
 
 
 \subsection{Scenarios}
 
-The model was set up in three consecutive time windows. In the first window of 10 years, newborns entered the population in the absence of fishing. This resulted in a virgin stock status. Then, the fleet of 8000 vessels started fishing in the absence of any fisheries regulations. This window lasted 15 years and gradually resulted in a situation where the stocks were overfished, i.e. the harvest rates were larger than $H_{max}$. Finally, the management procedure started where the HCR controls the annual quotas.  
+The model was set up in three consecutive time windows. In the first window of 10 years, newborns entered the population in the absence of fishing. This resulted in a virgin stock status. Then, the fleet of 8000 vessels started fishing in the absence of any fisheries regulations. This window lasted 15 years and gradually resulted in a situation where the stocks were overfished, i.e. the harvest rates were larger than $H_{max}$. During this period the fishery was unmanaged, by meaned with unconstrained quota for both species. Finally, the management procedure started where the HCR, fishing at harvest rates equal to $H_{i,max}$, controls the annual quotas. This last period lasted 15 years. 
       
-The two management strategies we considered differ simply by the 
+The two management scenarios considered differ simply by the number of stocks forced to meet the objective of the plan. For this purpose, species 1 was the one to do so in first scenario, while in second scenario both species were controlled by HCR. The comparison among these scenarios allowed the evaluation of costs and benefits, both economic and in terms of risks to both stock and livelihoods, that resulted from the response of individual effort allocation to meet the objective of the management plan.
+ 
 
-
-formulae used to determine exploitation rates (HCR). These management strategies were chosen such that, if  the  management  model  was  the  correct  model  of  reality,  the corresponding  equilibrium  state  of  the  system  would  meet  the  objective  of  the  plan. For this purpose, each strategy was implemented after a period where the fishery was unmanaged, by meaned with unconstrained quota for both species.
-
-The comparison among these scenarios resulted in the 
-However, the  long term benefits to fisheries that could result from improved selectivity are ignored in those studies. Ignoring the potential for improved selectivity leaves out a key element in the perceived benefit of the LO. Because the LO should provide incentives for the use of more selective gears and for fisheries to  move away from areas with high levels of unwanted catch \cite{Alzorriz2016, Alzorriz2018}, the improved selectivity should lead to higher long term catches. Achieving single species MSY while landing all commercial catches in fisheries targeting multiple species (mixed fisheries) is challenging because achieving the objective for one species may mean missing the objective for another \cite{Batsleer2013,Ulrich2017}. Forecasting whether such management will be effective depends on understanding the response of individual effort allocation to the management.
-
-%\begin{table}[!h]
-%\centering
-%\caption{}
-%\label{scenarios}
-%\resizebox{0.8\textwidth}{!}{%
-%\begin{tabular}{l c c}
-%\hline
-%                                & \textbf{MP}            & \textbf{LO}                  \\ 
-%                                & \textit{(landings selectivity)}& \textit{(fulll avoidance of discards)}\\ \hline
-%& &   \\
-%Discarding                      & Allowed                        & Not allowed                 \\
-%Manager catch perception        & $C = L + D$                    &        $C = L$ ($D = 0$)    \\
-%Selectivity ($l_{ratio}$)       &  $ \neq 1$                     & $=1$                      \\
-%Yield per recruitment model     & based in $F_L$                 &       based in $F_C$          \\
-
-%&  &   \\\hline
-%\end{tabular}
-%}
-%\end{table}
-% 
-%\begin{enumerate}
-
-%\item
-%\textbf{MP Scenario: Landings selectivity},  under this scenario the fishery is under landings selectivity, only landings contribute to yield. Fishing mortality accounts for all catches, regardless wether these catches are landed or discarded.
-
-%\item
-%\textbf{LO Scenario: Fulll avoidance of discards}, this scenario contemplates the LO with landings selectivity only and fulll avoidance of discards.
-
-
-%\end{enumerate}
-
-
+%changes in selectivity.  
+%These management scenarios were chosen such that, if the management model was the correct model of reality, the corresponding equilibrium state of the system would meet the objective of the plan. 
 
 \section{Results}
 
@@ -343,19 +271,22 @@ The implementation of LO caused an increase in TACs and revenues were higher tha
 \begin{figure}[!ht]
 \centering
 \includegraphics[width=\textwidth]{Figures/Catches.eps} 
-\caption{Modelled total annual catches (thousand tonnes) for all vessels for both (a,c) species 1 and (b,d) species 2 in relation to the available individual quota (red line). In panels (a,b) only species 1 quota constrained the fishery, while in (c,d) both species quota constrained the fishery. MP year reflects the year where the management plan was introduced}
+\caption{Modelled total annual catches (thousand tonnes) for all vessels for both (a,c) species 1 and (b,d) species 2 in relation to the available individual quota (red line). In panels (a,b) only species 1 quota constrained the fishery, while in (c,d) both species quota constrained the fishery. MP year reflects the year where the management plan was introduced.}
+\label{f:catches}
 \end{figure}
 
 \begin{figure}[!ht]
 \centering
 \includegraphics[width=\textwidth]{Figures/Selectivity.eps} 
 \caption{Modelled changes in selectivity for both (a,c) species 1 and (b,d) species 2 in relation to the catch decision options made based in the availble individual quota. In panels (a,b) only species 1 quota constrained the fishery, while in (c,d) both species quota constrained the fishery. Black lines: selectivity curve before the MP period; grey line: selectivity curve after the introduction of the MP.}
+\label{f:selectivity}
 \end{figure}
 
 \begin{figure}[!ht]
 \centering
 \includegraphics[width=\textwidth]{Figures/Yields.eps} 
 \caption{Modelled yield per recruitment curves (thousand tonnes) for both (a,c) species 1 and (b,d) species 2 in relation to the management plan period (black line: period before the MP; grey line: period after the introduction of the MP). (a,c,d) After the introduction of the MP all species are underharvested to reach Fmsy, while in (b) species 2 is overharvested due to the abscence of any quota restriction.}
+\label{f:yields}
 \end{figure}
 
 \begin{figure}[!ht]
@@ -368,6 +299,7 @@ The implementation of LO caused an increase in TACs and revenues were higher tha
 \centering
 \includegraphics[width=\textwidth]{Figures/Catchesbyarea.eps} 
 \caption{Modelled catches (thousand tonnes/year) by area (blue line: Northern area, red line: Southern area) for both (a,c) species 1 and (b,d) species 2 in relation to the management plan period. In panels (a,b) only species 1 quota constrained the fishery, while in (c,d) both species quota constrained the fishery. MP year reflects the year where the management plan was introduced.}
+\label{f:effortecon}
 \end{figure} 
 
 \begin{figure}[!ht]
@@ -380,6 +312,7 @@ The implementation of LO caused an increase in TACs and revenues were higher tha
 \centering
 \includegraphics[width=\textwidth]{Figures/Mean_Economics.eps} 
 \caption{Modelled main economics (thousand euro/ year) for the fleet under the management scenarios: (a-c) when the fishery is quota contrained only by species 1, while (d-f) both species constrained the fishery. Panels (a,d) and (b,e) shown the average annual net and grooss revenues, respectively, by vessel. MP year reflects the year where the management plan was introduced. Trade-offs between net revenue (black lline), gross revenue (grey line), fuel cost (blue line) and annual fines (red line) for the fleet are shown in panels (c,f).}
+\label{f:meanecon}
 \end{figure}
 %---
 
