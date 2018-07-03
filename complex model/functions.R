@@ -80,7 +80,7 @@ catch_dataframe_to_array <- function(dsvm_result, ages, season, areas, stock, ca
   names(catch)   <- c("cat", "season","option","data")
   
   catch          <- tapply(catch[,"data"], list(factor(x = catch[,"cat"], levels = unique(catch[,"cat"])), 
-                                                factor(x = catch[,"season"], levels = unique(catch[,"season"])), 
+                                                factor(x = catch[,"season"], levels = sort(unique(catch[,"season"]))), 
                                                 factor(x = catch[,"option"], levels = unique(areas))), sum)
   return(catch)
 }

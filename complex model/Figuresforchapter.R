@@ -8,41 +8,47 @@ setwd("~/Dropbox/BoB/MSE/Git/Nekane_MSE/doc/Figures")
 
 #DISTRIBUTIONS
 ##############################################################################
-postscript(file="Distributions.eps", onefile=FALSE, horizontal=FALSE,width=5,height=4.25)
+postscript(file="Distributions.eps", onefile=FALSE, horizontal=FALSE,width=8.5,height=3.25)
 load("~/Dropbox/BoB/MSE/Git/Nekane_MSE/complex model/1quota12seasons.RData")
-par(oma=c(0,0,0,0), mar=c(4.1, 4.1, 3.1, 1.1))
-split.screen( rbind(c(0, .8,0,1), c(.8,1,0,1)))
+par(oma=c(0,0,0,0), mar=c(4.1, 4.1, 1.1, 1.1))
+split.screen( rbind(c(0, .9,0,1), c(.9,1,0,1)))
 
-split.screen(c(2,1), screen=1)-> ind
+split.screen(c(1,2), screen=1)-> ind
 screen( ind[1])
-image(matrix(round(aperm(pop1[,(stab.model-1),,],c(2,1,3))), ncol=2)[ , c(2,1)], col=gray((0:64)/64), axes=F, main= "Species 1", ylab="Area" )
+image(matrix(round(aperm(pop1[,(stab.model-1),,],c(2,1,3))), ncol=2)[ , c(2,1)], col=gray((0:64)/64), axes=F, main= "", ylab="" )
 box()
+mtext("Species 1", side=1, line = -1.3, adj = 0.99, font=2, cex = 1)
+mtext(text="Area"  ,side=2,line=2     , adj = 0.50, font=2)
+
 axis(2,at= seq(0.,1,1),labels= c("S","N"), las=1)
 axis(1,at= seq(0.,0.833,0.166),labels= seq(1:max(ages)))
 
 screen( ind[2])
-image(matrix(round(aperm(pop2[,(stab.model-1),,],c(2,1,3))), ncol=2)[ , c(2,1)], col=gray((0:64)/64), axes=F, main="Species 2", xlab="Age (years)", ylab="Area")
+image(matrix(round(aperm(pop2[,(stab.model-1),,],c(2,1,3))), ncol=2)[ , c(2,1)], col=gray((0:64)/64), axes=F, main="", xlab="", ylab="")
 box()
+mtext("Species 2", side=1, line = -1.3, adj = 0.99, font=2, cex = 1)
+mtext(text="Age (year)"  ,side=1,line=2,, adj = -0.60, font=2)
 axis(2,at= seq(0.,1,1),labels= c("S","N"), las=1)
 axis(1,at= seq(0.,0.833,0.166),labels= seq(1:max(ages)))
 
 #image.plot(matrix(round(aperm(pop1[,5,,],c(2,1,3))), ncol=2), col=gray((0:64)/64),  main= "Species 1" )
 screen(2)
-image.plot(legend.only=T,zlim=c(0,400),  col=gray((0:64)/64),  smallplot=c(.2,.4, .3,.7))
+image.plot(legend.only=T,zlim=c(0,400),  col=gray((0:64)/64), smallplot=c(.15,.35, .4,.7))
 close.screen( all=TRUE)
 dev.off()
 
 #PRICES
 ##############################################################################
-postscript(file="Prices.eps", onefile=FALSE, horizontal=FALSE,width=4.25,height=4.25)
-par(mar = c(5,5,2,5))
-plot(x=seq(min(ages)+((1/max(season))/2), max(ages+1),1/max(season)),y=sort(c(sp1Price)),
-     xlab="Age (year)", ylab= "Price (euro per ton)", ylim=c(0,max(sp1Price)), type="l", lty=1, las=1)
+postscript(file="Prices.eps", onefile=FALSE, horizontal=FALSE,width=4.25,height=3.25)
+par(mar = c(3,5,2,4))
+plot(x=seq(min(ages)+((1/max(season))/2), max(ages+1),1/max(season)),y=sort(c(sp1Price)), xlab="", ylab= "", ylim=c(0,max(sp1Price)), type="l", lty=1, las=1)
+mtext(side = 2, line = 3.5, 'Price (euro per ton)', font=2)
+mtext(side = 1, line = 2, 'Age (year)', font=2)
 par(new = T)
 plot(x=seq(min(ages)+((1/max(season))/2), max(ages+1),1/max(season)),
      y=c(lens),ylim=c(0,max(lens)), axes=F, xlab=NA,ylab=NA, type="l",lty=2)
 axis(side = 4)
-mtext(side = 4, line = 3, 'Fish length (cm)', font=2)
+mtext(side = 4, line = 2.5, 'Fish length (cm)', font=2)
 legend("bottomright", inset=.05, legend=c("Price", "Length"), pch=c(NA, NA), lty=c(1,2), lwd=c(2.5,2.5),col=c("black","black"), bty='n',text.font =2, cex=0.8)
 dev.off()
 
