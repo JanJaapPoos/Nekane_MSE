@@ -126,7 +126,7 @@ MPstart       <- 25
 #MPstartLO     <- 26
 
 SIMNUMBER     <- 8000 #pos 8000 WORKS
-SIGMA         <- 5000 #sig 6500 WORKS
+SIGMA         <- 4000#5000 #sig 6500 WORKS
 SPP1DSCSTEPS  <- 0
 SPP2DSCSTEPS  <- 0
 endy          <- stab.model + NUMRUNS
@@ -145,10 +145,10 @@ natmortality  <- 0.0001
 
 migconstant   <- 0.025 # 
 sp1price      <- sp2price      <- 30000
-slope1price <- 1000
-slope2price <- 1000 # 0.50*150
+slope1price <- 0.50*sp1price
+slope2price <- 0.50*sp2price#1000 # 0.50*150
 
-FuelPrice   <- 0
+FuelPrice   <- 2000
 
 # scenario I: discarding is not allowed, YPR based in C (C=L)
 # scenario II: discarding is allowed, YPR based in L, hr wanted based in catches
@@ -242,7 +242,7 @@ for(yy in (stab.model):(stab.model+NUMRUNS)){
   # if we are in MP period, then set quota based on last year
   if (yy > MPstart){
     control@spp1LndQuota <-  quota1[,yy,,]
-    control@spp2LndQuota <-  quota2[,yy,,]
+    #control@spp2LndQuota <-  quota2[,yy,,]
   }
   
   # because we wanted gradual introduction of vessels, we only put all vessels after stabmodel. First line is not strictly necessary becuase already defined when constructing control 

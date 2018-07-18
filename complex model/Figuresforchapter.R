@@ -284,7 +284,7 @@ abline(v=MPstart-9.5, lty=2)
 box()
 mtext("(a)", side=1, line = -1.3, adj = 0.03, font=2, cex = 1) 
 
-ylim= c(0, ceiling(max(aggregate(value ~ year, FUN=sum, data=netrev)[-c(1:5),])))
+ylim= c(0, ceiling(max(aggregate(value ~ year, FUN=sum, data=grossrev)[-c(1:5),])))
 plot(aggregate(value ~ year, FUN=sum, data=netrev), type="l", ylim=ylim, xlab = "Year", ylab = "Total net revenue", xaxt = "n", panel.first=grid(NA, NULL,col = "ivory2"))
 lines(aggregate(value ~ year, FUN=sum, data=netrev), type="l")
 lines(aggregate(value ~ year, FUN=sum, data=grossrev), type="l", col="gray")
@@ -309,7 +309,7 @@ abline(v=MPstart-9.5, lty=2)
 box()
 mtext("(c)", side=1, line = -1.3, adj = 0.03, font=2, cex = 1)
 
-ylim= c(0, ceiling(max(aggregate(value ~ year, FUN=sum, data=netrev)[-c(1:5),])))
+#ylim= c(0, ceiling(max(aggregate(value ~ year, FUN=sum, data=netrev)[-c(1:5),])))
 plot(aggregate(value ~ year, FUN=sum, data=netrev), type="l", ylim=ylim, xlab = "Year", ylab = "Total net revenue", xaxt = "n", panel.first=grid(NA, NULL,col = "ivory2"))
 lines(aggregate(value ~ year, FUN=sum, data=netrev), type="l")
 lines(aggregate(value ~ year, FUN=sum, data=grossrev), type="l", col="gray")
@@ -323,7 +323,6 @@ mtext("(d)", side=1, line = -1.3, adj = 0.03, font=2, cex = 1)
 legend("bottomright", inset=.05, legend=c("Net revenue","Gross revenue", "Fuel cost", "Annual fine"), pch=c(1,1,1,1), lwd=c(2,2,2,2),col=c("black","gray","blue","red"), bty='n',text.font =2, cex=0.8)
 
 mtext(text="Year",side=1,line=0,font=2,outer=TRUE)
-
 
 dev.off()
 
