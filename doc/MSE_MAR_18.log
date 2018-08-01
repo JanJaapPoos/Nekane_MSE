@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex 2017.9.14)  23 JUL 2018 16:30
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex 2017.9.14)  1 AUG 2018 09:14
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -501,16 +501,20 @@ Package epstopdf Info: Source file: <Figures/MSE.eps>
 (epstopdf)                    size: 88892 bytes
 (epstopdf)             Command: <repstopdf --outfile=Figures/MSE-eps-converted-
 to.pdf Figures/MSE.eps>
-(epstopdf)             \includegraphics on input line 66.
+(epstopdf)             \includegraphics on input line 61.
 Package epstopdf Info: Output file is already uptodate.
 
 <Figures/MSE-eps-converted-to.pdf, id=20, 742.775pt x 589.20125pt>
 File: Figures/MSE-eps-converted-to.pdf Graphic file (type pdf)
 
 <use Figures/MSE-eps-converted-to.pdf>
-Package pdftex.def Info: Figures/MSE-eps-converted-to.pdf used on input line 66
+Package pdftex.def Info: Figures/MSE-eps-converted-to.pdf used on input line 61
 .
 (pdftex.def)             Requested size: 249.13371pt x 197.61963pt.
+
+
+LaTeX Warning: `!h' float specifier changed to `!ht'.
+
 Package epstopdf Info: Source file: <Figures/Areadynamics.eps>
 (epstopdf)                    date: 2018-06-20 14:30:41
 (epstopdf)                    size: 765304 bytes
@@ -520,65 +524,67 @@ Package epstopdf Info: Source file: <Figures/Areadynamics.eps>
 (epstopdf)                    size: 320771 bytes
 (epstopdf)             Command: <repstopdf --outfile=Figures/Areadynamics-eps-c
 onverted-to.pdf Figures/Areadynamics.eps>
-(epstopdf)             \includegraphics on input line 73.
+(epstopdf)             \includegraphics on input line 68.
 Package epstopdf Info: Output file is already uptodate.
-
 <Figures/Areadynamics-eps-converted-to.pdf, id=21, 471.7625pt x 600.2425pt>
 File: Figures/Areadynamics-eps-converted-to.pdf Graphic file (type pdf)
 
 <use Figures/Areadynamics-eps-converted-to.pdf>
 Package pdftex.def Info: Figures/Areadynamics-eps-converted-to.pdf used on inpu
-t line 73.
+t line 68.
 (pdftex.def)             Requested size: 181.18439pt x 230.53079pt.
 
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
-LaTeX Font Info:    Try loading font information for U+msa on input line 81.
+LaTeX Font Info:    Try loading font information for U+msa on input line 76.
 (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Try loading font information for U+msb on input line 81.
+LaTeX Font Info:    Try loading font information for U+msb on input line 76.
 
 (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
-LaTeX Font Info:    Try loading font information for U+lasy on input line 81.
+LaTeX Font Info:    Try loading font information for U+lasy on input line 76.
 
 (/usr/share/texlive/texmf-dist/tex/latex/base/ulasy.fd
 File: ulasy.fd 1998/08/17 v2.2e LaTeX symbol font definitions
-) [5 <./Figures/MSE-eps-converted-to.pdf>] [6 <./Figures/Areadynamics-eps-conve
+) [5] [6 <./Figures/MSE-eps-converted-to.pdf> <./Figures/Areadynamics-eps-conve
 rted-to.pdf>] [7]
-[8] [9] [10]
+[8] [9]
+
+LaTeX Warning: `!h' float specifier changed to `!ht'.
+
+[10] [11]
 Package epstopdf Info: Source file: <Figures/Distributions.eps>
-(epstopdf)                    date: 2018-07-23 16:15:56
+(epstopdf)                    date: 2018-07-29 15:53:42
 (epstopdf)                    size: 30628 bytes
 (epstopdf)             Output file: <Figures/Distributions-eps-converted-to.pdf
 >
-(epstopdf)                    date: 2018-07-23 16:16:07
+(epstopdf)                    date: 2018-07-29 15:54:06
 (epstopdf)                    size: 14174 bytes
 (epstopdf)             Command: <repstopdf --outfile=Figures/Distributions-eps-
 converted-to.pdf Figures/Distributions.eps>
-(epstopdf)             \includegraphics on input line 219.
+(epstopdf)             \includegraphics on input line 214.
 Package epstopdf Info: Output file is already uptodate.
 
-<Figures/Distributions-eps-converted-to.pdf, id=53, 561.09625pt x 234.8775pt>
+<Figures/Distributions-eps-converted-to.pdf, id=56, 561.09625pt x 234.8775pt>
 File: Figures/Distributions-eps-converted-to.pdf Graphic file (type pdf)
 
 <use Figures/Distributions-eps-converted-to.pdf>
 Package pdftex.def Info: Figures/Distributions-eps-converted-to.pdf used on inp
-ut line 219.
-(pdftex.def)             Requested size: 452.9679pt x 189.61179pt.
- [11]
+ut line 214.
+(pdftex.def)             Requested size: 362.37569pt x 151.69014pt.
 Package epstopdf Info: Source file: <Figures/Prices.eps>
-(epstopdf)                    date: 2018-07-23 16:15:56
+(epstopdf)                    date: 2018-07-29 15:53:42
 (epstopdf)                    size: 7118 bytes
 (epstopdf)             Output file: <Figures/Prices-eps-converted-to.pdf>
-(epstopdf)                    date: 2018-07-23 16:16:07
+(epstopdf)                    date: 2018-07-29 15:54:06
 (epstopdf)                    size: 12655 bytes
 (epstopdf)             Command: <repstopdf --outfile=Figures/Prices-eps-convert
 ed-to.pdf Figures/Prices.eps>
-(epstopdf)             \includegraphics on input line 230.
+(epstopdf)             \includegraphics on input line 225.
 Package epstopdf Info: Output file is already uptodate.
 
 <Figures/Prices-eps-converted-to.pdf, id=57, 307.1475pt x 234.8775pt>
@@ -586,19 +592,19 @@ File: Figures/Prices-eps-converted-to.pdf Graphic file (type pdf)
 
 <use Figures/Prices-eps-converted-to.pdf>
 Package pdftex.def Info: Figures/Prices-eps-converted-to.pdf used on input line
- 230.
+ 225.
 (pdftex.def)             Requested size: 226.48395pt x 173.19377pt.
  [12 <./Figures/Distributions-eps-converted-to.pdf>] [13 <./Figures/Prices-eps-
 converted-to.pdf>] [14]
 Package epstopdf Info: Source file: <Figures/Catches.eps>
-(epstopdf)                    date: 2018-07-23 16:15:57
-(epstopdf)                    size: 25547 bytes
+(epstopdf)                    date: 2018-07-29 15:53:43
+(epstopdf)                    size: 26419 bytes
 (epstopdf)             Output file: <Figures/Catches-eps-converted-to.pdf>
-(epstopdf)                    date: 2018-07-23 16:16:07
-(epstopdf)                    size: 23519 bytes
+(epstopdf)                    date: 2018-07-29 15:54:07
+(epstopdf)                    size: 24138 bytes
 (epstopdf)             Command: <repstopdf --outfile=Figures/Catches-eps-conver
 ted-to.pdf Figures/Catches.eps>
-(epstopdf)             \includegraphics on input line 271.
+(epstopdf)             \includegraphics on input line 264.
 Package epstopdf Info: Output file is already uptodate.
 
 <Figures/Catches-eps-converted-to.pdf, id=88, 561.09625pt x 469.755pt>
@@ -606,157 +612,161 @@ File: Figures/Catches-eps-converted-to.pdf Graphic file (type pdf)
 
 <use Figures/Catches-eps-converted-to.pdf>
 Package pdftex.def Info: Figures/Catches-eps-converted-to.pdf used on input lin
-e 271.
-(pdftex.def)             Requested size: 452.9679pt x 379.22359pt.
+e 264.
+(pdftex.def)             Requested size: 362.37569pt x 303.38031pt.
+ [15]
 Package epstopdf Info: Source file: <Figures/Selectivity.eps>
-(epstopdf)                    date: 2018-07-23 16:15:58
-(epstopdf)                    size: 13884 bytes
+(epstopdf)                    date: 2018-07-29 15:53:44
+(epstopdf)                    size: 13885 bytes
 (epstopdf)             Output file: <Figures/Selectivity-eps-converted-to.pdf>
-(epstopdf)                    date: 2018-07-23 16:16:08
-(epstopdf)                    size: 16723 bytes
+(epstopdf)                    date: 2018-07-29 15:54:07
+(epstopdf)                    size: 16735 bytes
 (epstopdf)             Command: <repstopdf --outfile=Figures/Selectivity-eps-co
 nverted-to.pdf Figures/Selectivity.eps>
-(epstopdf)             \includegraphics on input line 278.
+(epstopdf)             \includegraphics on input line 274.
 Package epstopdf Info: Output file is already uptodate.
 
-<Figures/Selectivity-eps-converted-to.pdf, id=89, 561.09625pt x 469.755pt>
+<Figures/Selectivity-eps-converted-to.pdf, id=92, 561.09625pt x 469.755pt>
 File: Figures/Selectivity-eps-converted-to.pdf Graphic file (type pdf)
 
 <use Figures/Selectivity-eps-converted-to.pdf>
 Package pdftex.def Info: Figures/Selectivity-eps-converted-to.pdf used on input
- line 278.
-(pdftex.def)             Requested size: 452.9679pt x 379.22359pt.
+ line 274.
+(pdftex.def)             Requested size: 362.37569pt x 303.38031pt.
+ [16 <./Figures/Catches-eps-converted-to.pdf>]
 Package epstopdf Info: Source file: <Figures/Yields.eps>
-(epstopdf)                    date: 2018-07-23 16:15:58
-(epstopdf)                    size: 53446 bytes
+(epstopdf)                    date: 2018-07-29 15:53:44
+(epstopdf)                    size: 53490 bytes
 (epstopdf)             Output file: <Figures/Yields-eps-converted-to.pdf>
-(epstopdf)                    date: 2018-07-23 16:16:08
-(epstopdf)                    size: 35362 bytes
+(epstopdf)                    date: 2018-07-29 15:54:07
+(epstopdf)                    size: 35360 bytes
 (epstopdf)             Command: <repstopdf --outfile=Figures/Yields-eps-convert
 ed-to.pdf Figures/Yields.eps>
-(epstopdf)             \includegraphics on input line 285.
+(epstopdf)             \includegraphics on input line 284.
 Package epstopdf Info: Output file is already uptodate.
 
-<Figures/Yields-eps-converted-to.pdf, id=90, 561.09625pt x 469.755pt>
+<Figures/Yields-eps-converted-to.pdf, id=106, 561.09625pt x 469.755pt>
 File: Figures/Yields-eps-converted-to.pdf Graphic file (type pdf)
 
 <use Figures/Yields-eps-converted-to.pdf>
 Package pdftex.def Info: Figures/Yields-eps-converted-to.pdf used on input line
- 285.
-(pdftex.def)             Requested size: 452.9679pt x 379.22359pt.
+ 284.
+(pdftex.def)             Requested size: 362.37569pt x 303.38031pt.
+ [17 <./Figures/Selectivity-eps-converted-to.pdf>] [18 <./Figures/Yields-eps-co
+nverted-to.pdf>]
 Package epstopdf Info: Source file: <Figures/Efforteconomics.eps>
-(epstopdf)                    date: 2018-07-23 16:16:02
-(epstopdf)                    size: 28298 bytes
+(epstopdf)                    date: 2018-07-29 15:53:48
+(epstopdf)                    size: 28746 bytes
 (epstopdf)             Output file: <Figures/Efforteconomics-eps-converted-to.p
 df>
-(epstopdf)                    date: 2018-07-23 16:16:08
-(epstopdf)                    size: 16903 bytes
+(epstopdf)                    date: 2018-07-29 15:54:08
+(epstopdf)                    size: 16940 bytes
 (epstopdf)             Command: <repstopdf --outfile=Figures/Efforteconomics-ep
 s-converted-to.pdf Figures/Efforteconomics.eps>
-(epstopdf)             \includegraphics on input line 292.
+(epstopdf)             \includegraphics on input line 294.
 Package epstopdf Info: Output file is already uptodate.
 
-<Figures/Efforteconomics-eps-converted-to.pdf, id=91, 561.09625pt x 469.755pt>
+<Figures/Efforteconomics-eps-converted-to.pdf, id=133, 561.09625pt x 469.755pt>
 File: Figures/Efforteconomics-eps-converted-to.pdf Graphic file (type pdf)
-
 <use Figures/Efforteconomics-eps-converted-to.pdf>
 Package pdftex.def Info: Figures/Efforteconomics-eps-converted-to.pdf used on i
-nput line 292.
-(pdftex.def)             Requested size: 452.9679pt x 379.22359pt.
+nput line 294.
+(pdftex.def)             Requested size: 362.37569pt x 303.38031pt.
+ [19 <./Figures/Efforteconomics-eps-converted-to.pdf>]
 Package epstopdf Info: Source file: <Figures/Catchesbyarea.eps>
-(epstopdf)                    date: 2018-07-23 16:16:03
-(epstopdf)                    size: 22426 bytes
+(epstopdf)                    date: 2018-07-29 15:53:49
+(epstopdf)                    size: 23302 bytes
 (epstopdf)             Output file: <Figures/Catchesbyarea-eps-converted-to.pdf
 >
-(epstopdf)                    date: 2018-07-23 16:16:09
-(epstopdf)                    size: 15160 bytes
+(epstopdf)                    date: 2018-07-29 15:54:08
+(epstopdf)                    size: 15315 bytes
 (epstopdf)             Command: <repstopdf --outfile=Figures/Catchesbyarea-eps-
 converted-to.pdf Figures/Catchesbyarea.eps>
-(epstopdf)             \includegraphics on input line 298.
+(epstopdf)             \includegraphics on input line 303.
 Package epstopdf Info: Output file is already uptodate.
 
-<Figures/Catchesbyarea-eps-converted-to.pdf, id=92, 561.09625pt x 469.755pt>
+<Figures/Catchesbyarea-eps-converted-to.pdf, id=148, 561.09625pt x 469.755pt>
 File: Figures/Catchesbyarea-eps-converted-to.pdf Graphic file (type pdf)
 
 <use Figures/Catchesbyarea-eps-converted-to.pdf>
 Package pdftex.def Info: Figures/Catchesbyarea-eps-converted-to.pdf used on inp
-ut line 298.
-(pdftex.def)             Requested size: 452.9679pt x 379.22359pt.
+ut line 303.
+(pdftex.def)             Requested size: 362.37569pt x 303.38031pt.
 Package epstopdf Info: Source file: <Figures/Meaneffort.eps>
-(epstopdf)                    date: 2018-07-23 16:16:02
-(epstopdf)                    size: 16183 bytes
+(epstopdf)                    date: 2018-07-29 15:53:48
+(epstopdf)                    size: 16121 bytes
 (epstopdf)             Output file: <Figures/Meaneffort-eps-converted-to.pdf>
-(epstopdf)                    date: 2018-07-23 16:16:09
-(epstopdf)                    size: 14120 bytes
+(epstopdf)                    date: 2018-07-29 15:54:08
+(epstopdf)                    size: 14160 bytes
 (epstopdf)             Command: <repstopdf --outfile=Figures/Meaneffort-eps-con
 verted-to.pdf Figures/Meaneffort.eps>
-(epstopdf)             \includegraphics on input line 305.
+(epstopdf)             \includegraphics on input line 312.
 Package epstopdf Info: Output file is already uptodate.
 
-<Figures/Meaneffort-eps-converted-to.pdf, id=93, 561.09625pt x 469.755pt>
+<Figures/Meaneffort-eps-converted-to.pdf, id=149, 561.09625pt x 469.755pt>
 File: Figures/Meaneffort-eps-converted-to.pdf Graphic file (type pdf)
 
 <use Figures/Meaneffort-eps-converted-to.pdf>
 Package pdftex.def Info: Figures/Meaneffort-eps-converted-to.pdf used on input 
-line 305.
-(pdftex.def)             Requested size: 452.9679pt x 379.22359pt.
+line 312.
+(pdftex.def)             Requested size: 362.37569pt x 303.38031pt.
+ [20]
 Package epstopdf Info: Source file: <Figures/Mean_Economics.eps>
-(epstopdf)                    date: 2018-07-23 16:20:28
-(epstopdf)                    size: 57203 bytes
+(epstopdf)                    date: 2018-07-29 15:53:51
+(epstopdf)                    size: 107852 bytes
 (epstopdf)             Output file: <Figures/Mean_Economics-eps-converted-to.pd
 f>
-(epstopdf)                    date: 2018-07-23 16:20:41
-(epstopdf)                    size: 21536 bytes
+(epstopdf)                    date: 2018-07-29 15:54:08
+(epstopdf)                    size: 22206 bytes
 (epstopdf)             Command: <repstopdf --outfile=Figures/Mean_Economics-eps
 -converted-to.pdf Figures/Mean_Economics.eps>
-(epstopdf)             \includegraphics on input line 311.
+(epstopdf)             \includegraphics on input line 321.
 Package epstopdf Info: Output file is already uptodate.
 
-<Figures/Mean_Economics-eps-converted-to.pdf, id=94, 561.09625pt x 469.755pt>
+<Figures/Mean_Economics-eps-converted-to.pdf, id=153, 561.09625pt x 469.755pt>
 File: Figures/Mean_Economics-eps-converted-to.pdf Graphic file (type pdf)
 
 <use Figures/Mean_Economics-eps-converted-to.pdf>
 Package pdftex.def Info: Figures/Mean_Economics-eps-converted-to.pdf used on in
-put line 311.
-(pdftex.def)             Requested size: 452.9679pt x 379.22359pt.
- [15] [16 <./Figures/Catches-eps-converted-to.pdf>] [17 <./Figures/Selectivity-
-eps-converted-to.pdf>]
-[18 <./Figures/Yields-eps-converted-to.pdf>] [19 <./Figures/Efforteconomics-eps
--converted-to.pdf>] [20 <./Figures/Catchesbyarea-eps-converted-to.pdf>]
-[21 <./Figures/Meaneffort-eps-converted-to.pdf>] [22 <./Figures/Mean_Economics-
-eps-converted-to.pdf>]
-Missing character: There is no â in font cmr12!
-Missing character: There is no € in font cmr12!
-Missing character: There is no ™ in font cmr12!
- [23
+put line 321.
+(pdftex.def)             Requested size: 362.37569pt x 303.38031pt.
+LaTeX Font Info:    Try loading font information for OMS+cmr on input line 330.
 
-] [24] (./MSE_MAR_18.bbl [25] [26] [27]) [28]
-(./MSE_MAR_18.aux) ) 
+
+(/usr/share/texlive/texmf-dist/tex/latex/base/omscmr.fd
+File: omscmr.fd 2014/09/29 v2.5h Standard LaTeX font definitions
+)
+LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <12> not available
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 330.
+ [21 <./Figures/Catchesbyarea-eps-converted-to.pdf>] [22 <./Figures/Meaneffort-
+eps-converted-to.pdf>]
+(./MSE_MAR_18.bbl [23 <./Figures/Mean_Economics-eps-converted-to.pdf>] [24]
+[25]) [26] (./MSE_MAR_18.aux) ) 
 Here is how much of TeX's memory you used:
- 5040 strings out of 493029
- 71326 string characters out of 6136234
- 154328 words of memory out of 5000000
- 8410 multiletter control sequences out of 15000+600000
+ 5059 strings out of 493029
+ 71642 string characters out of 6136234
+ 151695 words of memory out of 5000000
+ 8426 multiletter control sequences out of 15000+600000
  11375 words of font info for 44 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 38i,13n,35p,1811b,283s stack positions out of 5000i,500n,10000p,200000b,80000s
-</usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/
-cm/cmbx10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmb
-x12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pf
-b></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb></us
-r/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb></usr/share
-/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/share/texliv
-e/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf
--dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/share/texlive/texmf-dist/f
-onts/type1/public/amsfonts/cm/cmr17.pfb></usr/share/texlive/texmf-dist/fonts/ty
-pe1/public/amsfonts/cm/cmr8.pfb></usr/share/texlive/texmf-dist/fonts/type1/publ
-ic/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/ams
-fonts/cm/cmsy8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/c
-m/cmti12.pfb>
-Output written on MSE_MAR_18.pdf (28 pages, 754076 bytes).
+ 38i,13n,35p,1985b,283s stack positions out of 5000i,500n,10000p,200000b,80000s
+</usr/share/texlive/texmf-dist/fonts/type1/publi
+c/amsfonts/cm/cmbx10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsf
+onts/cm/cmbx12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/c
+m/cmex10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi
+12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb>
+</usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/s
+hare/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/te
+xlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/share/texlive/t
+exmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/share/texlive/texmf-di
+st/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/share/texlive/texmf-dist/fonts
+/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1
+/public/amsfonts/cm/cmsy8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public
+/amsfonts/cm/cmti12.pfb>
+Output written on MSE_MAR_18.pdf (26 pages, 761654 bytes).
 PDF statistics:
- 253 PDF objects out of 1000 (max. 8388607)
- 169 compressed objects within 2 object streams
+ 247 PDF objects out of 1000 (max. 8388607)
+ 165 compressed objects within 2 object streams
  0 named destinations out of 1000 (max. 500000)
  56 words of extra memory for PDF output out of 10000 (max. 10000000)
 
