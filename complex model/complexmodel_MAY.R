@@ -438,10 +438,13 @@ nompdays <- aggregate(effort~ option+season, FUN=mean, data=subset(daysmen,(year
 mpdays <- aggregate(effort~ option+season, FUN=mean, data=subset(daysmen,(year %in% c((yy-3):yy))))
 
 # First two rows are the NOMP area north and south. And 2 last rows, MP area north and south
-daysmen<- dcast(nompdays ,option~season, value.var="effort")
-daysmen<- rbind(daysmen, dcast(mpdays ,option~season, value.var="effort"))
-rownames(daysmen)  <- daysmen$option
-daysmen            <- daysmen[,-1]
+daysnomp <- dcast(nompdays ,option~season, value.var="effort")
+rownames(daysnomp) <- paste("nomp",daysnomp$option, sep="_")
+                            
+daysmp <- dcast(mpdays ,option~season, value.var="effort")
+rownames(daysmp) <- paste("mp",daysmp$option, sep="_")
+daysmen          <- rbind(daysnomp,daysmp)
+daysmen[,-1]
 
 #economics
 netrev      <-  melt(economics_res_allyrs, id.vars = "year", measure.vars = c("NetRev"))
