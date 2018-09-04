@@ -111,7 +111,7 @@ yield_curve <- function(hr,lratio, wts, natmortality, R=1, sequence = seq(0.001,
   return(res)
 }
 
-SIGMAS        <- seq(5000,100000,5000)   #SIGMA         <- 100 #comes from 2// chanheg from 300 to 200
+SIGMAS        <- seq(10000,100000,5000)   #SIGMA         <- 100 #comes from 2// chanheg from 300 to 200
 
 for (SIGMA in SIGMAS){
 
@@ -175,7 +175,7 @@ catches.wt.dsvm1      <- catches.wt.dsvm2      <- array(0, dim=c(length(ages),en
 landings.wt.dsvm1     <- landings.wt.dsvm2     <- array(0, dim=c(length(ages),endy,length(season),length(areas)), dimnames=list(cat=ages,   year=as.character(1:endy), season=as.character(season), option =areas))
 catches.wt.dsvm.tot1  <- catches.wt.dsvm.tot2  <- array(0, dim=c(1           ,endy,              1,            1), dimnames=list(cat="all", year=as.character(1:endy), season="all",                option ="all"))
 landings.wt.dsvm.tot1 <- landings.wt.dsvm.tot2 <- array(0, dim=c(1           ,endy,              1,            1), dimnames=list(cat="all", year=as.character(1:endy), season="all",                option ="all"))
-quota1                <- quota2                <- array(1000, dim=c(1           ,endy,              1,            1), dimnames=list(cat="all", year=as.character(1:endy), season="all",                option ="all"))
+quota1                <- quota2                <- array(5000, dim=c(1           ,endy,              1,            1), dimnames=list(cat="all", year=as.character(1:endy), season="all",                option ="all"))
 
 pos_catches1 <- pos_catches2 <- pop1
 
