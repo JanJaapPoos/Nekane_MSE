@@ -111,11 +111,9 @@ yield_curve <- function(hr,lratio, wts, natmortality, R=1, sequence = seq(0.001,
   return(res)
 }
 
-#SIGMAS        <- c(10, 40, 70, 100)   #SIGMA         <- 100 #comes from 2// chanheg from 300 to 200
-#NVESSELS      <- c(600, 700, 800)     #SIMNUMBER     <- 600
+SIGMAS        <- seq(5000,100000,5000)   #SIGMA         <- 100 #comes from 2// chanheg from 300 to 200
 
-#for (pos in NVESSELS){
-#  for (sig in SIGMAS){
+for (SIGMA in SIGMAS){
 
 ages          <- 1:6
 season        <- 1:12
@@ -123,10 +121,8 @@ areas         <- c("a", "b")
 stab.model    <- 10
 NUMRUNS       <- 30
 MPstart       <- 25
-#MPstartLO     <- 26
 
 SIMNUMBER     <- 8000 #pos 8000 WORKS
-SIGMA         <- 4000#5000 #sig 6500 WORKS
 SPP1DSCSTEPS  <- 0
 SPP2DSCSTEPS  <- 0
 endy          <- stab.model + NUMRUNS
@@ -134,7 +130,7 @@ endy          <- stab.model + NUMRUNS
 Linf          <- 50 #50
 K             <- 0.6 #0.4
 alpha         <- 0.0002#0.00005
-beta          <- 3
+beta          <- 2.4
 sages         <- array(seq(min(ages)+((1/max(season))/2), max(ages+1),1/max(season)), dim=c(length(season),1,length(ages),1), dimnames=list(season=as.character(season),   year="all", cat=ages, option ="all"))
 lens          <- Linf*(1-exp(-K*(sages)))
 wts           <- alpha * lens ^ beta
@@ -144,7 +140,7 @@ q             <- 0.000025
 natmortality  <- 0.0001
 
 migconstant   <- 0.025 # 
-sp1price      <- sp2price      <- 30000
+sp1price      <- sp2price      <- 5000
 slope1price <- 0.50*sp1price
 slope2price <- 0.50*sp2price#1000 # 0.50*150
 
@@ -154,7 +150,7 @@ FuelPrice   <- 2000
 # scenario II: discarding is allowed, YPR based in L, hr wanted based in catches
 # scenario III: discarding ocurred but not perceived, YPR based in L, hr wanted based in landings
 
-recs1          <- c(500,0) 
+recs1          <- c(500000,0) 
 mig1     <- array(0, dim=c(length(ages),1,length(season),length(areas), length(areas)), dimnames=list(cat=ages,year="all",season=as.character(season), from =areas, to=areas)) 
 mig1[,,,"a","a"] <- -migconstant
 mig1[,,,"b","b"] <- -migconstant
@@ -162,7 +158,7 @@ mig1[,,,"a","b"] <- migconstant
 mig1[,,,"b","a"] <- migconstant
 aperm( mig1,c(1,3,2,4,5))
 
-recs2          <- c(0,500) 
+recs2          <- c(0,500000) 
 mig2     <- array(0, dim=c(length(ages),1,length(season),length(areas), length(areas)), dimnames=list(cat=ages,year="all",season=as.character(season), from =areas, to=areas)) 
 mig2[,,,"a","a"] <- -migconstant
 mig2[,,,"b","b"] <- -migconstant
@@ -171,8 +167,6 @@ mig2[,,,"b","a"] <- migconstant
 aperm( mig2,c(1,3,2,4,5))
 
 effort <- array(c(1), dim=c(length(areas), length(season)), dimnames=list(option =areas,season=as.character(season)))
-
-
 
 pop1  <- pop2         <-array(0, dim=c(length(ages),endy+1,length(season),length(areas)), dimnames=list(cat=ages,   year=as.character(1:(endy+1)), season=as.character(season), option =areas))
 catches.n.dsvm1       <- catches.n.dsvm2       <- array(0, dim=c(length(ages),endy,length(season),length(areas)), dimnames=list(cat=ages,   year=as.character(1:endy), season=as.character(season), option =areas))
@@ -455,9 +449,10 @@ grossrev    <-  melt(economics_res_allyrs, id.vars = "year", measure.vars = c("G
 annualfine  <-  melt(economics_res_allyrs, id.vars = "year", measure.vars = c("Annualfine"))
 fuelcosts   <-  melt(economics_res_allyrs, id.vars = "year", measure.vars = c("Fuelcosts"))
 
-save.image("1quota12seasons.RData")
+save.image(paste0("1quota12seasons_",SIGMA,".RData"))
 #save.image("2quotas12seasons.RData")
 
-# rm(dsvm_res,dsvm_res_allyrs)
-# rm(economics_res,economics_res_allyrs)
-# rm(control, sp1, sp2, sp3, sp4, sp5)
+rm(dsvm_res,dsvm_res_allyrs)
+rm(economics_res,economics_res_allyrs)
+rm(control, sp1, sp2, sp3, sp4, sp5)
+}

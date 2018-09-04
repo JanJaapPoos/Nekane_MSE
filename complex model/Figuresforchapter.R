@@ -27,7 +27,7 @@ screen( ind[2])
 image(matrix(round(aperm(pop2[,(stab.model-1),,],c(2,1,3))), ncol=2)[ , c(2,1)], col=gray((0:72)/72), axes=F, main="", xlab="", ylab="")
 box()
 mtext("(b)", side=1, line = -1.3, adj = 0.96, font=2, cex = 1)
-mtext(text="Age (year)"  ,side=1,line=2,, adj = -0.60, font=2)
+mtext(text="Age (year)"  ,side=1,line=2, adj = -0.60, font=2)
 axis(2,at= seq(0.,1,1),labels= c("South","North"), las=1)
 axis(1,at= seq(0.,1,0.1666),labels= seq(1:max(ages+1)))
 
@@ -38,21 +38,29 @@ image.plot(legend.only=T,zlim=c(0,500),  col=gray((0:72)/72), smallplot=c(.15,.3
 close.screen( all=TRUE)
 dev.off()
 
-#PRICES
+#PRICES and FISH LENGTHS
 ##############################################################################
-postscript(file="Prices.eps", onefile=FALSE, horizontal=FALSE,width=4.25,height=3.25)
+postscript(file="weights.eps", onefile=FALSE, horizontal=FALSE,width=4.25,height=3.25)
 par(mar = c(3,5,2,4))
-plot(x=seq(min(ages)+((1/max(season))/2), max(ages+1),1/max(season)),y=sort(c(sp1Price/1000)), xlab="", ylab= "", ylim=c(0,50), type="l", lty=1, las=1)
+plot(x=seq(min(ages)+((1/max(season))/2), max(ages+1),1/max(season)),y=sort(c(sp1Price/1000)), xlab="", ylab= "", ylim=c(0,8), type="l", lty=1, las=1)
 mtext(side = 2, line = 3.5, 'Price (euro per kg)', font=2, cex = 1)
 mtext(side = 1, line = 2, 'Age (year)', font=2, cex = 1)
 par(new = T)
 plot(x=seq(min(ages)+((1/max(season))/2), max(ages+1),1/max(season)),
      y=c(lens),ylim=c(0,max(lens)), axes=F, xlab=NA,ylab=NA, type="l",lty=2)
-axis(side = 4,, las=1)
+axis(side = 4, las=1)
 mtext(side = 4, line = 2.5, 'Fish length (cm)', font=2, cex = 1)
 legend("bottomright", inset=.05, legend=c("Price", "Length"), pch=c(NA, NA), lty=c(1,2), lwd=c(1,1),col=c("black","black"), bty='n',text.font =1, cex=0.7)
 dev.off()
 
+#FISH WEIGHTS
+##############################################################################
+postscript(file="Prices.eps", onefile=FALSE, horizontal=FALSE,width=4.25,height=3.25)
+par(mar = c(3,5,2,4))
+plot(x=seq(min(ages)+((1/max(season))/2), max(ages+1),1/max(season)),y=sort(wts[,,,]), xlab="", ylab= "", ylim=c(0,3), type="l", lty=1, las=1)
+mtext(side = 2, line = 3.5, 'Fish weight (kg)', font=2, cex = 1)
+mtext(side = 1, line = 2, 'Age (year)', font=2, cex = 1)
+dev.off()
 
 #CATCHES
 ##############################################################################
