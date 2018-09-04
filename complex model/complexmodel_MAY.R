@@ -111,7 +111,7 @@ yield_curve <- function(hr,lratio, wts, natmortality, R=1, sequence = seq(0.001,
   return(res)
 }
 
-SIGMAS        <- seq(10000,100000,5000)   #SIGMA         <- 100 #comes from 2// chanheg from 300 to 200
+SIGMAS        <- seq(30000,120000,5000)   #SIGMA         <- 100 #comes from 2// chanheg from 300 to 200
 
 for (SIGMA in SIGMAS){
 
