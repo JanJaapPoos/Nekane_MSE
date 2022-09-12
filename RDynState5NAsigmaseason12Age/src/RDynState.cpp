@@ -18,21 +18,21 @@ bool            outofbounds_bool;
 double          outofbounds_double;
 
 // 160 by 98  works fine
-#define SPP1CAPACITY     1800    // max number of first choke sp (larger than MAXNOINC * MAXHORIZON *NOSIZES= 25 * 6* 12 = 1800) 
-#define SPP2CAPACITY     1800    // max number of second choke sp 
+#define SPP1CAPACITY     2400    // max number of first choke sp (larger than MAXNOINC * MAXHORIZON *NOSIZES= 25 * 8 * 12 = 1800) 
+#define SPP2CAPACITY     2400    // max number of second choke sp 
 #define NOSPEC              5    // number of species used in the analysis
-#define NOSIZES             6    // number of size classes used in the analysis
+#define NOSIZES             8    // number of size classes used in the analysis
 #define MAXNOINC           25    // max number of increments
 #define MAXHORIZON         12    // number of seasons to fish (= time)
 
 typedef unsigned UFINT;
 
-typedef float  (*FTYPE)[SPP2CAPACITY]; //matalloc(sizeof(float), (void *)0, 2, kSpp1Cap, kSpp2Cap); /* make pointer called FTYPE for FF0Star and FF1 arrays (that only has states and stores V for best choices) */
-typedef float  (*FCTYPE)[SPP2CAPACITY][3]; // (FCTYPE) matalloc(sizeof(float), (void*) 0,3, kSpp1Capacity, kSpp2Capacity,kNPatch) ;  /* make pointer called FCTYPE for FF0 array (that has states and patch, storing V for all patches/choices)_  */
-typedef float  (*ITYPE)[SPP1CAPACITY][SPP2CAPACITY][3]; //  matalloc(sizeof(float), (void *)0, 4, MAXHORIZON, kSpp1Capacity,kSpp2Capacity,kNPatch);  /* make pointer called ITYPE optimal choice array*/
-typedef double (*PTYPE)[MAXHORIZON][NOSPEC][NOSIZES][MAXNOINC]; /* make pointer called PTYPE for information on statistical distribution prey*/
+typedef float  (*FTYPE)[SPP2CAPACITY];                                //matalloc(sizeof(float), (void *)0, 2, kSpp1Cap, kSpp2Cap); /* make pointer called FTYPE for FF0Star and FF1 arrays (that only has states and stores V for best choices) */
+typedef float  (*FCTYPE)[SPP2CAPACITY][3];                            // (FCTYPE) matalloc(sizeof(float), (void*) 0,3, kSpp1Capacity, kSpp2Capacity,kNPatch) ;  /* make pointer called FCTYPE for FF0 array (that has states and patch, storing V for all patches/choices)_  */
+typedef float  (*ITYPE)[SPP1CAPACITY][SPP2CAPACITY][3];               //  matalloc(sizeof(float), (void *)0, 4, MAXHORIZON, kSpp1Capacity,kSpp2Capacity,kNPatch);  /* make pointer called ITYPE optimal choice array*/
+typedef double (*PTYPE)[MAXHORIZON][NOSPEC][NOSIZES][MAXNOINC];       /* make pointer called PTYPE for information on statistical distribution prey*/
 typedef double (*ATYPE)[MAXHORIZON][NOSPEC][(NOSIZES*MAXNOINC) - 1];  /* make pointer called ATYPE for information on statistical distribution prey aggregated over sizes*/
-typedef float  (*PITYPE)[NOSPEC][NOSIZES];                         // matalloc(sizeof(float), (void *)0, 3, MAXHORIZON, NOSPEC, NOSIZES);; /* make pointer called PITYPE for price information*/
+typedef float  (*PITYPE)[NOSPEC][NOSIZES];                            // matalloc(sizeof(float), (void *)0, 3, MAXHORIZON, NOSPEC, NOSIZES);; /* make pointer called PITYPE for price information*/
 
 
 /* random number generator*/
@@ -489,7 +489,7 @@ Rprintf("Start of DynStateF\n");
 
   Rprintf("kPriceEffort ");     Rprintf("%f \n",kPriceEffort); 
 
-  int Lndspp1, Lndspp2,i,t,s,inc0,inc1,inc2,inc3,inc4,inc5; /*for loops */
+  int Lndspp1, Lndspp2, i, t, s, inc0, inc1, inc2, inc3, inc4, inc5, inc6, inc7; /*for loops */
 
   /********************************************************************************************************************/
   /* Check if sigma is zero (because this leads to div by zero in prob calcs). If so set to very small num and warn   */
@@ -564,28 +564,38 @@ Rprintf("Start of DynStateF\n");
   }
 
   /* turned around inc0 and patch in loo pfor more parallel speedup */
-#pragma omp parallel private(i,t,s,inc0,inc1,inc2,inc3,inc4,inc5)
+#pragma omp parallel private(i,t,s,inc0,inc1,inc2,inc3,inc4,inc5, inc6, inc7)
 {
 #pragma omp for schedule(static)    
   for ( inc0 = 0; inc0 < noInc; inc0++){
     for ( i = 0; i < kNPatch; i++){
-    for (t = 0; t < kHorizon; t++){
-      for (s = 0; s < NOSPEC; s++){
+      for (t = 0; t < kHorizon; t++){
+        for (s = 0; s < NOSPEC; s++){
 	
-	  for (inc1 = 0; inc1 < noInc; inc1++){
-	    for (inc2 = 0; inc2 < noInc; inc2++){
-	      for (inc3 = 0; inc3 < noInc; inc3++){
-	        for (inc4 = 0; inc4 < noInc; inc4++){
-	          for (inc5 = 0; inc5 < noInc; inc5++){
-	            
-		theLndParmsAgg[i][t][s][inc0 + inc1 + inc2 + inc3 + inc4 + inc5] +=  theLndParms[i][t][s][0][inc0] * theLndParms[i][t][s][1][inc1] *  theLndParms[i][t][s][2][inc2]  * theLndParms[i][t][s][3][inc3] * theLndParms[i][t][s][4][inc4] * theLndParms[i][t][s][5][inc5] ;
-	      }
-	    }
-	  }
-	}
+	        for (inc1 = 0; inc1 < noInc; inc1++){
+	          for (inc2 = 0; inc2 < noInc; inc2++){
+	            for (inc3 = 0; inc3 < noInc; inc3++){
+	              for (inc4 = 0; inc4 < noInc; inc4++){
+	                for (inc5 = 0; inc5 < noInc; inc5++){
+	                  for (inc6 = 0; inc6 < noInc; inc6++){
+	                    for (inc7 = 0; inc7 < noInc; inc7++){
+		                    theLndParmsAgg[i][t][s][inc0 + inc1 + inc2 + inc3 + inc4 + inc5 + inc6 + inc7] +=  theLndParms[i][t][s][0][inc0] * 
+		                                                                                   theLndParms[i][t][s][1][inc1] *
+		                                                                                   theLndParms[i][t][s][2][inc2]* 
+		                                                                                   theLndParms[i][t][s][3][inc3] *
+		                                                                                   theLndParms[i][t][s][4][inc4] * 
+		                                                                                   theLndParms[i][t][s][5][inc5] *
+		                                                                                   theLndParms[i][t][s][6][inc6] *
+		                                                                                   theLndParms[i][t][s][7][inc7];
+	                    }
+	                  }
+	                }
+	              }
+	            }
+	          }
+          }
+        }
       }
-    }
-  }
     }
   }
   }
@@ -593,7 +603,7 @@ Rprintf("Start of DynStateF\n");
   Rprintf("Generated aggregated distribution functions \n"); R_FlushConsole();
   
   if (verbose == 1){
-    Rprintf(" landings probs for size 1-6, choice1 (0), time 0, spec 0\n");
+    Rprintf(" landings probs for size 1-8, choice1 (0), time 0, spec 0\n");
     for (int inc = 0; inc < noInc; inc++){
       Rprintf("%22.22f ",	theLndParms[0][0][0][0][inc]);
       Rprintf("%22.22f ",	theLndParms[0][0][0][1][inc]);
@@ -601,9 +611,11 @@ Rprintf("Start of DynStateF\n");
       Rprintf("%22.22f ",	theLndParms[0][0][0][3][inc]);
       Rprintf("%22.22f ",	theLndParms[0][0][0][4][inc]);
       Rprintf("%22.22f ",	theLndParms[0][0][0][5][inc]);
+      Rprintf("%22.22f ",	theLndParms[0][0][0][6][inc]);
+      Rprintf("%22.22f ",	theLndParms[0][0][0][7][inc]);
       Rprintf("\n");
     }
-    Rprintf(" landings probs for size 1-6, choice2 (1), time 0, spec 0\n");
+    Rprintf(" landings probs for size 1-8, choice2 (1), time 0, spec 0\n");
     for (int inc = 0; inc < noInc; inc++){
       Rprintf("%22.22f ",	theLndParms[1][0][0][0][inc]);
       Rprintf("%22.22f ",	theLndParms[1][0][0][1][inc]);
@@ -611,6 +623,8 @@ Rprintf("Start of DynStateF\n");
       Rprintf("%22.22f ",	theLndParms[1][0][0][3][inc]);
       Rprintf("%22.22f ",	theLndParms[1][0][0][4][inc]);
       Rprintf("%22.22f ",	theLndParms[1][0][0][5][inc]);
+      Rprintf("%22.22f ",	theLndParms[1][0][0][6][inc]);
+      Rprintf("%22.22f ",	theLndParms[1][0][0][7][inc]);
       Rprintf("\n");
     }
     Rprintf("aggregated landings probs for choice1, choice2, choice3, time 0, spec 0\n");
@@ -704,15 +718,17 @@ Rprintf("Start of DynStateF\n");
     }
   } 
 
-//  Rprintf("Price parameters for all species\n");
-//  for (int t = 0; t < kHorizon; t++){
-//    for (int s = 0; s < NOSPEC; s++){
-//      for (int si = 0; si < NOSIZES; si++){
-//	Rprintf ("%f ", thePriceParms[t][s][si]);
-//      }
-//      Rprintf("\n");
-//    }
-//  }
+  if (verbose == 1){
+    Rprintf("Price parameters for all species\n");
+    for (int t = 0; t < kHorizon; t++){
+      for (int s = 0; s < NOSPEC; s++){
+        for (int si = 0; si < NOSIZES; si++){
+	        Rprintf ("%f ", thePriceParms[t][s][si]);
+        }
+        Rprintf("\n");
+      }
+    }
+  }
   
   /*************************************************************************************************************************************/
   /*INITIALISE THE EFFORTCOST FOR THE DIFFERENT PATCHES                                                                                */

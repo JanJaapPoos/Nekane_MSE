@@ -33,10 +33,15 @@ NEW FEATURES
     o Added Run Length Encoding for Istar array in cpp part, substantially
       reducing memory footprint
 
-  	 CHANGES IN FLRDynState VERSION 0.3-4
+  	 CHANGES IN FLRDynState VERSION 0.3-5
      
 NEW FEATURES
     o Ensured maximum uplimits cannot exceed model arrays and stop when number
       of options set by user exceed signed short 
-             
+
+ CHANGES IN RFleetDynState VERSION 1.02-03
+
+NEW FEATURES
+    o Extended number of size classes, from 6 to 8. 
+
  
