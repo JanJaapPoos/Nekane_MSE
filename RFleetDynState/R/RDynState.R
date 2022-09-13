@@ -110,7 +110,7 @@ setClass("DynState.control",
         spp1LndQuotaFine      =as.double(1e8),
         spp2LndQuotaFine      =as.double(1e8),
         simNumber             =as.integer(10),
-        sigma                 =as.double(30),
+        sigma                 =as.double(.000001),
         fuelUse               =as.double(1),
         fuelPrice             =as.double(30),
         gearMaintenance       =as.double(30), 
@@ -220,7 +220,7 @@ setClass("DynState",
 
 invisible(createFLAccesors(new("DynState")))
 
-DynState.control <- function(spp1LndQuota=4000, spp2LndQuota=4000, spp1LndQuotaFine = 1E8, spp2LndQuotaFine=1E8, simNumber=30, fuelUse=1, sigma=0.1, fuelPrice=40, gearMaintenance=2, landingCosts=0, increments=25, addNoFishing=TRUE, spp1DiscardSteps=0, spp2DiscardSteps=0, spp3DiscardSteps=0, spp4DiscardSteps=0, spp5DiscardSteps=0, choiceDist=0, verbose=0,numThreads=4){
+DynState.control <- function(spp1LndQuota=4000, spp2LndQuota=4000, spp1LndQuotaFine = 1E8, spp2LndQuotaFine=1E8, simNumber=30, fuelUse=1, sigma=0.000001, fuelPrice=40, gearMaintenance=2, landingCosts=0, increments=25, addNoFishing=TRUE, spp1DiscardSteps=0, spp2DiscardSteps=0, spp3DiscardSteps=0, spp4DiscardSteps=0, spp5DiscardSteps=0, choiceDist=0, verbose=0,numThreads=4){
     res <- new("DynState.control", spp1LndQuota= as.double(spp1LndQuota), spp2LndQuota=as.double(spp2LndQuota),  spp1LndQuotaFine= as.double(spp1LndQuotaFine), spp2LndQuotaFine= as.double(spp2LndQuotaFine),  simNumber=as.integer(simNumber), sigma=as.double(sigma), fuelUse=as.double(fuelUse), fuelPrice=as.double(fuelPrice), gearMaintenance=as.double(gearMaintenance), landingCosts=as.double(landingCosts), increments=as.integer(increments), addNoFishing=addNoFishing, spp1DiscardSteps=as.double(spp1DiscardSteps), spp2DiscardSteps=as.double(spp2DiscardSteps), spp3DiscardSteps=as.double(spp3DiscardSteps), 
 spp4DiscardSteps=as.double(spp4DiscardSteps), spp5DiscardSteps=as.double(spp5DiscardSteps), choiceDist=as.integer(choiceDist),verbose=as.integer(verbose), numThreads=as.integer(numThreads))
    return(res)
